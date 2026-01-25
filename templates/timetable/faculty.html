@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Timetable – {{ faculty.first_name }} {{ faculty.last_name }}{% endblock %}
+{% block content %}
+<h2 class="mb-4">Timetable – {{ faculty.first_name }} {{ faculty.last_name }} ({{ faculty.emp_id }})</h2>
+<p><a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary btn-sm">← Timetable</a></p>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Day</th>
+          <th>Time</th>
+          <th>Subject</th>
+          <th>Course</th>
+          <th>Sem</th>
+          <th>Room</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in slots %}
+        <tr>
+          <td>{{ days[t.day_of_week] if t.day_of_week < days|length else t.day_of_week }}</td>
+          <td>{{ t.start_time }} – {{ t.end_time }}</td>
+          <td>{{ t.subject_name }}</td>
+          <td>{{ t.course_name }}</td>
+          <td>{{ t.semester }}</td>
+          <td>{{ t.room or '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No slots.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

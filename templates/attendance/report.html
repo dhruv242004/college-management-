@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Attendance Report – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Attendance Report</h2>
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-3">
+        <select name="course_id" class="form-select">
+          <option value="">All courses</option>
+          {% for c in courses %}
+          <option value="{{ c.id }}" {% if course_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <input type="number" name="semester" class="form-control" placeholder="Semester" min="1" max="10" value="{{ semester or '' }}">
+      </div>
+      <div class="col-md-3">
+        <select name="subject_id" class="form-select">
+          <option value="">All subjects</option>
+          {% for s in subjects %}
+          <option value="{{ s.id }}" {% if subject_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <input type="month" name="month" class="form-control" value="{{ month or '' }}" placeholder="Month">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Enrollment</th>
+          <th>Name</th>
+          <th>Course</th>
+          <th>Semester</th>
+          <th>Subject</th>
+          <th>Present</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in report %}
+        <tr>
+          <td><code>{{ r.enrollment_no }}</code></td>
+          <td>{{ r.first_name }} {{ r.last_name }}</td>
+          <td>{{ r.course_name }}</td>
+          <td>{{ r.current_semester }}</td>
+          <td>{{ r.subject_name or '—' }}</td>
+          <td>{{ r.present or 0 }}</td>
+          <td>{{ r.total or 0 }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted">No data.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

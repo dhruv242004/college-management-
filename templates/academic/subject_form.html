@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if subject else 'Add' }} Subject – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">{{ 'Edit' if subject else 'Add' }} Subject</h2>
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form method="post" data-validate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label required">Name</label>
+          <input type="text" name="name" class="form-control" required value="{{ subject.name if subject else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Code</label>
+          <input type="text" name="code" class="form-control" required value="{{ subject.code if subject else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Course</label>
+          <select name="course_id" class="form-select" required>
+            <option value="">Select</option>
+            {% for c in courses %}
+            <option value="{{ c.id }}" {% if subject and subject.course_id == c.id %}selected{% endif %}>{{ c.name }} ({{ c.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Semester</label>
+          <input type="number" name="semester" class="form-control" min="1" max="10" value="{{ subject.semester if subject else 1 }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Credits</label>
+          <input type="number" name="credits" class="form-control" min="1" max="10" value="{{ subject.credits if subject else 4 }}">
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{{ url_for('academic_bp.list_subjects') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

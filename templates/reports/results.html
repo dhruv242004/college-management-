@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Result report – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Result report</h2>
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-3">
+        <select name="course_id" class="form-select">
+          <option value="">All courses</option>
+          {% for c in courses %}
+          <option value="{{ c.id }}" {% if course_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select name="subject_id" class="form-select">
+          <option value="">All subjects</option>
+          {% for s in subjects %}
+          <option value="{{ s.id }}" {% if subject_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Enrollment</th>
+          <th>Name</th>
+          <th>Semester</th>
+          <th>Course</th>
+          <th>Subject</th>
+          <th>Internal</th>
+          <th>External</th>
+          <th>Total</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td><code>{{ r.enrollment_no }}</code></td>
+          <td>{{ r.first_name }} {{ r.last_name }}</td>
+          <td>{{ r.current_semester }}</td>
+          <td>{{ r.course_name }}</td>
+          <td>{{ r.subject_name }}</td>
+          <td>{{ r.internal_marks or '—' }}</td>
+          <td>{{ r.external_marks or '—' }}</td>
+          <td>{{ r.total_marks or '—' }}</td>
+          <td><strong>{{ r.grade or '—' }}</strong></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" class="text-center text-muted">No data.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

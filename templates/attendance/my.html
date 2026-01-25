@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}My Attendance – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">My Attendance</h2>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-transparent">Subject-wise</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Subject</th>
+          <th>Present</th>
+          <th>Total</th>
+          <th>%</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in stats %}
+        <tr>
+          <td>{{ r.subject.name }} ({{ r.subject.code }})</td>
+          <td>{{ r.present }}</td>
+          <td>{{ r.total }}</td>
+          <td>
+            <span class="badge {{ 'bg-success' if r.percent >= 75 else ('bg-warning' if r.percent >= 50 else 'bg-danger') }}">{{ r.percent }}%</span>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center text-muted">No attendance records.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% if stats %}
+<div class="mt-4">
+  <h6>Overview</h6>
+  <canvas id="attChart" width="400" height="150"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+  var ctx = document.getElementById('attChart');
+  if (!ctx) return;
+  new Chart(ctx.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: [{% for r in stats %}'{{ r.subject.code }}'{% if not loop.last %},{% endif %}{% endfor %}],
+      datasets: [{
+        label: 'Attendance %',
+        data: [{% for r in stats %}{{ r.percent }}{% if not loop.last %},{% endif %}{% endfor %}],
+        backgroundColor: 'rgba(13,110,253,0.6)',
+        borderColor: 'rgb(13,110,253)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true, max: 100 }
+      }
+    }
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

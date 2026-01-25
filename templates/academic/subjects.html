@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Subjects – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Subjects</h2>
+{% if current_user.role_name == 'admin' %}
+<p><a href="{{ url_for('academic_bp.add_subject') }}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>Add Subject</a></p>
+{% endif %}
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Course</th>
+          <th>Semester</th>
+          <th>Credits</th>
+          {% if current_user.role_name == 'admin' %}<th></th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in subjects %}
+        <tr>
+          <td><code>{{ s.code }}</code></td>
+          <td>{{ s.name }}</td>
+          <td>{{ s.course_name }} ({{ s.course_code }})</td>
+          <td>{{ s.semester }}</td>
+          <td>{{ s.credits }}</td>
+          {% if current_user.role_name == 'admin' %}
+          <td>
+            <a href="{{ url_for('academic_bp.edit_subject', sid=s.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+            <form action="{{ url_for('academic_bp.delete_subject', sid=s.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete?');">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No subjects.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if faculty else 'Add' }} Faculty – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">{{ 'Edit' if faculty else 'Add' }} Faculty</h2>
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form method="post" data-validate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label required">Emp ID</label>
+          <input type="text" name="emp_id" class="form-control" required value="{{ faculty.emp_id if faculty else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Department</label>
+          <select name="department_id" class="form-select" required>
+            <option value="">Select</option>
+            {% for d in departments %}
+            <option value="{{ d.id }}" {% if faculty and faculty.department_id == d.id %}selected{% endif %}>{{ d.name }} ({{ d.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">First name</label>
+          <input type="text" name="first_name" class="form-control" required value="{{ faculty.first_name if faculty else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Last name</label>
+          <input type="text" name="last_name" class="form-control" required value="{{ faculty.last_name if faculty else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Email</label>
+          <input type="email" name="email" class="form-control" required value="{{ faculty.email if faculty else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone</label>
+          <input type="text" name="phone" class="form-control" value="{{ faculty.phone if faculty else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Designation</label>
+          <input type="text" name="designation" class="form-control" value="{{ faculty.designation if faculty else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Joined date</label>
+          <input type="date" name="joined_date" class="form-control" value="{{ faculty.joined_date or '' }}">
+        </div>
+        {% if not faculty or not faculty.user_id %}
+        <div class="col-12">
+          <hr>
+          <div class="form-check mb-2">
+            <input type="checkbox" name="create_login" value="1" class="form-check-input" id="createLogin">
+            <label class="form-check-label" for="createLogin">Create login (faculty can sign in to view &amp; update details)</label>
+          </div>
+          <div class="row g-3 create-login-fields" style="display:none;">
+            <div class="col-md-6">
+              <label class="form-label">Username</label>
+              <input type="text" name="username" class="form-control" placeholder="e.g. emp id">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Password</label>
+              <input type="password" name="password" class="form-control">
+            </div>
+          </div>
+        </div>
+        {% elif faculty and faculty.user_id %}
+        <div class="col-12">
+          <hr>
+          <p class="text-muted small mb-0"><i class="bi bi-check-circle text-success me-1"></i> Faculty has login. <a href="{{ url_for('faculty_bp.profile', fid=faculty.id) }}">View profile</a></p>
+        </div>
+        {% endif %}
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{{ url_for('faculty_bp.list_faculty') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% if not faculty or not faculty.user_id %}
+<script>
+(function(){
+  var chk = document.getElementById('createLogin');
+  var fields = document.querySelectorAll('.create-login-fields');
+  if (chk) chk.addEventListener('change', function(){ fields.forEach(function(f){ f.style.display = chk.checked ? 'flex' : 'none'; }); });
+})();
+</script>
+{% endif %}
+{% endblock %}

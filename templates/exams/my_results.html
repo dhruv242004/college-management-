@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}My Results – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">My Results</h2>
+{% if student %}
+<p class="text-muted">{{ student.first_name }} {{ student.last_name }} · {{ student.enrollment_no }} · {{ student.course_name }}</p>
+{% endif %}
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Subject</th>
+          <th>Credits</th>
+          <th>Internal</th>
+          <th>External</th>
+          <th>Total</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td>{{ r.subject_name }} ({{ r.subject_code }})</td>
+          <td>{{ r.credits }}</td>
+          <td>{{ r.internal_marks or '—' }}</td>
+          <td>{{ r.external_marks or '—' }}</td>
+          <td>{{ r.total_marks or '—' }}</td>
+          <td><strong>{{ r.grade or '—' }}</strong></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No published results.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

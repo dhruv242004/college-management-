@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if course else 'Add' }} Course – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">{{ 'Edit' if course else 'Add' }} Course</h2>
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form method="post" data-validate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label required">Name</label>
+          <input type="text" name="name" class="form-control" required value="{{ course.name if course else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Code</label>
+          <input type="text" name="code" class="form-control" required value="{{ course.code if course else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Department</label>
+          <select name="department_id" class="form-select" required>
+            <option value="">Select</option>
+            {% for d in departments %}
+            <option value="{{ d.id }}" {% if course and course.department_id == d.id %}selected{% endif %}>{{ d.name }} ({{ d.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Duration (years)</label>
+          <input type="number" name="duration_years" class="form-control" min="1" max="6" value="{{ course.duration_years if course else 3 }}">
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{{ url_for('academic_bp.list_courses') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

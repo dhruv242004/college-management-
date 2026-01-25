@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Add timetable – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Add timetable entry</h2>
+<p><a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary btn-sm">← Timetable</a></p>
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form method="post" data-validate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label required">Course</label>
+          <select name="course_id" class="form-select" required>
+            <option value="">Select</option>
+            {% for c in courses %}
+            <option value="{{ c.id }}">{{ c.name }} ({{ c.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Subject</label>
+          <select name="subject_id" class="form-select" required>
+            <option value="">Select</option>
+            {% for s in subjects %}
+            <option value="{{ s.id }}" data-course="{{ s.course_id }}">{{ s.name }} (Sem {{ s.semester }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Faculty</label>
+          <select name="faculty_id" class="form-select" required>
+            <option value="">Select</option>
+            {% for f in faculty %}
+            <option value="{{ f.id }}">{{ f.first_name }} {{ f.last_name }} ({{ f.emp_id }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label required">Semester</label>
+          <input type="number" name="semester" class="form-control" min="1" max="10" value="1" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label required">Day</label>
+          <select name="day_of_week" class="form-select" required>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label required">Start time</label>
+          <input type="time" name="start_time" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label required">End time</label>
+          <input type="time" name="end_time" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Room</label>
+          <input type="text" name="room" class="form-control" placeholder="e.g. A101">
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Add</button>
+          <a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

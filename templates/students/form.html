@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if student else 'Add' }} Student – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">{{ 'Edit' if student else 'Add' }} Student</h2>
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data" data-validate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label required">First name</label>
+          <input type="text" name="first_name" class="form-control" required value="{{ student.first_name if student else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Last name</label>
+          <input type="text" name="last_name" class="form-control" required value="{{ student.last_name if student else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Email</label>
+          <input type="email" name="email" class="form-control" required value="{{ student.email if student else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone</label>
+          <input type="text" name="phone" class="form-control" value="{{ student.phone if student else '' }}">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Date of birth</label>
+          <input type="date" name="date_of_birth" class="form-control" value="{{ student.date_of_birth or '' }}">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Gender</label>
+          <select name="gender" class="form-select">
+            <option value="">—</option>
+            <option value="M" {% if student and student.gender == 'M' %}selected{% endif %}>Male</option>
+            <option value="F" {% if student and student.gender == 'F' %}selected{% endif %}>Female</option>
+            <option value="O" {% if student and student.gender == 'O' %}selected{% endif %}>Other</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Photo</label>
+          <input type="file" name="photo" class="form-control" accept=".jpg,.jpeg,.png,.gif">
+          {% if student and student.photo_path %}<small class="text-muted">Current: {{ student.photo_path }}</small>{% endif %}
+        </div>
+        <div class="col-12">
+          <label class="form-label">Address</label>
+          <textarea name="address" class="form-control" rows="2">{{ student.address or '' }}</textarea>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label required">Course</label>
+          <select name="course_id" class="form-select" required>
+            <option value="">Select course</option>
+            {% for c in courses %}
+            <option value="{{ c.id }}" {% if student and student.course_id == c.id %}selected{% endif %}>{{ c.name }} ({{ c.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Semester</label>
+          <input type="number" name="current_semester" class="form-control" min="1" max="10" value="{{ student.current_semester if student else 1 }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Admission date</label>
+          <input type="date" name="admission_date" class="form-control" value="{{ student.admission_date or '' }}">
+        </div>
+        {% if not student or not student.user_id %}
+        <div class="col-12">
+          <hr>
+          <div class="form-check mb-2">
+            <input type="checkbox" name="create_login" value="1" class="form-check-input" id="createLogin">
+            <label class="form-check-label" for="createLogin">Create login (student can sign in to view details)</label>
+          </div>
+          <div class="row g-3 create-login-fields" style="display:none; align-items: flex-end;">
+            <div class="col-md-6">
+              <label class="form-label">Username</label>
+              <input type="text" name="username" class="form-control" placeholder="e.g. enrollment no">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Password</label>
+              <input type="password" name="password" class="form-control">
+            </div>
+          </div>
+        </div>
+        {% elif student and student.user_id %}
+        <div class="col-12">
+          <hr>
+          <p class="text-muted small mb-0"><i class="bi bi-check-circle text-success me-1"></i> Student has login. <a href="{{ url_for('students_bp.profile', sid=student.id) }}">View profile</a></p>
+        </div>
+        {% endif %}
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{{ url_for('students_bp.list_students') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% if not student or not student.user_id %}
+<script>
+(function(){
+  var chk = document.getElementById('createLogin');
+  var fields = document.querySelectorAll('.create-login-fields');
+  if (chk) chk.addEventListener('change', function(){ fields.forEach(function(f){ f.style.display = chk.checked ? 'flex' : 'none'; }); });
+})();
+</script>
+{% endif %}
+{% endblock %}

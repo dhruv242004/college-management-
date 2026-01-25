@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Assigned students – {{ faculty.first_name }} {{ faculty.last_name }}{% endblock %}
+{% block content %}
+<h2 class="mb-4">{% if current_user.role_name == 'faculty' %}My {% endif %}Students – {{ faculty.first_name }} {{ faculty.last_name }}</h2>
+<p>
+  {% if current_user.role_name == 'faculty' %}
+  <a href="{{ url_for('faculty_bp.profile', fid=faculty.id) }}" class="btn btn-outline-secondary btn-sm">← My Profile</a>
+  {% else %}
+  <a href="{{ url_for('faculty_bp.list_faculty') }}" class="btn btn-outline-secondary btn-sm">← Faculty</a>
+  {% endif %}
+</p>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Enrollment</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Semester</th>
+          <th>Course</th>
+          <th>Subject</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td><code>{{ s.enrollment_no }}</code></td>
+          <td>{{ s.first_name }} {{ s.last_name }}</td>
+          <td>{{ s.email }}</td>
+          <td>{{ s.current_semester }}</td>
+          <td>{{ s.course_name }}</td>
+          <td>{{ s.subject_name }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No students.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

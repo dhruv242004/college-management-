@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if structure else 'Add' }} fee structure – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">{{ 'Edit' if structure else 'Add' }} fee structure</h2>
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form method="post" data-validate>
+      <div class="row g-3">
+        {% if not structure %}
+        <div class="col-md-6">
+          <label class="form-label required">Course</label>
+          <select name="course_id" class="form-select" required>
+            <option value="">Select</option>
+            {% for c in courses %}
+            <option value="{{ c.id }}" {% if pre_course_id == c.id %}selected{% endif %}>{{ c.name }} ({{ c.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label required">Semester</label>
+          <input type="number" name="semester" class="form-control" min="1" max="10" value="{{ structure.semester if structure else (pre_semester or 1) }}" required>
+        </div>
+        {% endif %}
+        <div class="col-md-6">
+          <label class="form-label required">Amount (₹)</label>
+          <input type="number" name="amount" class="form-control" min="0" step="0.01" required value="{{ structure.amount if structure else '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Due date</label>
+          <input type="date" name="due_date" class="form-control" value="{{ structure.due_date or '' }}">
+        </div>
+        {% if not structure %}
+        <div class="col-md-6">
+          <label class="form-label">Academic year</label>
+          <input type="text" name="academic_year" class="form-control" value="2025-26" placeholder="2025-26">
+        </div>
+        {% endif %}
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{{ url_for('fees_bp.index') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – College CMS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
+  <div>
+    <h2 class="fw-bold text-dark mb-1">Dashboard</h2>
+    <p class="text-muted mb-0">Welcome back, {{ user.username }}!</p>
+  </div>
+  <div class="glass-panel px-3 py-2 d-flex align-items-center text-primary fw-bold">
+    <i class="bi bi-calendar-event me-2"></i> {{ "now"|date("%B %d, %Y") }}
+  </div>
+</div>
+
+<div class="row g-4 mb-5">
+  {% if role == 'admin' %}
+  <!-- Admin Stats -->
+  <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+    <div class="glass-card h-100 p-4 stats-card text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h5 class="opacity-75 mb-0">Total Students</h5>
+          <h2 class="fw-bold mt-2 display-5">{{ stats.students }}</h2>
+        </div>
+        <i class="bi bi-people fs-1 opacity-50"></i>
+      </div>
+      <a href="{{ url_for('students_bp.list_students') }}" class="text-white text-decoration-none small opacity-75 hover-opacity-100">
+        View Details <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+    <div class="glass-card h-100 p-4 stats-card text-white" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h5 class="opacity-75 mb-0">Total Faculty</h5>
+          <h2 class="fw-bold mt-2 display-5">{{ stats.faculty }}</h2>
+        </div>
+        <i class="bi bi-person-badge fs-1 opacity-50"></i>
+      </div>
+      <a href="{{ url_for('faculty_bp.list_faculty') }}" class="text-white text-decoration-none small opacity-75 hover-opacity-100">
+        View Faculty <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+    <div class="glass-card h-100 p-4 stats-card text-white" style="background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%);">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h5 class="opacity-75 mb-0">Active Courses</h5>
+          <h2 class="fw-bold mt-2 display-5">{{ stats.courses }}</h2>
+        </div>
+        <i class="bi bi-book fs-1 opacity-50"></i>
+      </div>
+      <a href="{{ url_for('academic_bp.list_courses') }}" class="text-white text-decoration-none small opacity-75 hover-opacity-100">
+        Manage Courses <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+    <div class="glass-card h-100 p-4 stats-card text-white" style="background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h5 class="opacity-75 mb-0">Notices</h5>
+          <h2 class="fw-bold mt-2 display-5">{{ stats.notices }}</h2>
+        </div>
+        <i class="bi bi-megaphone fs-1 opacity-50"></i>
+      </div>
+      <a href="{{ url_for('notice_bp.list_notices') }}" class="text-white text-decoration-none small opacity-75 hover-opacity-100">
+        Post Notice <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  {% elif role == 'faculty' %}
+  <!-- Faculty Stats -->
+  <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+    <div class="glass-card h-100 p-4 stats-card text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="opacity-75">Subject Assignments</h5>
+          <h2 class="fw-bold display-4">{{ stats.assignments }}</h2>
+          <a href="{{ url_for('attendance_bp.index') }}" class="btn btn-light btn-sm rounded-pill mt-2 text-primary fw-bold">Manage Classes</a>
+        </div>
+        <i class="bi bi-journal-check display-1 opacity-25"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+    <div class="glass-card h-100 p-4 stats-card text-white" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="opacity-75">Actions</h5>
+          <div class="d-flex gap-2 mt-3">
+            <a href="{{ url_for('attendance_bp.index') }}" class="btn btn-light rounded-pill text-success fw-bold"><i class="bi bi-check-circle me-1"></i> Attendance</a>
+            <a href="{{ url_for('exam_bp.index') }}" class="btn btn-light rounded-pill text-success fw-bold"><i class="bi bi-pencil-square me-1"></i> Marks</a>
+          </div>
+        </div>
+        <i class="bi bi-calendar-check display-1 opacity-25"></i>
+      </div>
+    </div>
+  </div>
+
+  {% elif role == 'student' %}
+  <!-- Student Stats -->
+  <div class="col-md-8" data-aos="fade-right">
+    <div class="glass-card p-4 h-100 text-white" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+      <div class="row align-items-center">
+        <div class="col-md-7">
+          <h3 class="fw-bold mb-3">Attendance Overview</h3>
+          <div class="d-flex align-items-end mb-2">
+            <h1 class="display-3 fw-bold mb-0 lh-1">{{ (stats.present / stats.total * 100)|round|int if stats.total else 0 }}<small class="fs-4">%</small></h1>
+            <span class="ms-3 mb-2 opacity-75">Present Classes</span>
+          </div>
+          <p class="opacity-75 mb-4">You have attended {{ stats.present }} out of {{ stats.total }} total classes.</p>
+          <div class="progress bg-white bg-opacity-25 rounded-pill" style="height: 10px;">
+            <div class="progress-bar bg-white rounded-pill" role="progressbar" style="width: {{ (stats.present / stats.total * 100)|round if stats.total else 0 }}%"></div>
+          </div>
+        </div>
+        <div class="col-md-5 text-center d-none d-md-block">
+          <i class="bi bi-pie-chart-fill display-1 opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4" data-aos="fade-left">
+    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center text-center">
+      <div class="mb-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3" style="width: 60px; height: 60px;">
+          <i class="bi bi-trophy-fill fs-3"></i>
+        </div>
+        <h5 class="fw-bold">Quick Access</h5>
+      </div>
+      <div class="d-grid gap-2">
+        <a href="{{ url_for('exam_bp.my_results') }}" class="btn btn-outline-primary border-2 fw-bold">View Results</a>
+        <a href="{{ url_for('fees_bp.my_fees') }}" class="btn btn-outline-success border-2 fw-bold">Check Fees</a>
+        <a href="{{ url_for('timetable_bp.my_timetable') }}" class="btn btn-outline-info border-2 fw-bold">My Timetable</a>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- Accountant Stats -->
+  <div class="col-md-6" data-aos="fade-up">
+    <div class="glass-card h-100 p-5 text-white text-center" style="background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);">
+      <i class="bi bi-wallet2 display-1 mb-4 opacity-50"></i>
+      <h2 class="fw-bold">Fee Management</h2>
+      <p class="lead opacity-75 mb-4">Manage student fees, structures, and payments.</p>
+      <a href="{{ url_for('fees_bp.index') }}" class="btn btn-light btn-lg rounded-pill text-primary fw-bold px-5">Go to Fees</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Quick Actions / Recent Activity Placeholder -->
+<div class="row g-4">
+  <div class="col-md-8" data-aos="fade-up" data-aos-delay="200">
+    <div class="glass-card">
+      <div class="card-header d-flex justify-content-between align-items-center border-0 bg-transparent">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2 text-primary"></i> Recent Notices</h5>
+        <a href="{{ url_for('notice_bp.list_notices') }}" class="btn btn-sm btn-primary-soft">View All</a>
+      </div>
+      <div class="card-body p-0">
+        <!-- We could fetch recent notices here, but for now just a placeholder or link -->
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-inbox fs-1 d-block mb-3 opacity-25"></i>
+          <p>Check the Notices section for the latest updates.</p>
+          <a href="{{ url_for('notice_bp.list_notices') }}" class="btn btn-primary btn-sm rounded-pill">Go to Notices</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+    <div class="glass-card h-100">
+      <div class="card-header border-0 bg-transparent">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-link-45deg me-2 text-secondary"></i> Quick Links</h5>
+      </div>
+      <div class="list-group list-group-flush bg-transparent">
+        <a href="#" class="list-group-item list-group-item-action bg-transparent border-0 d-flex align-items-center py-3">
+          <span class="bg-success bg-opacity-10 text-success rounded p-2 me-3"><i class="bi bi-calendar3"></i></span>
+          Academic Calendar
+        </a>
+        <a href="#" class="list-group-item list-group-item-action bg-transparent border-0 d-flex align-items-center py-3">
+          <span class="bg-warning bg-opacity-10 text-warning rounded p-2 me-3"><i class="bi bi-file-earmark-text"></i></span>
+          Exam Schedule
+        </a>
+        <a href="#" class="list-group-item list-group-item-action bg-transparent border-0 d-flex align-items-center py-3">
+          <span class="bg-info bg-opacity-10 text-info rounded p-2 me-3"><i class="bi bi-info-circle"></i></span>
+          Help Desk
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

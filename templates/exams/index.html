@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Exams – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Exams & Results</h2>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-transparent">Subjects – Enter marks</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Subject</th>
+          <th>Course</th>
+          <th>Semester</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in subjects %}
+        <tr>
+          <td>{{ s.name }} ({{ s.code }})</td>
+          <td>{{ s.course_name }}</td>
+          <td>{{ s.semester }}</td>
+          <td>
+            <a href="{{ url_for('exam_bp.marks_entry', subject_id=s.id) }}" class="btn btn-sm btn-primary">Marks</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center text-muted">No subjects.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

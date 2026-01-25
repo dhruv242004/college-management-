@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Faculty – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Faculty</h2>
+<p><a href="{{ url_for('faculty_bp.add') }}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>Add Faculty</a></p>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Emp ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Designation</th>
+          <th>Department</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in faculty_list %}
+        <tr>
+          <td><code>{{ f.emp_id }}</code></td>
+          <td>{{ f.first_name }} {{ f.last_name }}</td>
+          <td>{{ f.email }}</td>
+          <td>{{ f.designation or '—' }}</td>
+          <td>{{ f.dept_name }}</td>
+          <td>
+            <a href="{{ url_for('faculty_bp.profile', fid=f.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+            {% if not f.user_id %}
+            <a href="{{ url_for('faculty_bp.create_login', fid=f.id) }}" class="btn btn-sm btn-outline-success" title="Faculty can then log in">Create login</a>
+            {% endif %}
+            <a href="{{ url_for('faculty_bp.assign_subjects', fid=f.id) }}" class="btn btn-sm btn-outline-primary">Assign</a>
+            <a href="{{ url_for('faculty_bp.assigned_students', fid=f.id) }}" class="btn btn-sm btn-outline-info">Students</a>
+            <a href="{{ url_for('faculty_bp.edit', fid=f.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+            <form action="{{ url_for('faculty_bp.delete', fid=f.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete this faculty?');">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No faculty.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

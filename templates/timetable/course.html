@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Timetable – {{ course.name }}{% endblock %}
+{% block content %}
+<div class="container-fluid" data-aos="fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="background: linear-gradient(45deg, #4f46e5, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ course.name }}</h2>
+            <p class="text-muted mb-0"><i class="bi bi-journal-bookmark-fill me-2"></i>{{ course.code }} <span class="mx-2">•</span> Timetable View</p>
+        </div>
+        <div>
+            <a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-arrow-left me-2"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <div class="glass-panel p-3 mb-4 d-flex flex-wrap align-items-center gap-2" data-aos="fade-up" data-aos-delay="100">
+        <span class="fw-bold text-muted me-2"><i class="bi bi-funnel me-1"></i>Select Semester:</span>
+        {% for s in range(1, 9) %}
+        <a href="{{ url_for('timetable_bp.course_timetable', course_id=course.id, semester=s) }}" 
+           class="btn btn-sm rounded-pill px-3 {{ 'btn-primary shadow-sm' if semester == s else 'btn-outline-secondary border-0' }}"
+           style="transition: all 0.3s;">
+           Semester {{ s }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="glass-panel p-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="table-responsive bg-transparent shadow-none">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="text-uppercase text-secondary" style="font-size: 0.8rem; letter-spacing: 1px;">
+                    <tr>
+                        <th class="border-0">Day</th>
+                        <th class="border-0">Time</th>
+                        <th class="border-0">Subject</th>
+                        <th class="border-0">Faculty</th>
+                        <th class="border-0">Room</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in slots %}
+                    <tr class="border-bottom" style="transition: all 0.2s;">
+                        <td class="fw-bold text-primary">{{ days[t.day_of_week] if t.day_of_week < days|length else t.day_of_week }}</td>
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                <i class="bi bi-clock me-1"></i>{{ t.start_time }} – {{ t.end_time }}
+                            </span>
+                        </td>
+                        <td class="fw-semibold">
+                            {{ t.subject_name }}
+                            <small class="text-muted d-block">{{ t.subject_code }}</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-gradient-primary text-white me-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-size: 0.8rem; background: linear-gradient(135deg, var(--primary), var(--secondary));">
+                                    {{ t.fac_first[0] if t.fac_first else 'F' }}
+                                </div>
+                                {{ t.fac_first }} {{ t.fac_last }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if t.room %}
+                            <span class="badge bg-info bg-opacity-10 text-info">
+                                <i class="bi bi-geo-alt-fill me-1"></i>{{ t.room }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-center text-muted py-5">
+                        <i class="bi bi-calendar-x display-4 d-block mb-3 opacity-50"></i>
+                        No slots scheduled for Semester {{ semester }}.
+                    </td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

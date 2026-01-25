@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Notices – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Notices</h2>
+{% if current_user.role_name in ['admin','faculty'] %}
+<p><a href="{{ url_for('notice_bp.add') }}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>Add notice</a></p>
+{% endif %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-4">
+        <select name="category" class="form-select">
+          <option value="">All categories</option>
+          <option value="Exam" {% if category == 'Exam' %}selected{% endif %}>Exam</option>
+          <option value="Event" {% if category == 'Event' %}selected{% endif %}>Event</option>
+          <option value="Holiday" {% if category == 'Holiday' %}selected{% endif %}>Holiday</option>
+          <option value="General" {% if category == 'General' %}selected{% endif %}>General</option>
+          <option value="Academic" {% if category == 'Academic' %}selected{% endif %}>Academic</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="card border-0 shadow-sm">
+  <div class="list-group list-group-flush">
+    {% for n in notices %}
+    <div class="list-group-item">
+      <div class="d-flex justify-content-between">
+        <h6 class="mb-1">{{ n.title }}</h6>
+        <span class="badge bg-secondary">{{ n.category }}</span>
+      </div>
+      <p class="text-muted small mb-1">{{ (n.content or '')[:200] }}{% if (n.content or '')|length > 200 %}…{% endif %}</p>
+      <small class="text-muted">By {{ n.username }} · {{ n.created_at.strftime('%Y-%m-%d %H:%M') if n.created_at else '' }}</small>
+      {% if current_user.role_name in ['admin','faculty'] %}
+      <div class="mt-2">
+        <a href="{{ url_for('notice_bp.edit', nid=n.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+        <form action="{{ url_for('notice_bp.delete', nid=n.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete?');">
+          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="list-group-item text-center text-muted">No notices.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

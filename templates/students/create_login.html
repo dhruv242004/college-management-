@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Create login – {{ student.first_name }} {{ student.last_name }}{% endblock %}
+{% block content %}
+<h2 class="mb-4">Create login</h2>
+<p class="text-muted">{{ student.first_name }} {{ student.last_name }} · {{ student.enrollment_no }} · {{ student.email }}</p>
+<p><a href="{{ url_for('students_bp.profile', sid=student.id) }}" class="btn btn-outline-secondary btn-sm">← Profile</a></p>
+<div class="card border-0 shadow-sm" style="max-width: 400px;">
+  <div class="card-body">
+    <form method="post" data-validate>
+      <div class="mb-3">
+        <label class="form-label required">Username</label>
+        <input type="text" name="username" class="form-control" required placeholder="e.g. {{ student.enrollment_no|lower }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label required">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Create login</button>
+      <a href="{{ url_for('students_bp.list_students') }}" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+  </div>
+</div>
+<p class="text-muted small mt-3">Student will use this username and password to log in and view My Profile, Attendance, Results, Fees, Timetable.</p>
+{% endblock %}

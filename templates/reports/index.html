@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Reports – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Reports</h2>
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-people display-6 text-primary"></i>
+        <h5 class="mt-2">Student list</h5>
+        <p class="text-muted">By course / semester. Export CSV.</p>
+        <a href="{{ url_for('reports_bp.students_report') }}" class="btn btn-outline-primary">Open</a>
+      </div>
+    </div>
+  </div>
+  {% if current_user.role_name in ['admin','faculty'] %}
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-calendar-check display-6 text-success"></i>
+        <h5 class="mt-2">Attendance report</h5>
+        <p class="text-muted">By course / subject.</p>
+        <a href="{{ url_for('reports_bp.attendance_report') }}" class="btn btn-outline-primary">Open</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-clipboard-data display-6 text-info"></i>
+        <h5 class="mt-2">Result report</h5>
+        <p class="text-muted">Published results by course / subject.</p>
+        <a href="{{ url_for('reports_bp.results_report') }}" class="btn btn-outline-primary">Open</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% if current_user.role_name in ['admin','accountant'] %}
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-currency-rupee display-6 text-warning"></i>
+        <h5 class="mt-2">Fees pending</h5>
+        <p class="text-muted">Students with pending dues.</p>
+        <a href="{{ url_for('reports_bp.fees_pending_report') }}" class="btn btn-outline-primary">Open</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

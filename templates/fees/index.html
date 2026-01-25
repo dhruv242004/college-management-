@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Fees – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Fees</h2>
+<p>
+  <a href="{{ url_for('fees_bp.add_structure') }}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>Add fee structure</a>
+  <a href="{{ url_for('fees_bp.pay_list') }}" class="btn btn-primary">Payments</a>
+  <a href="{{ url_for('reports_bp.fees_pending_report') }}" class="btn btn-outline-warning">Pending report</a>
+</p>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-transparent">Fee structure (course / semester)</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Course</th>
+          <th>Semester</th>
+          <th>Amount</th>
+          <th>Due date</th>
+          <th>Year</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fs in structures %}
+        <tr>
+          <td>{{ fs.course_name }} ({{ fs.course_code }})</td>
+          <td>{{ fs.semester }}</td>
+          <td>₹ {{ "%.2f"|format(fs.amount) }}</td>
+          <td>{{ fs.due_date or '—' }}</td>
+          <td>{{ fs.academic_year }}</td>
+          <td><a href="{{ url_for('fees_bp.edit_structure', fsid=fs.id) }}" class="btn btn-sm btn-outline-primary">Edit</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No fee structures.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

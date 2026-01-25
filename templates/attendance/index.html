@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Attendance – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Attendance</h2>
+{% if current_user.role_name == 'student' %}
+<p><a href="{{ url_for('attendance_bp.my_attendance') }}" class="btn btn-primary">My Attendance</a></p>
+{% else %}
+<p><a href="{{ url_for('attendance_bp.report') }}" class="btn btn-outline-secondary">Reports</a></p>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-transparent">Subjects / Assignments – Mark attendance</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Subject</th>
+          <th>Course</th>
+          <th>Semester</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assignments %}
+        <tr>
+          <td>{{ a.subject_name }} ({{ a.subject_code|default(a.subject_name, true) }})</td>
+          <td>{{ a.course_name }}</td>
+          <td>{{ a.semester }}</td>
+          <td>
+            <a href="{{ url_for('attendance_bp.mark', subject_id=a.subject_id, course_id=a.course_id, semester=a.semester) }}" class="btn btn-sm btn-primary">Mark</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center text-muted">No subjects. {% if is_faculty %}Get assignments from admin.{% else %}Add subjects.{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

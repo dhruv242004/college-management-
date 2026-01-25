@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Students report – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Students report</h2>
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-3">
+        <select name="course_id" class="form-select">
+          <option value="">All courses</option>
+          {% for c in courses %}
+          <option value="{{ c.id }}" {% if course_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <input type="number" name="semester" class="form-control" placeholder="Semester" min="1" max="10" value="{{ semester or '' }}">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+      </div>
+      <div class="col-md-2">
+        <a href="{{ url_for('reports_bp.students_report', export='csv', course_id=course_id or '', semester=semester or '') }}" class="btn btn-success">Export CSV</a>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Enrollment</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Semester</th>
+          <th>Course</th>
+          <th>Department</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td><code>{{ r.enrollment_no }}</code></td>
+          <td>{{ r.first_name }} {{ r.last_name }}</td>
+          <td>{{ r.email }}</td>
+          <td>{{ r.current_semester }}</td>
+          <td>{{ r.course_name }}</td>
+          <td>{{ r.dept_name }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No data.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

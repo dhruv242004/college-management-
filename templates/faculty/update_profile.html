@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Update my profile – College CMS{% endblock %}
+{% block content %}
+<h2 class="mb-4">Update my profile</h2>
+<p><a href="{{ url_for('faculty_bp.profile', fid=faculty.id) }}" class="btn btn-outline-secondary btn-sm">← My Profile</a></p>
+<div class="card border-0 shadow-sm" style="max-width: 500px;">
+  <div class="card-body">
+    <p class="text-muted small mb-3">You can update only phone and designation. Other details are managed by admin.</p>
+    <form method="post" data-validate>
+      <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <input type="text" name="phone" class="form-control" value="{{ faculty.phone or '' }}" placeholder="e.g. +91 9876543210">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Designation</label>
+        <input type="text" name="designation" class="form-control" value="{{ faculty.designation or '' }}" placeholder="e.g. Assistant Professor">
+      </div>
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a href="{{ url_for('faculty_bp.profile', fid=faculty.id) }}" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
