@@ -154,8 +154,8 @@ def pay_list():
                 (s["id"], fs["id"]),
             )
             payments = cur.fetchall()
-        paid = sum(p["amount_paid"] for p in payments)
-        pending = max(0, float(fs["amount"]) - paid)
+        paid = float(sum(p["amount_paid"] for p in payments))
+        pending = max(0.0, float(fs["amount"]) - paid)
         if status_filter == "paid" and pending > 0:
             continue
         if status_filter == "pending" and pending <= 0:
@@ -210,8 +210,8 @@ def record_payment(student_id):
             (student_id, structure["id"]),
         )
         payments = cur.fetchall()
-    paid = sum(p["amount_paid"] for p in payments)
-    pending = max(0, float(structure["amount"]) - paid)
+    paid = float(sum(p["amount_paid"] for p in payments))
+    pending = max(0.0, float(structure["amount"]) - paid)
     if request.method == "POST":
         amount = request.form.get("amount", type=float)
         payment_date = request.form.get("payment_date") or str(date.today())
@@ -275,8 +275,8 @@ def my_fees():
             (sid, structure["id"]),
         )
         payments = cur.fetchall()
-    paid = sum(p["amount_paid"] for p in payments)
-    pending = max(0, float(structure["amount"]) - paid)
+    paid = float(sum(p["amount_paid"] for p in payments))
+    pending = max(0.0, float(structure["amount"]) - paid)
     return render_template(
         "fees/my_fees.html",
         student=student,
