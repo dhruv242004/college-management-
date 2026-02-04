@@ -11,8 +11,10 @@ def login_user(username: str, password: str) -> tuple[bool, str, dict]:
     """
     Authenticate user. Returns (success, message, user_dict).
     user_dict: id, username, email, role_id, role_name, extra_id (student_id/faculty_id).
+    Supports login via username, email, or enrollment number (for students).
     """
     with db_cursor() as (conn, cur):
+        # First try username/email login
         cur.execute(
             """
             SELECT u.id, u.username, u.email, u.password_hash, u.role_id, r.name AS role_name,
@@ -26,6 +28,21 @@ def login_user(username: str, password: str) -> tuple[bool, str, dict]:
             (username, username),
         )
         row = cur.fetchone()
+        
+        # If not found, try enrollment number login for students
+        if not row:
+            cur.execute(
+                """
+                SELECT u.id, u.username, u.email, u.password_hash, u.role_id, r.name AS role_name,
+                       s.id AS student_id, NULL AS faculty_id
+                FROM students s
+                JOIN users u ON u.id = s.user_id
+                JOIN roles r ON r.id = u.role_id
+                WHERE s.enrollment_no = %s AND u.is_active = 1
+                """,
+                (username.upper(),),
+            )
+            row = cur.fetchone()
     if not row:
         return False, "Invalid username or password.", {}
     if not check_password_hash(row["password_hash"], password):

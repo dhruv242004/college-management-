@@ -1,21 +1,73 @@
-"""Authentication routes: login, logout."""
+"""Authentication routes: login, logout, student registration."""
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from datetime import date
 
-from auth import login_user, logout_user, get_current_user, require_login
+from auth import login_user, logout_user, get_current_user, require_login, hash_password
+from database import db_cursor
 
 auth_bp = Blueprint("auth_bp", __name__)
+
+
+def get_next_enrollment_for_course(course_code: str) -> str:
+    """
+    Generate next enrollment number for a course.
+    Format: COURSECODE + YEAR + SEQUENCE (e.g., BCA2025001, MCA2025002)
+    """
+    current_year = date.today().year
+    prefix = f"{course_code.upper()}{current_year}"
+    
+    with db_cursor() as (conn, cur):
+        # Get the highest enrollment number for this course prefix
+        cur.execute(
+            """
+            SELECT enrollment_no FROM students 
+            WHERE enrollment_no LIKE %s 
+            ORDER BY enrollment_no DESC 
+            LIMIT 1
+            """,
+            (f"{prefix}%",)
+        )
+        row = cur.fetchone()
+    
+    if not row:
+        return f"{prefix}001"
+    
+    try:
+        # Extract the sequence number from the last enrollment
+        last_enrollment = row["enrollment_no"]
+        sequence = int(last_enrollment[len(prefix):]) + 1
+        return f"{prefix}{sequence:03d}"
+    except (ValueError, IndexError):
+        return f"{prefix}001"
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if get_current_user():
         return redirect(url_for("dashboard"))
+    
+    # Fetch recent notices for display on login page
+    notices = []
+    try:
+        with db_cursor() as (conn, cur):
+            cur.execute(
+                """
+                SELECT title, category FROM notices 
+                WHERE is_published = 1 
+                ORDER BY created_at DESC 
+                LIMIT 5
+                """
+            )
+            notices = cur.fetchall()
+    except Exception:
+        pass  # Ignore errors fetching notices
+    
     if request.method == "POST":
         username = (request.form.get("username") or "").strip()
         password = request.form.get("password") or ""
         if not username or not password:
             flash("Username and password are required.", "danger")
-            return render_template("auth/login.html")
+            return render_template("auth/login.html", notices=notices)
         try:
             ok, msg, user = login_user(username, password)
         except Exception as e:
@@ -24,17 +76,17 @@ def login():
                 "Database error. Ensure MySQL is running, then run: mysql -u root -p < schema.sql and python seed_admin.py. " + err,
                 "danger",
             )
-            return render_template("auth/login.html")
+            return render_template("auth/login.html", notices=notices)
         if not ok:
             flash(msg, "danger")
-            return render_template("auth/login.html")
+            return render_template("auth/login.html", notices=notices)
         session["user"] = user
         session.permanent = True
         session.modified = True
         flash(msg, "success")
         next_url = request.args.get("next") or request.form.get("next") or url_for("dashboard")
         return redirect(next_url)
-    return render_template("auth/login.html")
+    return render_template("auth/login.html", notices=notices)
 
 
 @auth_bp.route("/logout")
@@ -42,3 +94,109 @@ def logout():
     logout_user()
     flash("You have been logged out.", "info")
     return redirect(url_for("auth_bp.login"))
+
+
+@auth_bp.route("/register", methods=["GET", "POST"])
+def student_register():
+    """Student self-registration with course-wise enrollment number generation."""
+    if get_current_user():
+        return redirect(url_for("dashboard"))
+    
+    # Fetch available courses
+    with db_cursor() as (conn, cur):
+        cur.execute(
+            """
+            SELECT c.id, c.name, c.code, d.name AS dept_name 
+            FROM courses c 
+            JOIN departments d ON d.id = c.department_id 
+            ORDER BY d.name, c.name
+            """
+        )
+        courses = cur.fetchall()
+    
+    if request.method == "POST":
+        first_name = (request.form.get("first_name") or "").strip()
+        last_name = (request.form.get("last_name") or "").strip()
+        email = (request.form.get("email") or "").strip().lower()
+        phone = (request.form.get("phone") or "").strip()
+        dob = request.form.get("date_of_birth") or None
+        gender = request.form.get("gender") or None
+        course_id = request.form.get("course_id", type=int)
+        password = request.form.get("password") or ""
+        confirm_password = request.form.get("confirm_password") or ""
+        
+        # Validation
+        errors = []
+        if not first_name:
+            errors.append("First name is required.")
+        if not last_name:
+            errors.append("Last name is required.")
+        if not email:
+            errors.append("Email is required.")
+        if not course_id:
+            errors.append("Please select a course.")
+        if not password:
+            errors.append("Password is required.")
+        if len(password) < 6:
+            errors.append("Password must be at least 6 characters.")
+        if password != confirm_password:
+            errors.append("Passwords do not match.")
+        
+        if errors:
+            for error in errors:
+                flash(error, "danger")
+            return render_template("auth/register.html", courses=courses)
+        
+        # Check if email already exists
+        with db_cursor() as (conn, cur):
+            cur.execute("SELECT id FROM users WHERE email = %s", (email,))
+            if cur.fetchone():
+                flash("Email is already registered. Please use a different email or login.", "danger")
+                return render_template("auth/register.html", courses=courses)
+        
+        # Get course code for enrollment generation
+        course_code = None
+        for c in courses:
+            if c["id"] == course_id:
+                course_code = c["code"]
+                break
+        
+        if not course_code:
+            flash("Invalid course selected.", "danger")
+            return render_template("auth/register.html", courses=courses)
+        
+        # Generate course-wise enrollment number
+        enrollment_no = get_next_enrollment_for_course(course_code)
+        
+        # Create user and student records
+        try:
+            with db_cursor() as (conn, cur):
+                # Create user account (role_id=3 for student)
+                cur.execute(
+                    """
+                    INSERT INTO users (role_id, email, username, password_hash) 
+                    VALUES (3, %s, %s, %s)
+                    """,
+                    (email, enrollment_no.lower(), hash_password(password))
+                )
+                user_id = cur.lastrowid
+                
+                # Create student record
+                cur.execute(
+                    """
+                    INSERT INTO students (user_id, enrollment_no, first_name, last_name, email, phone, 
+                        date_of_birth, gender, course_id, current_semester, admission_date)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1, %s)
+                    """,
+                    (user_id, enrollment_no, first_name, last_name, email, phone or None, 
+                     dob, gender, course_id, date.today())
+                )
+            
+            flash(f"Registration successful! Your enrollment number is: {enrollment_no}. Please login with your enrollment number and password.", "success")
+            return redirect(url_for("auth_bp.login"))
+        
+        except Exception as e:
+            flash(f"Registration failed. Please try again. Error: {str(e)[:100]}", "danger")
+            return render_template("auth/register.html", courses=courses)
+    
+    return render_template("auth/register.html", courses=courses)
