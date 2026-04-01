@@ -1,1 +1,1 @@
-web: gunicorn --worker-class eventlet -w 1 app:app
+web: python seed_admin.py && python seed_data.py && gunicorn --worker-class eventlet -w 1 app:app
