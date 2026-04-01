@@ -72,9 +72,9 @@ def login():
         try:
             ok, msg, user = login_user(username, password)
         except Exception as e:
-            err = str(e)[:120] + "…" if len(str(e)) > 120 else str(e)
+            err = str(e)[:150] + "…" if len(str(e)) > 150 else str(e)
             flash(
-                "Database error. Ensure MySQL is running, then run: mysql -u root -p < schema.sql and python seed_admin.py. " + err,
+                "Database connection error. Please check your connection settings. " + err,
                 "danger",
             )
             return render_template("auth/login.html", notices=notices)

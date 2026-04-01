@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+static/uploads/*
+!static/uploads/.gitkeep
+instance/
+.pytest_cache/
+.vscode/
+.idea/
+*.log
