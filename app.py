@@ -15,7 +15,7 @@ app.config["SESSION_COOKIE_SAMESITE"] = config.SESSION_COOKIE_SAMESITE
 
 os.makedirs(config.UPLOAD_FOLDER, exist_ok=True)
 
-socketio = SocketIO(app, async_mode="threading")
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 from routes.auth_routes import auth_bp
 from routes.student_routes import students_bp
