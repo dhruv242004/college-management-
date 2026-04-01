@@ -49,14 +49,14 @@
       </thead>
       <tbody>
         {% for r in report %}
-        <tr>
-          <td><code>{{ r.enrollment_no }}</code></td>
-          <td>{{ r.first_name }} {{ r.last_name }}</td>
-          <td>{{ r.course_name }}</td>
-          <td>{{ r.current_semester }}</td>
-          <td>{{ r.subject_name or '—' }}</td>
-          <td>{{ r.present or 0 }}</td>
-          <td>{{ r.total or 0 }}</td>
+        <tr style="background: rgba(30, 41, 59, 0.2);">
+          <td><code style="background: rgba(30, 41, 59, 0.4); padding: 0.5rem; border-radius: 6px; color: #a5b4fc;">{{ r.enrollment_no }}</code></td>
+          <td style="color: #cbd5e1;">{{ r.first_name }} {{ r.last_name }}</td>
+          <td style="color: #cbd5e1;">{{ r.course_name }}</td>
+          <td style="color: #cbd5e1;">{{ r.current_semester }}</td>
+          <td style="color: #cbd5e1;">{{ r.subject_name or '—' }}</td>
+          <td style="color: #cbd5e1;">{{ r.present or 0 }}</td>
+          <td style="color: #cbd5e1;">{{ r.total or 0 }}</td>
         </tr>
         {% else %}
         <tr><td colspan="7" class="text-center text-muted">No data.</td></tr>

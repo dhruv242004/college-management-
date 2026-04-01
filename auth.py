@@ -23,7 +23,7 @@ def login_user(username: str, password: str) -> tuple[bool, str, dict]:
             JOIN roles r ON r.id = u.role_id
             LEFT JOIN students s ON s.user_id = u.id
             LEFT JOIN faculty f ON f.user_id = u.id
-            WHERE (u.username = %s OR u.email = %s) AND u.is_active = 1
+            WHERE (u.username = %s OR u.email = %s) AND u.is_active = TRUE
             """,
             (username, username),
         )
@@ -38,7 +38,7 @@ def login_user(username: str, password: str) -> tuple[bool, str, dict]:
                 FROM students s
                 JOIN users u ON u.id = s.user_id
                 JOIN roles r ON r.id = u.role_id
-                WHERE s.enrollment_no = %s AND u.is_active = 1
+                WHERE s.enrollment_no = %s AND u.is_active = TRUE
                 """,
                 (username.upper(),),
             )

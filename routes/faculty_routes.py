@@ -101,11 +101,19 @@ def add():
         user_id = None
         if create_login:
             with db_cursor() as (conn, cur):
-                cur.execute(
-                    "INSERT INTO users (role_id, email, username, password_hash) VALUES (2, %s, %s, %s)",
-                    (email, username, hash_password(password)),
-                )
-                user_id = cur.lastrowid
+                is_pg = hasattr(conn, 'cursor_factory')
+                if is_pg:
+                    cur.execute(
+                        "INSERT INTO users (role_id, email, username, password_hash) VALUES (2, %s, %s, %s) RETURNING id",
+                        (email, username, hash_password(password)),
+                    )
+                    user_id = cur.fetchone()['id']
+                else:
+                    cur.execute(
+                        "INSERT INTO users (role_id, email, username, password_hash) VALUES (2, %s, %s, %s)",
+                        (email, username, hash_password(password)),
+                    )
+                    user_id = cur.lastrowid
         with db_cursor() as (conn, cur):
             cur.execute(
                 """
@@ -154,11 +162,19 @@ def edit(fid):
                 return redirect(url_for("faculty_bp.edit", fid=fid))
             if create_login:
                 with db_cursor() as (conn, cur):
-                    cur.execute(
-                        "INSERT INTO users (role_id, email, username, password_hash) VALUES (2, %s, %s, %s)",
-                        (email, username, hash_password(password)),
-                    )
-                    user_id = cur.lastrowid
+                    is_pg = hasattr(conn, 'cursor_factory')
+                    if is_pg:
+                        cur.execute(
+                            "INSERT INTO users (role_id, email, username, password_hash) VALUES (2, %s, %s, %s) RETURNING id",
+                            (email, username, hash_password(password)),
+                        )
+                        user_id = cur.fetchone()['id']
+                    else:
+                        cur.execute(
+                            "INSERT INTO users (role_id, email, username, password_hash) VALUES (2, %s, %s, %s)",
+                            (email, username, hash_password(password)),
+                        )
+                        user_id = cur.lastrowid
                     cur.execute("UPDATE faculty SET user_id = %s WHERE id = %s", (user_id, fid))
         with db_cursor() as (conn, cur):
             cur.execute(
@@ -213,11 +229,19 @@ def create_login(fid):
             flash("Username and password are required.", "danger")
             return redirect(url_for("faculty_bp.create_login", fid=fid))
         with db_cursor() as (conn, cur):
-            cur.execute(
-                "INSERT INTO users (role_id, email, username, password_hash) VALUES (2, %s, %s, %s)",
-                (faculty["email"], username, hash_password(password)),
-            )
-            uid = cur.lastrowid
+            is_pg = hasattr(conn, 'cursor_factory')
+            if is_pg:
+                cur.execute(
+                    "INSERT INTO users (role_id, email, username, password_hash) VALUES (2, %s, %s, %s) RETURNING id",
+                    (faculty["email"], username, hash_password(password)),
+                )
+                uid = cur.fetchone()['id']
+            else:
+                cur.execute(
+                    "INSERT INTO users (role_id, email, username, password_hash) VALUES (2, %s, %s, %s)",
+                    (faculty["email"], username, hash_password(password)),
+                )
+                uid = cur.lastrowid
             cur.execute("UPDATE faculty SET user_id = %s WHERE id = %s", (uid, fid))
         flash(f"Login created. Faculty can sign in with {username} / (password as entered).", "success")
         return redirect(url_for("faculty_bp.profile", fid=fid))

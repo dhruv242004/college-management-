@@ -93,10 +93,14 @@ def marks_entry(subject_id):
                 cur.execute(
                     """
                     INSERT INTO marks (student_id, subject_id, internal_marks, external_marks, total_marks, grade, exam_type, exam_session, published)
-                    VALUES (%s, %s, %s, %s, %s, %s, 'Internal+External', %s, 0)
-                    ON DUPLICATE KEY UPDATE internal_marks=%s, external_marks=%s, total_marks=%s, grade=%s
+                    VALUES (%s, %s, %s, %s, %s, %s, 'Internal+External', %s, FALSE)
+                    ON CONFLICT (student_id, subject_id, exam_session) DO UPDATE SET 
+                        internal_marks = EXCLUDED.internal_marks, 
+                        external_marks = EXCLUDED.external_marks, 
+                        total_marks = EXCLUDED.total_marks, 
+                        grade = EXCLUDED.grade
                     """,
-                    (s["id"], subject_id, internal, external, total, grade, EXAM_SESSION, internal, external, total, grade),
+                    (s["id"], subject_id, internal, external, total, grade, EXAM_SESSION),
                 )
         flash("Marks saved.", "success")
         return redirect(url_for("exam_bp.marks_entry", subject_id=subject_id))
@@ -113,7 +117,7 @@ def marks_entry(subject_id):
 @require_roles("admin", "faculty")
 def publish(subject_id):
     action = request.form.get("action")
-    pub = 1 if action == "publish" else 0
+    pub = (action == "publish")
     with db_cursor() as (conn, cur):
         cur.execute(
             "UPDATE marks SET published = %s WHERE subject_id = %s AND exam_session = %s",
@@ -138,7 +142,7 @@ def my_results():
                    s.name AS subject_name, s.code AS subject_code, s.credits
             FROM marks m
             JOIN subjects s ON s.id = m.subject_id
-            WHERE m.student_id = %s AND m.exam_session = %s AND m.published = 1
+            WHERE m.student_id = %s AND m.exam_session = %s AND m.published = TRUE
             ORDER BY s.name
             """,
             (sid, EXAM_SESSION),

@@ -8,27 +8,28 @@
   <a href="{{ url_for('reports_bp.fees_pending_report') }}" class="btn btn-outline-warning">Pending report</a>
 </p>
 <div class="card border-0 shadow-sm">
-  <div class="card-header bg-transparent">Fee structure (course / semester)</div>
+  <div class="card-header bg-transparent" style="color: #a5b4fc; border-bottom: 1px solid rgba(99, 102, 241, 0.15);">Fee structure (course / semester)</div>
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead class="table-light">
+      <thead style="background: rgba(30, 41, 59, 0.3);">
         <tr>
-          <th>Course</th>
-          <th>Semester</th>
-          <th>Amount</th>
-          <th>Due date</th>
-          <th>Year</th>
-          <th></th>
+          <th style="color: #a5b4fc;">Course</th>
+          <th style="color: #a5b4fc;">Semester</th>
+          <th style="color: #a5b4fc;">Amount</th>
+          <th style="color: #a5b4fc;">Due date</th>
+          <th style="color: #a5b4fc;">Year</th>
+          <th style="color: #a5b4fc;"></th>
         </tr>
       </thead>
       <tbody>
         {% for fs in structures %}
-        <tr>
-          <td>{{ fs.course_name }} ({{ fs.course_code }})</td>
-          <td>{{ fs.semester }}</td>
-          <td>₹ {{ "%.2f"|format(fs.amount) }}</td>
-          <td>{{ fs.due_date or '—' }}</td>
-          <td>{{ fs.academic_year }}</td>
+        <tr style="background: rgba(30, 41, 59, 0.2);">
+          <td style="color: #cbd5e1;">{{ fs.course_name }} ({{ fs.course_code }})</td>
+          <td style="color: #cbd5e1;">{{ fs.semester }}</td>
+          <td style="color: #cbd5e1;">₹ {{ "%.2f"|format(fs.amount) }}</td>
+          <td style="color: #cbd5e1;">{{ fs.due_date or '—' }}</td>
+          <td style="color: #cbd5e1;">{{ fs.due_date or '—' }}</td>
+          <td style="color: #cbd5e1;">{{ fs.academic_year }}</td>
           <td><a href="{{ url_for('fees_bp.edit_structure', fsid=fs.id) }}" class="btn btn-sm btn-outline-primary">Edit</a></td>
         </tr>
         {% else %}

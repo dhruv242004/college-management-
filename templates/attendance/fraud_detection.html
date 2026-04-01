@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Fraud Detection - Attendance{% endblock %}
+
+{% block content %}
+<div class="main-content container-fluid p-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-5 fw-bold mb-2">
+        <i class="bi bi-shield-exclamation text-danger me-2"></i>Fraud Detection & Audit Log
+      </h1>
+      <p class="text-muted">Monitor suspicious attendance activities</p>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="row mb-4 g-3">
+    <div class="col-md-4">
+      <div class="card glass-panel shadow border-0">
+        <div class="card-body text-center">
+          <div class="display-6 fw-bold text-danger">{{ fraud_logs|length }}</div>
+          <small class="text-muted">Flagged Attempts (7 days)</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card glass-panel shadow border-0">
+        <div class="card-body text-center">
+          <div class="display-6 fw-bold text-warning">
+            {% set duplicates = fraud_logs|selectattr('event_type', 'equalto', 'duplicate_scan')|list|length %}
+            {{ duplicates }}
+          </div>
+          <small class="text-muted">Duplicate Attempts</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card glass-panel shadow border-0">
+        <div class="card-body text-center">
+          <div class="display-6 fw-bold text-info">
+            {% set sessions_expired = fraud_logs|selectattr('event_type', 'equalto', 'session_expired_db')|list|length %}
+            {{ sessions_expired }}
+          </div>
+          <small class="text-muted">Expired Sessions</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fraud LogsTable -->
+  <div class="card glass-panel shadow-lg border-0">
+    <div class="card-header bg-gradient border-0">
+      <h5 class="card-title mb-0">
+        <i class="bi bi-list-check me-2"></i>Suspicious Activities Log
+      </h5>
+    </div>
+    
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Event Type</th>
+            <th>Student/Action</th>
+            <th>IP Address</th>
+            <th>Time</th>
+            <th>Details</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if fraud_logs %}
+            {% for log in fraud_logs %}
+            <tr>
+              <td>
+                {% if log.event_type == 'duplicate_scan' %}
+                  <span class="badge bg-danger">Duplicate Scan</span>
+                {% elif log.event_type == 'session_expired_db' %}
+                  <span class="badge bg-warning text-dark">Expired</span>
+                {% elif log.event_type == 'invalid_token' %}
+                  <span class="badge bg-danger">Invalid Token</span>
+                {% elif log.event_type == 'student_not_in_course' %}
+                  <span class="badge bg-warning text-dark">Unauthorized</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ log.event_type }}</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if log.student_name %}
+                  <strong>{{ log.student_name }}</strong><br>
+                  <small class="text-muted">{{ log.enrollment_no }}</small>
+                {% else %}
+                  <span class="text-muted">System</span>
+                {% endif %}
+              </td>
+              <td>
+                <code class="small">{{ log.ip_address or 'N/A' }}</code>
+              </td>
+              <td>
+                <small class="text-muted">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+              </td>
+              <td>
+                <small class="text-muted">{{ log.action }}</small>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="View Details">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center text-muted py-5">
+                <i class="bi bi-check-circle fs-1 mb-2 d-block"></i>
+                No suspicious activities detected
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card glass-panel border-0 shadow">
+        <div class="card-header bg-light border-0">
+          <h6 class="card-title mb-0">
+            <i class="bi bi-info-circle me-2"></i>Event Types
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <span class="badge bg-danger me-2">Duplicate Scan</span>
+                <small class="text-muted">Student attempted to mark attendance twice</small>
+              </div>
+              <div class="mb-3">
+                <span class="badge bg-warning text-dark me-2">Expired</span>
+                <small class="text-muted">QR code expired before scanning</small>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <span class="badge bg-danger me-2">Invalid Token</span>
+                <small class="text-muted">Invalid or tampered QR code</small>
+              </div>
+              <div class="mb-3">
+                <span class="badge bg-warning text-dark me-2">Unauthorized</span>
+                <small class="text-muted">Student not enrolled in course</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', () => {
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+});
+</script>
+{% endblock %}

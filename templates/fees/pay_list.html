@@ -32,33 +32,33 @@
 <div class="card border-0 shadow-sm">
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead class="table-light">
+      <thead style="background: rgba(30, 41, 59, 0.3);">
         <tr>
-          <th>Enrollment</th>
-          <th>Name</th>
-          <th>Course</th>
-          <th>Semester</th>
-          <th>Amount</th>
-          <th>Paid</th>
-          <th>Pending</th>
-          <th></th>
+          <th style="color: #a5b4fc;">Enrollment</th>
+          <th style="color: #a5b4fc;">Name</th>
+          <th style="color: #a5b4fc;">Course</th>
+          <th style="color: #a5b4fc;">Semester</th>
+          <th style="color: #a5b4fc;">Amount</th>
+          <th style="color: #a5b4fc;">Paid</th>
+          <th style="color: #a5b4fc;">Pending</th>
+          <th style="color: #a5b4fc;"></th>
         </tr>
       </thead>
       <tbody>
         {% for r in rows %}
-        <tr>
-          <td><code>{{ r.student.enrollment_no }}</code></td>
-          <td>{{ r.student.first_name }} {{ r.student.last_name }}</td>
-          <td>{{ r.student.course_name }}</td>
-          <td>{{ r.student.current_semester }}</td>
-          <td>₹ {{ "%.2f"|format(r.structure.amount) if r.structure else '—' }}</td>
-          <td>₹ {{ "%.2f"|format(r.paid) }}</td>
-          <td>₹ {{ "%.2f"|format(r.pending) if r.pending is not none else '—' }}</td>
+        <tr style="background: rgba(30, 41, 59, 0.2);">
+          <td><code style="background: rgba(30, 41, 59, 0.4); padding: 0.5rem; border-radius: 6px; color: #a5b4fc;">{{ r.student.enrollment_no }}</code></td>
+          <td style="color: #cbd5e1;">{{ r.student.first_name }} {{ r.student.last_name }}</td>
+          <td style="color: #cbd5e1;">{{ r.student.course_name }}</td>
+          <td style="color: #cbd5e1;">{{ r.student.current_semester }}</td>
+          <td style="color: #cbd5e1;">₹ {{ "%.2f"|format(r.structure.amount) if r.structure else '—' }}</td>
+          <td style="color: #4ade80;">₹ {{ "%.2f"|format(r.paid) }}</td>
+          <td style="color: #fbbf24;">₹ {{ "%.2f"|format(r.pending) if r.pending is not none else '—' }}</td>
           <td>
             {% if r.structure %}
             <a href="{{ url_for('fees_bp.record_payment', student_id=r.student.id) }}" class="btn btn-sm btn-primary">Record payment</a>
             {% else %}
-            <a href="{{ url_for('fees_bp.add_structure', course_id=r.student.course_id, semester=r.student.current_semester) }}" class="badge bg-warning text-dark text-decoration-none" title="Click to add fee structure">
+            <a href="{{ url_for('fees_bp.add_structure', course_id=r.student.course_id, semester=r.student.current_semester) }}" class="badge text-decoration-none" style="background: rgba(251,146,60,0.12); color: #fed7aa;" title="Click to add fee structure">
                 <i class="bi bi-plus-circle me-1"></i>Add Structure
             </a>
             {% endif %}

@@ -131,7 +131,7 @@ def results_report():
         JOIN courses c ON c.id = st.course_id
         JOIN marks m ON m.student_id = st.id
         JOIN subjects sub ON sub.id = m.subject_id
-        WHERE m.exam_session = %s AND m.published = 1
+        WHERE m.exam_session = %s AND m.published = TRUE
     """
     params = [session_name]
     if course_id:
@@ -174,7 +174,7 @@ def fees_pending_report():
             JOIN fee_structure fs ON fs.course_id = st.course_id AND fs.semester = st.current_semester AND fs.academic_year = %s
             LEFT JOIN fee_payments fp ON fp.student_id = st.id AND fp.fee_structure_id = fs.id
             GROUP BY st.id, st.enrollment_no, st.first_name, st.last_name, st.current_semester, c.name, fs.id, fs.amount, fs.due_date, fs.semester, fs.academic_year
-            HAVING pending > 0
+            HAVING (fs.amount - COALESCE(SUM(fp.amount_paid), 0)) > 0
             ORDER BY fs.due_date, st.enrollment_no
             """,
             (ACAD_YEAR,),

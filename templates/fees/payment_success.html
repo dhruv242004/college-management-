@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Payment Successful{% endblock %}
+{% block content %}
+<div class="container py-5" data-aos="zoom-in">
+  <div class="text-center">
+    <div class="mb-4">
+      <svg width="96" height="96" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" fill="#10b981" opacity="0.2"/>
+        <path d="M7 12l3 3 7-7" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 class="fw-bold mb-2">Payment Successful</h2>
+    <p class="text-muted mb-4">Thank you. Your payment has been verified.</p>
+    <div class="glass-panel p-4 mx-auto" style="max-width: 560px;">
+      <div class="row g-3">
+        <div class="col-6"><div class="text-muted small">Order ID</div><div class="fw-semibold">{{ payment.order_id }}</div></div>
+        <div class="col-6"><div class="text-muted small">Payment ID</div><div class="fw-semibold">{{ payment.payment_id }}</div></div>
+        <div class="col-6"><div class="text-muted small">Amount</div><div class="fw-semibold">₹ {{ '%.2f'|format(payment.amount) }}</div></div>
+        <div class="col-6"><div class="text-muted small">Status</div><span class="badge bg-success rounded-pill px-3 py-2">Success</span></div>
+      </div>
+    </div>
+    <div class="mt-4 d-flex justify-content-center gap-2">
+      {% if receipt_no %}
+      <a href="{{ url_for('fees_bp.receipt', receipt_no=receipt_no) }}" class="btn btn-outline-primary rounded-pill px-4">
+        <i class="bi bi-receipt me-1"></i> View Receipt
+      </a>
+      {% endif %}
+      <a href="{{ url_for('fees_bp.my_fees') }}" class="btn btn-primary rounded-pill px-4">
+        Back to My Fees
+      </a>
+    </div>
+  </div>
+  <div class="position-fixed top-0 start-0 w-100 h-100" style="pointer-events:none; z-index:-1;">
+    <div class="floating" style="position:absolute; left:10%; top:20%; width:8px; height:8px; background: #10b981; border-radius:50%; animation: float 6s ease-in-out infinite;"></div>
+    <div class="floating" style="position:absolute; left:80%; top:40%; width:6px; height:6px; background: #4f46e5; border-radius:50%; animation: float 7s ease-in-out infinite;"></div>
+  </div>
+</div>
+<style>
+@keyframes float { 0%{ transform: translateY(0) } 50%{ transform: translateY(-12px) } 100%{ transform: translateY(0)} }
+</style>
+{% endblock %}

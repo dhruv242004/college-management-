@@ -25,6 +25,13 @@
             {% endfor %}
           </select>
         </div>
+        {% if is_faculty %}
+        <div class="col-md-6">
+          <label class="form-label required">Faculty</label>
+          <input type="text" class="form-control" value="{{ faculty[0].first_name }} {{ faculty[0].last_name }} ({{ faculty[0].emp_id }})" disabled>
+          <input type="hidden" name="faculty_id" value="{{ faculty[0].id }}">
+        </div>
+        {% else %}
         <div class="col-md-6">
           <label class="form-label required">Faculty</label>
           <select name="faculty_id" class="form-select" required>
@@ -34,6 +41,7 @@
             {% endfor %}
           </select>
         </div>
+        {% endif %}
         <div class="col-md-3">
           <label class="form-label required">Semester</label>
           <input type="number" name="semester" class="form-control" min="1" max="10" value="1" required>
@@ -69,4 +77,36 @@
     </form>
   </div>
 </div>
+
+<script>
+// Filter subjects by selected course
+(function(){
+  const courseSelect = document.querySelector('select[name="course_id"]');
+  const subjectSelect = document.querySelector('select[name="subject_id"]');
+  if (!courseSelect || !subjectSelect) return;
+
+  function filterSubjects(){
+    const cid = courseSelect.value;
+    let foundAny = false;
+    Array.from(subjectSelect.options).forEach(opt => {
+      const c = opt.getAttribute('data-course');
+      if(!c) return; // keep placeholder
+      if (!cid || cid === c){
+        opt.style.display = '';
+        foundAny = true;
+      } else {
+        opt.style.display = 'none';
+      }
+    });
+    // if selected option hidden, reset
+    if (subjectSelect.selectedOptions.length && subjectSelect.selectedOptions[0].style.display === 'none'){
+      subjectSelect.value = '';
+    }
+  }
+  courseSelect.addEventListener('change', filterSubjects);
+  // initial run
+  filterSubjects();
+})();
+</script>
+
 {% endblock %}

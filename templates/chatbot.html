@@ -1,0 +1,56 @@
+{# Floating AI College Assistant widget, included on dashboard #}
+<div id="ai-chat-toggle" class="ai-chat-toggle" title="Ask College Assistant">
+  <div class="ai-chat-toggle-icon">
+    <i class="bi bi-robot"></i>
+  </div>
+</div>
+
+<div id="ai-chat-window" class="ai-chat-window">
+  <div class="ai-chat-header">
+    <div class="ai-chat-header-main">
+      <span class="ai-chat-title">AI College Assistant</span>
+      <span class="ai-chat-subtitle">Ask me about attendance, fees, exams & more</span>
+    </div>
+    <button type="button" class="ai-chat-close" aria-label="Close assistant">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div id="ai-chat-messages" class="ai-chat-messages">
+    <div class="ai-chat-bubble bot">
+      <div class="ai-chat-bubble-inner">
+        <div class="ai-chat-bubble-text">
+          Hi {{ current_user.username if current_user else "there" }} 👋<br>
+          I’m your AI assistant. You can ask things like:
+          <ul>
+            <li>What is my attendance?</li>
+            <li>Show my fee status</li>
+            <li>When is my next exam?</li>
+            <li>Any new notices today?</li>
+          </ul>
+        </div>
+        <div class="ai-chat-meta">Assistant · just now</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ai-chat-typing" class="ai-chat-typing" aria-hidden="true">
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+
+  <form id="ai-chat-form" class="ai-chat-input-row" autocomplete="off">
+    <input
+      id="ai-chat-input"
+      type="text"
+      class="form-control ai-chat-input"
+      placeholder="Type your question here…"
+      maxlength="500"
+    >
+    <button type="submit" class="btn btn-primary ai-chat-send">
+      <i class="bi bi-send-fill"></i>
+    </button>
+  </form>
+</div>
+

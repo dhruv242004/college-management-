@@ -4,6 +4,7 @@ from datetime import date
 
 from auth import login_user, logout_user, get_current_user, require_login, hash_password
 from database import db_cursor
+from id_card_service import default_id_card_service
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -53,7 +54,7 @@ def login():
             cur.execute(
                 """
                 SELECT title, category FROM notices 
-                WHERE is_published = 1 
+                WHERE is_published = TRUE 
                 ORDER BY created_at DESC 
                 LIMIT 5
                 """
@@ -121,7 +122,11 @@ def student_register():
         phone = (request.form.get("phone") or "").strip()
         dob = request.form.get("date_of_birth") or None
         gender = request.form.get("gender") or None
-        course_id = request.form.get("course_id", type=int)
+        blood_group = (request.form.get("blood_group") or "").strip().upper()
+        try:
+            course_id = int(request.form.get("course_id") or 0)
+        except (TypeError, ValueError):
+            course_id = 0
         password = request.form.get("password") or ""
         confirm_password = request.form.get("confirm_password") or ""
         
@@ -135,6 +140,12 @@ def student_register():
             errors.append("Email is required.")
         if not course_id:
             errors.append("Please select a course.")
+        if not dob:
+            errors.append("Date of birth is required.")
+        if not gender:
+            errors.append("Gender is required.")
+        if not blood_group:
+            errors.append("Blood group is required (for your ID card and safety).")
         if not password:
             errors.append("Password is required.")
         if len(password) < 6:
@@ -165,32 +176,70 @@ def student_register():
             flash("Invalid course selected.", "danger")
             return render_template("auth/register.html", courses=courses)
         
-        # Generate course-wise enrollment number
-        enrollment_no = get_next_enrollment_for_course(course_code)
-        
         # Create user and student records
         try:
+            # Generate course-wise enrollment number
+            enrollment_no = get_next_enrollment_for_course(course_code)
+            
             with db_cursor() as (conn, cur):
+                is_pg = hasattr(conn, 'cursor_factory')
+                
+                # Ensure username (enrollment) is not already taken
+                cur.execute("SELECT id FROM users WHERE username = %s", (enrollment_no.lower(),))
+                if cur.fetchone():
+                    flash("Generated enrollment username already exists. Please contact admin.", "danger")
+                    return render_template("auth/register.html", courses=courses)
+                
                 # Create user account (role_id=3 for student)
-                cur.execute(
-                    """
-                    INSERT INTO users (role_id, email, username, password_hash) 
-                    VALUES (3, %s, %s, %s)
-                    """,
-                    (email, enrollment_no.lower(), hash_password(password))
-                )
-                user_id = cur.lastrowid
+                if is_pg:
+                    cur.execute(
+                        """
+                        INSERT INTO users (role_id, email, username, password_hash) 
+                        VALUES (3, %s, %s, %s) RETURNING id
+                        """,
+                        (email, enrollment_no.lower(), hash_password(password))
+                    )
+                    user_id = cur.fetchone()['id']
+                else:
+                    cur.execute(
+                        """
+                        INSERT INTO users (role_id, email, username, password_hash) 
+                        VALUES (3, %s, %s, %s)
+                        """,
+                        (email, enrollment_no.lower(), hash_password(password))
+                    )
+                    user_id = cur.lastrowid
                 
                 # Create student record
-                cur.execute(
-                    """
-                    INSERT INTO students (user_id, enrollment_no, first_name, last_name, email, phone, 
-                        date_of_birth, gender, course_id, current_semester, admission_date)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1, %s)
-                    """,
-                    (user_id, enrollment_no, first_name, last_name, email, phone or None, 
-                     dob, gender, course_id, date.today())
-                )
+                if is_pg:
+                    cur.execute(
+                        """
+                        INSERT INTO students (user_id, enrollment_no, first_name, last_name, email, phone, 
+                            date_of_birth, gender, course_id, current_semester, admission_date)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1, %s) RETURNING id
+                        """,
+                        (user_id, enrollment_no, first_name, last_name, email, phone or None, 
+                         dob, gender, course_id, date.today())
+                    )
+                    student_id = cur.fetchone()['id']
+                else:
+                    cur.execute(
+                        """
+                        INSERT INTO students (user_id, enrollment_no, first_name, last_name, email, phone, 
+                            date_of_birth, gender, course_id, current_semester, admission_date)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1, %s)
+                        """,
+                        (user_id, enrollment_no, first_name, last_name, email, phone or None, 
+                         dob, gender, course_id, date.today())
+                    )
+                    student_id = cur.lastrowid
+
+            # Create a digital ID card record for the new student (best effort)
+            try:
+                default_id_card_service.ensure_card_record(student_id, blood_group=blood_group)
+            except Exception:
+                # Do not block registration if ID card creation fails
+                pass
             
             flash(f"Registration successful! Your enrollment number is: {enrollment_no}. Please login with your enrollment number and password.", "success")
             return redirect(url_for("auth_bp.login"))

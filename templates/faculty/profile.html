@@ -6,7 +6,7 @@
   <div class="col-md-4">
     <div class="card border-0 shadow-sm">
       <div class="card-body text-center">
-        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center mb-2" style="width:120px;height:120px;">
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width:120px;height:120px; background: rgba(30,41,59,0.4); color: #cbd5e1;">
           <i class="bi bi-person-badge display-4 text-muted"></i>
         </div>
         <h5>{{ faculty.first_name }} {{ faculty.last_name }}</h5>
@@ -26,15 +26,17 @@
   <div class="col-md-8">
     <div class="card border-0 shadow-sm">
       <div class="card-body">
-        <h6 class="text-muted mb-3">Details</h6>
-        <table class="table table-sm table-borderless">
-          <tr><td class="text-muted" width="140">Emp ID</td><td><code>{{ faculty.emp_id }}</code></td></tr>
-          <tr><td class="text-muted">Email</td><td>{{ faculty.email }}</td></tr>
-          <tr><td class="text-muted">Phone</td><td>{{ faculty.phone or '—' }}</td></tr>
-          <tr><td class="text-muted">Designation</td><td>{{ faculty.designation or '—' }}</td></tr>
-          <tr><td class="text-muted">Department</td><td>{{ faculty.dept_name }} ({{ faculty.dept_code }})</td></tr>
-          <tr><td class="text-muted">Joined</td><td>{{ faculty.joined_date or '—' }}</td></tr>
-        </table>
+        <div class="profile-info-section">
+          <h6 class="text-muted mb-3">Details</h6>
+          <table class="table table-sm table-borderless">
+            <tr><td class="text-muted" width="140">Emp ID</td><td><code>{{ faculty.emp_id }}</code></td></tr>
+            <tr><td class="text-muted">Email</td><td>{{ faculty.email }}</td></tr>
+            <tr><td class="text-muted">Phone</td><td>{{ faculty.phone or '—' }}</td></tr>
+            <tr><td class="text-muted">Designation</td><td>{{ faculty.designation or '—' }}</td></tr>
+            <tr><td class="text-muted">Department</td><td>{{ faculty.dept_name }} ({{ faculty.dept_code }})</td></tr>
+            <tr><td class="text-muted">Joined</td><td>{{ faculty.joined_date or '—' }}</td></tr>
+          </table>
+        </div>
         {% if current_user.role_name == 'faculty' and current_user.extra_id == faculty.id %}
         <h6 class="text-muted mb-3 mt-4">Check my details</h6>
         <div class="d-flex flex-wrap gap-2">

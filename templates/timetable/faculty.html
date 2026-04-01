@@ -2,7 +2,12 @@
 {% block title %}Timetable – {{ faculty.first_name }} {{ faculty.last_name }}{% endblock %}
 {% block content %}
 <h2 class="mb-4">Timetable – {{ faculty.first_name }} {{ faculty.last_name }} ({{ faculty.emp_id }})</h2>
-<p><a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary btn-sm">← Timetable</a></p>
+<p>
+  <a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary btn-sm">← Timetable</a>
+  {% if current_user.role_name in ['admin'] or (current_user.role_name == 'faculty' and current_user.extra_id == faculty.id) %}
+  <a href="{{ url_for('timetable_bp.add') }}" class="btn btn-primary btn-sm ms-2">Add New Entry</a>
+  {% endif %}
+</p>
 <div class="card border-0 shadow-sm">
   <div class="table-responsive">
     <table class="table table-bordered table-hover mb-0">

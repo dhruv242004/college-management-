@@ -17,7 +17,7 @@ def list_notices():
             SELECT n.id, n.title, n.content, n.category, n.target_role, n.created_at, u.username
             FROM notices n
             JOIN users u ON u.id = n.user_id
-            WHERE n.is_published = 1
+            WHERE n.is_published = TRUE
         """
         params = []
         if category:

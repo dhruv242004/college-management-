@@ -10,7 +10,7 @@
             {% endif %}
         </div>
         <div class="d-none d-md-block">
-            <span class="badge bg-white text-success shadow-sm p-3 rounded-pill">
+            <span class="badge" style="background: rgba(30,41,59,0.6); color: #4ade80; border: 1px solid rgba(99,102,241,0.12); box-shadow: 0 6px 18px rgba(0,0,0,0.35); padding: 0.6rem 1rem; border-radius: 999px;">
                 <i class="bi bi-wallet2 me-2"></i>Financial Status
             </span>
         </div>
@@ -25,8 +25,8 @@
                         <h6 class="opacity-75 mb-1">Total Fees</h6>
                         <h3 class="fw-bold mb-0">₹ {{ "%.2f"|format(structure.amount) }}</h3>
                     </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-2">
-                        <i class="bi bi-cash-stack fs-4"></i>
+                    <div class="rounded-circle p-2" style="background: rgba(255,255,255,0.04);">
+                        <i class="bi bi-cash-stack fs-4" style="color: rgba(255,255,255,0.95);"></i>
                     </div>
                 </div>
             </div>
@@ -38,8 +38,8 @@
                         <h6 class="opacity-75 mb-1">Total Paid</h6>
                         <h3 class="fw-bold mb-0">₹ {{ "%.2f"|format(paid) }}</h3>
                     </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-2">
-                        <i class="bi bi-check-lg fs-4"></i>
+                    <div class="rounded-circle p-2" style="background: rgba(255,255,255,0.04);">
+                        <i class="bi bi-check-lg fs-4" style="color: rgba(255,255,255,0.95);"></i>
                     </div>
                 </div>
             </div>
@@ -51,22 +51,42 @@
                         <h6 class="opacity-75 mb-1">Pending Amount</h6>
                         <h3 class="fw-bold mb-0">₹ {{ "%.2f"|format(pending) }}</h3>
                     </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-2">
-                        <i class="bi bi-exclamation-circle fs-4"></i>
+                    <div class="rounded-circle p-2" style="background: rgba(255,255,255,0.04);">
+                        <i class="bi bi-exclamation-circle fs-4" style="color: rgba(255,255,255,0.95);"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="alert glass-panel border-0 mb-4" data-aos="fade-up" data-aos-delay="400">
+    {% if pending > 0 %}
+    <div class="glass-panel p-4 d-flex justify-content-between align-items-center mb-4" data-aos="fade-up" data-aos-delay="400">
         <div class="d-flex align-items-center">
-            <i class="bi bi-info-circle-fill text-primary fs-4 me-3"></i>
+            <i class="bi bi-shield-lock-fill text-primary fs-4 me-3"></i>
             <div>
-                <strong>Payment Notice:</strong> Online payment is currently unavailable. Please visit the college administration office to clear your dues.
+                <div class="fw-bold">Secure Online Payment</div>
+                <div class="text-muted small">Powered by Razorpay (Test Mode)</div>
             </div>
         </div>
+        <button id="payNowBtn" class="btn btn-primary btn-lg rounded-pill px-4" style="box-shadow: 0 10px 24px rgba(79,70,229,0.35);">
+            <span class="d-inline-flex align-items-center">
+                <span class="spinner-border spinner-border-sm me-2 d-none" id="paySpinner" role="status" aria-hidden="true"></span>
+                <i class="bi bi-lightning-fill me-2"></i>Pay Now ₹ {{ '%.2f'|format(pending) }}
+            </span>
+        </button>
     </div>
+    {% else %}
+    <div class="glass-panel p-4 d-flex justify-content-between align-items-center mb-4" data-aos="fade-up" data-aos-delay="400">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+            <div>
+                <div class="fw-bold">All dues cleared</div>
+                <div class="text-muted small">Your fees are fully paid</div>
+            </div>
+        </div>
+        <span class="badge rounded-pill bg-success px-3 py-2">Paid</span>
+    </div>
+    {% endif %}
 
     <div class="glass-panel p-4" data-aos="fade-up" data-aos-delay="500">
         <h5 class="fw-bold mb-4 border-bottom pb-2">Payment History</h5>
@@ -83,10 +103,10 @@
                 <tbody>
                     {% for p in payments %}
                     <tr class="border-bottom" style="transition: all 0.2s;">
-                        <td class="fw-bold text-dark">{{ p.payment_date }}</td>
-                        <td class="text-success fw-bold">₹ {{ "%.2f"|format(p.amount_paid) }}</td>
+                        <td class="fw-bold" style="color: #cbd5e1;">{{ p.payment_date }}</td>
+                        <td class="text-success fw-bold" style="color: #4ade80;">₹ {{ "%.2f"|format(p.amount_paid) }}</td>
                         <td>
-                            <span class="badge bg-light text-dark border">{{ p.payment_mode or '—' }}</span>
+                            <span class="badge" style="background: rgba(30, 41, 59, 0.6); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3);">{{ p.payment_mode or '—' }}</span>
                         </td>
                         <td>
                             {% if p.receipt_no %}
@@ -114,5 +134,71 @@
         No fee structure assigned for your course/semester yet.
     </div>
     {% endif %}
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+        <div id="payToast" class="toast align-items-center text-white bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="payToastBody">Processing...</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+  (function () {
+    const payBtn = document.getElementById('payNowBtn');
+    if (!payBtn) return;
+    payBtn.setAttribute('type','button');
+    const spinner = document.getElementById('paySpinner');
+    const toastEl = document.getElementById('payToast');
+    const toastBody = document.getElementById('payToastBody');
+    const bsToast = toastEl ? new bootstrap.Toast(toastEl) : null;
+    
+    function showToast(msg) {
+      if (!bsToast) return;
+      toastBody.textContent = msg;
+      bsToast.show();
+    }
+    
+    payBtn.addEventListener('click', async () => {
+      try {
+        payBtn.disabled = true;
+        spinner.classList.remove('d-none');
+        showToast('Initializing payment gateway…');
+        
+        const res = await fetch('{{ url_for("payment_bp.create_order") }}', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        
+        const data = await res.json().catch(()=>({}));
+        
+        if (!res.ok) {
+          showToast((data && data.error) || 'Failed to create order');
+          payBtn.disabled = false;
+          spinner.classList.add('d-none');
+          return;
+        }
+        
+        // Redirect to mock checkout page
+        if (data.checkout_url) {
+            window.location.href = data.checkout_url;
+        } else {
+            showToast('Invalid response from server');
+            payBtn.disabled = false;
+            spinner.classList.add('d-none');
+        }
+        
+      } catch (e) {
+        showToast('Unexpected error: ' + e.message);
+        payBtn.disabled = false;
+        spinner.classList.add('d-none');
+      }
+    });
+  })();
+</script>
 {% endblock %}

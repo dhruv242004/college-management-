@@ -9,7 +9,7 @@
         {% if student.photo_path %}
         <img src="{{ url_for('static', filename=student.photo_path) }}" alt="Photo" class="rounded-circle mb-2" style="width:120px;height:120px;object-fit:cover;">
         {% else %}
-        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center mb-2" style="width:120px;height:120px;">
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width:120px;height:120px; background: rgba(30,41,59,0.4); color: #cbd5e1;">
           <i class="bi bi-person display-4 text-muted"></i>
         </div>
         {% endif %}
@@ -26,21 +26,25 @@
   <div class="col-md-8">
     <div class="card border-0 shadow-sm">
       <div class="card-body">
-        <h6 class="text-muted mb-3">Personal</h6>
-        <table class="table table-sm table-borderless">
-          <tr><td class="text-muted" width="140">Email</td><td>{{ student.email }}</td></tr>
-          <tr><td class="text-muted">Phone</td><td>{{ student.phone or '—' }}</td></tr>
-          <tr><td class="text-muted">DOB</td><td>{{ student.date_of_birth or '—' }}</td></tr>
-          <tr><td class="text-muted">Gender</td><td>{{ 'Male' if student.gender == 'M' else ('Female' if student.gender == 'F' else ('Other' if student.gender == 'O' else '—')) }}</td></tr>
-          <tr><td class="text-muted">Address</td><td>{{ student.address or '—' }}</td></tr>
-        </table>
-        <h6 class="text-muted mb-3 mt-3">Academic</h6>
-        <table class="table table-sm table-borderless">
-          <tr><td class="text-muted" width="140">Department</td><td>{{ student.dept_name }} ({{ student.dept_code }})</td></tr>
-          <tr><td class="text-muted">Course</td><td>{{ student.course_name }} ({{ student.course_code }})</td></tr>
-          <tr><td class="text-muted">Semester</td><td>{{ student.current_semester }}</td></tr>
-          <tr><td class="text-muted">Admission</td><td>{{ student.admission_date or '—' }}</td></tr>
-        </table>
+        <div class="profile-info-section">
+          <h6 class="text-muted mb-3">Personal</h6>
+          <table class="table table-sm table-borderless">
+            <tr><td class="text-muted" width="140">Email</td><td>{{ student.email }}</td></tr>
+            <tr><td class="text-muted">Phone</td><td>{{ student.phone or '—' }}</td></tr>
+            <tr><td class="text-muted">DOB</td><td>{{ student.date_of_birth or '—' }}</td></tr>
+            <tr><td class="text-muted">Gender</td><td>{{ 'Male' if student.gender == 'M' else ('Female' if student.gender == 'F' else ('Other' if student.gender == 'O' else '—')) }}</td></tr>
+            <tr><td class="text-muted">Address</td><td>{{ student.address or '—' }}</td></tr>
+          </table>
+        </div>
+        <div class="profile-info-section">
+          <h6 class="text-muted mb-3">Academic</h6>
+          <table class="table table-sm table-borderless">
+            <tr><td class="text-muted" width="140">Department</td><td>{{ student.dept_name }} ({{ student.dept_code }})</td></tr>
+            <tr><td class="text-muted">Course</td><td>{{ student.course_name }} ({{ student.course_code }})</td></tr>
+            <tr><td class="text-muted">Semester</td><td>{{ student.current_semester }}</td></tr>
+            <tr><td class="text-muted">Admission</td><td>{{ student.admission_date or '—' }}</td></tr>
+          </table>
+        </div>
         {% if current_user.role_name == 'student' and current_user.extra_id == student.id %}
         <h6 class="text-muted mb-3 mt-4">Check my details</h6>
         <div class="d-flex flex-wrap gap-2">
@@ -48,6 +52,7 @@
           <a href="{{ url_for('exam_bp.my_results') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-trophy me-1"></i>My Results</a>
           <a href="{{ url_for('fees_bp.my_fees') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-currency-rupee me-1"></i>My Fees</a>
           <a href="{{ url_for('timetable_bp.my_timetable') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-calendar3 me-1"></i>My Timetable</a>
+          <a href="{{ url_for('students_bp.id_card', sid=student.id) }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-badge-ad me-1"></i>Digital ID Card</a>
         </div>
         {% endif %}
       </div>

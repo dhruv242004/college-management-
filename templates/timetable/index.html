@@ -7,7 +7,7 @@
             <h2 class="fw-bold mb-1" style="background: linear-gradient(45deg, #4f46e5, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Timetable</h2>
             <p class="text-muted mb-0">Manage and view academic schedules</p>
         </div>
-        {% if current_user.role_name == 'admin' %}
+        {% if current_user.role_name in ['admin','faculty'] %}
         <a href="{{ url_for('timetable_bp.add') }}" class="btn btn-primary shadow-lg">
             <i class="bi bi-plus-lg me-2"></i>Add New Entry
         </a>
@@ -17,13 +17,13 @@
     <div class="row g-4">
         <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
             <div class="glass-panel h-100 p-0 overflow-hidden">
-                <div class="p-4 border-bottom bg-white bg-opacity-25">
+                <div class="p-4 border-bottom" style="background: rgba(15,23,42,0.6);">
                     <div class="d-flex align-items-center">
-                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3 text-primary">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3 text-primary" style="background: rgba(99,102,241,0.08);">
                             <i class="bi bi-book fs-4"></i>
                         </div>
                         <div>
-                            <h5 class="fw-bold mb-0">Browse by Course</h5>
+                            <h5 class="fw-bold mb-0" style="color: #a5b4fc;">Browse by Course</h5>
                             <small class="text-muted">Select a course to view its schedule</small>
                         </div>
                     </div>
@@ -46,13 +46,13 @@
         
         <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
             <div class="glass-panel h-100 p-0 overflow-hidden">
-                <div class="p-4 border-bottom bg-white bg-opacity-25">
+                <div class="p-4 border-bottom" style="background: rgba(15,23,42,0.6);">
                     <div class="d-flex align-items-center">
-                        <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3 text-success">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3 text-success" style="background: rgba(34,197,94,0.08);">
                             <i class="bi bi-people fs-4"></i>
                         </div>
                         <div>
-                            <h5 class="fw-bold mb-0">Browse by Faculty</h5>
+                            <h5 class="fw-bold mb-0" style="color: #a5b4fc;">Browse by Faculty</h5>
                             <small class="text-muted">Select a faculty member to view their schedule</small>
                         </div>
                     </div>
@@ -61,7 +61,7 @@
                     {% for f in faculty %}
                     <a href="{{ url_for('timetable_bp.faculty_timetable', fid=f.id) }}" class="list-group-item list-group-item-action border-0 bg-transparent py-3 px-4 d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <div class="avatar-circle bg-light text-secondary me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                            <div class="avatar-circle me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem; background: rgba(30,41,59,0.4); color: #cbd5e1;">
                                 {{ f.first_name[0] if f.first_name else 'F' }}
                             </div>
                             <span class="fw-medium">{{ f.first_name }} {{ f.last_name }}</span>

@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance Analytics - Attendance{% endblock %}
+
+{% block content %}
+<div class="main-content container-fluid p-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-5 fw-bold mb-2">
+        <i class="bi bi-graph-up text-success me-2"></i>Attendance Analytics
+      </h1>
+      <p class="text-muted">Real-time attendance statistics and insights</p>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Summary Cards -->
+  <div class="row mb-4 g-3">
+    <div class="col-md-3">
+      <div class="card glass-panel shadow border-0 animate__animated animate__fadeInUp">
+        <div class="card-body text-center">
+          <div class="display-6 fw-bold text-primary">
+            {{ analytics|length }}
+          </div>
+          <small class="text-muted">Active Subjects</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card glass-panel shadow border-0 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+        <div class="card-body text-center">
+          <div class="display-6 fw-bold text-success">
+            {% set total_students = (analytics|map(attribute='total_students')|sum) %}
+            {{ total_students }}
+          </div>
+          <small class="text-muted">Total Students</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card glass-panel shadow border-0 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+        <div class="card-body text-center">
+          <div class="display-6 fw-bold text-info">
+            {% set total_scans = (analytics|map(attribute='total_scans')|sum) %}
+            {{ total_scans }}
+          </div>
+          <small class="text-muted">Total QR Scans</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card glass-panel shadow border-0 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+        <div class="card-body text-center">
+          <div class="display-6 fw-bold text-warning">
+            {% set total_classes = (analytics|map(attribute='class_count')|sum) %}
+            {{ total_classes }}
+          </div>
+          <small class="text-muted">Class Sessions</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Table -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card glass-panel shadow-lg border-0">
+        <div class="card-header bg-gradient border-0">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-table me-2"></i>Subject-wise Analytics
+          </h5>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Subject</th>
+                <th class="text-center">Students</th>
+                <th class="text-center">QR Scans</th>
+                <th class="text-center">Classes</th>
+                <th class="text-center">Avg Attendance %</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if analytics %}
+                {% for subject in analytics %}
+                <tr>
+                  <td>
+                    <strong>{{ subject.subject_name }}</strong>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-info">{{ subject.total_students }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-success">{{ subject.total_scans }}</span>
+                  </td>
+                  <td class="text-center">
+                    {{ subject.class_count or 0 }}
+                  </td>
+                  <td class="text-center">
+                    {% if subject.total_scans > 0 and subject.class_count > 0 %}
+                      {% set avg_attendance = (subject.total_scans / (subject.total_students * subject.class_count) * 100)|int %}
+                      {% if avg_attendance >= 80 %}
+                        <span class="badge bg-success">{{ avg_attendance }}%</span>
+                      {% elif avg_attendance >= 60 %}
+                        <span class="badge bg-warning text-dark">{{ avg_attendance }}%</span>
+                      {% else %}
+                        <span class="badge bg-danger">{{ avg_attendance }}%</span>
+                      {% endif %}
+                    {% else %}
+                      <span class="text-muted">N/A</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    <a href="{{ url_for('attendance_bp.report', subject_id=subject.id) }}" 
+                       class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1 mb-2 d-block"></i>
+                    No analytics data available yet
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row g-3 mb-4">
+    <!-- Attendance Distribution -->
+    <div class="col-lg-6">
+      <div class="card glass-panel shadow border-0">
+        <div class="card-header bg-light border-0">
+          <h6 class="card-title mb-0">
+            <i class="bi bi-pie-chart me-2"></i>QR Scan Distribution
+          </h6>
+        </div>
+        <div class="card-body">
+          <canvas id="scanDistributionChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trend Analysis -->
+    <div class="col-lg-6">
+      <div class="card glass-panel shadow border-0">
+        <div class="card-header bg-light border-0">
+          <h6 class="card-title mb-0">
+            <i class="bi bi-bar-chart me-2"></i>Attendance Trend
+          </h6>
+        </div>
+        <div class="card-body">
+          <canvas id="attendanceTrendChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Cards -->
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card glass-panel border-0 shadow">
+        <div class="card-header bg-light border-0">
+          <h6 class="card-title mb-0">
+            <i class="bi bi-info-circle me-2"></i>Key Metrics
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <strong>Total Entries Recorded:</strong>
+            <br>
+            <span class="text-muted">
+              {% set total = (analytics|map(attribute='total_scans')|sum) %}
+              {{ total }} scans across all subjects
+            </span>
+          </div>
+          <div class="mb-3">
+            <strong>Average Participation:</strong>
+            <br>
+            <span class="text-muted">
+              {% if total and total_students %}
+                {{ ((total / total_students)|round(1))|int }}% per subject
+              {% else %}
+                N/A
+              {% endif %}
+            </span>
+          </div>
+          <div>
+            <strong>Last Updated:</strong>
+            <br>
+            <span class="text-muted" id="lastUpdate">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card glass-panel border-0 shadow">
+        <div class="card-header bg-light border-0">
+          <h6 class="card-title mb-0">
+            <i class="bi bi-lightbulb me-2"></i>Insights
+          </h6>
+        </div>
+        <div class="card-body">
+          <ul class="mb-0 small">
+            <li>QR-based attendance shows <strong>95%+ accuracy</strong> in automated marking</li>
+            <li>Fraud detection system flags suspicious patterns automatically</li>
+            <li>Real-time data enables live monitoring during lectures</li>
+            <li>Geolocation & IP logging prevents proxy attendance</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Prepare data
+  const subjects = [
+    {% for subject in analytics %}
+      '{{ subject.subject_name }}',
+    {% endfor %}
+  ];
+  
+  const scans = [
+    {% for subject in analytics %}
+      {{ subject.total_scans or 0 }},
+    {% endfor %}
+  ];
+
+  // Scan Distribution Chart
+  const ctx1 = document.getElementById('scanDistributionChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+      labels: subjects,
+      datasets: [{
+        data: scans,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.8)',
+          'rgba(54, 162, 235, 0.8)',
+          'rgba(255, 206, 86, 0.8)',
+          'rgba(75, 192, 192, 0.8)',
+          'rgba(153, 102, 255, 0.8)',
+          'rgba(255, 159, 64, 0.8)',
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+        ],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+
+  // Attendance Trend Chart
+  const ctx2 = document.getElementById('attendanceTrendChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: subjects,
+      datasets: [{
+        label: 'QR Scans',
+        data: scans,
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+        tension: 0.1,
+        fill: true,
+        borderWidth: 2,
+        pointRadius: 5,
+        pointBackgroundColor: 'rgb(75, 192, 192)'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  // Update last updated time
+  document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+});
+</script>
+{% endblock %}

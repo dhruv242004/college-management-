@@ -10,7 +10,7 @@
             {% endif %}
         </div>
         <div class="d-none d-md-block">
-            <span class="badge bg-white text-primary shadow-sm p-3 rounded-pill">
+            <span class="badge" style="background: rgba(30,41,59,0.6); color: #a5b4fc; box-shadow: 0 6px 18px rgba(0,0,0,0.35); padding: 0.6rem 1rem; border-radius: 999px;">
                 <i class="bi bi-calendar-week me-2"></i>Academic Schedule
             </span>
         </div>
@@ -33,8 +33,8 @@
                     <tr class="border-bottom" style="transition: all 0.2s;">
                         <td class="fw-bold text-primary">{{ days[t.day_of_week] if t.day_of_week < days|length else t.day_of_week }}</td>
                         <td>
-                            <span class="badge bg-light text-dark border">
-                                <i class="bi bi-clock me-1"></i>{{ t.start_time }} – {{ t.end_time }}
+                            <span class="badge" style="background: rgba(30,41,59,0.4); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.03);">
+                                <i class="bi bi-clock me-1" style="color: #a5b4fc;"></i>{{ t.start_time }} – {{ t.end_time }}
                             </span>
                         </td>
                         <td class="fw-semibold">{{ t.subject_name }}</td>

@@ -42,8 +42,8 @@
                     <tr class="border-bottom" style="transition: all 0.2s;">
                         <td class="fw-bold text-primary">{{ days[t.day_of_week] if t.day_of_week < days|length else t.day_of_week }}</td>
                         <td>
-                            <span class="badge bg-light text-dark border">
-                                <i class="bi bi-clock me-1"></i>{{ t.start_time }} – {{ t.end_time }}
+                            <span class="badge" style="background: rgba(30,41,59,0.4); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.03);">
+                                <i class="bi bi-clock me-1" style="color: #a5b4fc;"></i>{{ t.start_time }} – {{ t.end_time }}
                             </span>
                         </td>
                         <td class="fw-semibold">

@@ -15,18 +15,18 @@
   <div class="card border-0 shadow-sm">
     <div class="table-responsive">
       <table class="table table-hover mb-0">
-        <thead class="table-light">
+        <thead style="background: rgba(30, 41, 59, 0.3);">
           <tr>
-            <th>Enrollment</th>
-            <th>Name</th>
-            <th>Status</th>
+            <th style="color: #a5b4fc;">Enrollment</th>
+            <th style="color: #a5b4fc;">Name</th>
+            <th style="color: #a5b4fc;">Status</th>
           </tr>
         </thead>
         <tbody>
           {% for s in students %}
-          <tr>
-            <td><code>{{ s.enrollment_no }}</code></td>
-            <td>{{ s.first_name }} {{ s.last_name }}</td>
+          <tr style="background: rgba(30, 41, 59, 0.2);">
+            <td><code style="background: rgba(30, 41, 59, 0.4); padding: 0.5rem; border-radius: 6px; color: #a5b4fc;">{{ s.enrollment_no }}</code></td>
+            <td style="color: #cbd5e1;">{{ s.first_name }} {{ s.last_name }}</td>
             <td>
               <select name="att_{{ s.id }}" class="form-select form-select-sm" style="width:auto;">
                 <option value="P" {% if existing.get(s.id) == 'P' %}selected{% endif %}>Present</option>

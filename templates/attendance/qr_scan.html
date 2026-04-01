@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}Scan QR Code - Attendance{% endblock %}
+
+{% block content %}
+<div class="main-content container-fluid p-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-5 fw-bold mb-2">
+        <i class="bi bi-camera-fill text-primary me-2"></i>Scan Attendance QR Code
+      </h1>
+      <p class="text-muted">Point your camera at the QR code displayed by your faculty member</p>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <div class="card glass-panel shadow-lg border-0 animate__animated animate__fadeInUp">
+        <div class="card-header bg-gradient border-0">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-camera me-2"></i>QR Code Scanner
+          </h5>
+        </div>
+
+        <div class="card-body">
+          <!-- Video Preview -->
+          <div id="scanner-container" class="mb-4" style="display: none;">
+            <div id="video-container" class="position-relative mx-auto" style="max-width: 500px;">
+              <video id="video" style="width: 100%; border-radius: 0.5rem; background: #000;" muted playsinline></video>
+              <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; border: 3px solid #00ff00; border-radius: 0.5rem;"></div>
+            </div>
+            <div class="mt-3 text-center">
+              <button type="button" class="btn btn-secondary" id="stopScanBtn">
+                <i class="bi bi-stop-circle me-2"></i>Stop Camera
+              </button>
+            </div>
+          </div>
+
+          <!-- Manual Entry Fallback -->
+          <div id="manual-entry" class="mb-4">
+            <div class="alert alert-info alert-soft" role="alert">
+              <strong>Can't scan QR code?</strong> You can manually enter the code.
+            </div>
+            
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label fw-bold">Enter Secure Attendance Code</label>
+                <div class="input-group input-group-lg mb-3">
+                  <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
+                  <input type="text" id="otp_code_manual" class="form-control text-uppercase font-monospace tracking-widest" placeholder="6-DIGIT CODE" maxlength="6">
+                  <button type="button" class="btn btn-primary px-4" id="submitOtpBtn">
+                    Submit Code
+                  </button>
+                </div>
+              </div>
+              
+              <div class="col-md-12 mt-4">
+                <label class="form-label text-muted small">Or paste QR token here (Advanced)</label>
+                <textarea 
+                  id="qr_token_manual" 
+                  class="form-control form-control-sm mb-3" 
+                  placeholder="Paste QR token here..." 
+                  rows="2"></textarea>
+                <div class="d-grid">
+                  <button type="button" class="btn btn-outline-secondary btn-sm" id="submitManualBtn">
+                    Submit Token
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary btn-lg" id="startScanBtn">
+              <i class="bi bi-camera me-2"></i>Start Camera Scanner
+            </button>
+          </div>
+
+          <!-- Status Message -->
+          <div id="status-message" class="mt-4" style="display: none;">
+            <div class="alert" id="status-alert" role="alert"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="card glass-panel border-0 shadow mt-4">
+        <div class="card-header bg-light border-0">
+          <h6 class="card-title mb-0">
+            <i class="bi bi-question-circle me-2"></i>Instructions
+          </h6>
+        </div>
+        <div class="card-body">
+          <ol class="mb-0">
+            <li><strong>Start Camera:</strong> Click "Start Camera Scanner" button</li>
+            <li><strong>Position QR:</strong> Point camera at QR code displayed by faculty</li>
+            <li><strong>Wait for Scan:</strong> System will automatically recognize and process</li>
+            <li><strong>Confirmation:</strong> You'll see success or error message</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Security Info -->
+      <div class="card glass-panel border-0 shadow mt-3">
+        <div class="card-header bg-light border-0">
+          <h6 class="card-title mb-0">
+            <i class="bi bi-shield-check me-2"></i>Security & Privacy
+          </h6>
+        </div>
+        <div class="card-body small">
+          <ul class="mb-0">
+            <li>Your location data (if allowed) is recorded for verification</li>
+            <li>Device information is logged for attendance records</li>
+            <li>QR codes expire after the validity period</li>
+            <li>Duplicate scans are prevented automatically</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include QR.js library -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+<style>
+.alert-soft {
+  background-color: rgba(13, 202, 240, 0.1);
+  border-color: rgba(13, 202, 240, 0.3);
+}
+
+#status-message {
+  animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.spinner-border {
+  color: #0d6efd;
+}
+</style>
+
+<script>
+let video = document.getElementById('video');
+let canvas, ctx;
+let isScanning = false;
+let scannerActive = false;
+
+// Get geolocation
+function getGeolocation() {
+  return new Promise((resolve) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy
+          });
+        },
+        (error) => {
+          console.log('Geolocation error:', error);
+          resolve(null);
+        }
+      );
+    } else {
+      resolve(null);
+    }
+  });
+}
+
+// Start camera
+document.getElementById('startScanBtn').addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      video: { facingMode: 'environment' } 
+    });
+    video.srcObject = stream;
+    
+    document.getElementById('scanner-container').style.display = 'block';
+    document.getElementById('startScanBtn').style.display = 'none';
+    
+    // Setup canvas for scanning
+    canvas = document.createElement('canvas');
+    ctx = canvas.getContext('2d');
+    
+    scannerActive = true;
+    scanQR();
+    
+  } catch (error) {
+    showStatus('error', 'Camera not available: ' + error.message);
+  }
+});
+
+// Stop camera
+document.getElementById('stopScanBtn').addEventListener('click', () => {
+  video.srcObject.getTracks().forEach(track => track.stop());
+  document.getElementById('scanner-container').style.display = 'none';
+  document.getElementById('startScanBtn').style.display = 'block';
+  scannerActive = false;
+});
+
+// Scan QR Code
+function scanQR() {
+  if (!scannerActive) return;
+  
+  if (video.readyState === video.HAVE_ENOUGH_DATA) {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height);
+    
+    if (code) {
+      // QR code detected
+      processToken(code.data);
+      return;
+    }
+  }
+  
+  requestAnimationFrame(scanQR);
+}
+
+// Manual token submission
+document.getElementById('submitManualBtn').addEventListener('click', () => {
+  const token = document.getElementById('qr_token_manual').value.trim();
+  if (!token) {
+    showStatus('warning', 'Please enter or paste the QR token');
+    return;
+  }
+  processToken(token);
+});
+
+// OTP code submission
+document.getElementById('submitOtpBtn').addEventListener('click', async () => {
+  const otpCode = document.getElementById('otp_code_manual').value.trim().toUpperCase();
+  if (!otpCode) {
+    showStatus('warning', 'Please enter the 6-digit attendance code');
+    return;
+  }
+  
+  isScanning = true;
+  showStatus('info', '<span class="spinner-border spinner-border-sm me-2"></span>Verifying attendance code...');
+  
+  try {
+    const deviceInfo = navigator.userAgent;
+    const location = await getGeolocation();
+    
+    const response = await fetch('/attendance/otp/mark', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        otp_code: otpCode,
+        latitude: location?.latitude,
+        longitude: location?.longitude,
+        accuracy: location?.accuracy
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      showStatus('success', `
+        <i class="bi bi-check-circle me-2"></i>
+        ${data.message}<br>
+        <small>Attendance recorded via secure code.</small>
+      `);
+      document.getElementById('otp_code_manual').value = '';
+    } else {
+      showStatus('danger', `<i class="bi bi-exclamation-circle me-2"></i> ${data.message}`);
+    }
+  } catch (error) {
+    showStatus('danger', 'Error processing code: ' + error.message);
+  }
+  isScanning = false;
+});
+
+// Process token
+async function processToken(token) {
+  isScanning = true;
+  showStatus('info', '<span class="spinner-border spinner-border-sm me-2"></span>Processing QR code...');
+  
+  if (scannerActive) {
+    video.srcObject.getTracks().forEach(track => track.stop());
+    document.getElementById('scanner-container').style.display = 'none';
+    document.getElementById('startScanBtn').style.display = 'block';
+    scannerActive = false;
+  }
+  
+  try {
+    // Get device info
+    const deviceInfo = navigator.userAgent;
+    const location = await getGeolocation();
+    
+    const response = await fetch('/attendance/qr/scan', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        qr_token: token,
+        latitude: location?.latitude,
+        longitude: location?.longitude,
+        accuracy: location?.accuracy
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      showStatus('success', `
+        <i class="bi bi-check-circle me-2"></i>
+        ${data.message}<br>
+        <small>Your attendance has been recorded successfully!</small>
+      `);
+      
+      // Clear manual entry
+      document.getElementById('qr_token_manual').value = '';
+      document.getElementById('startScanBtn').style.display = 'block';
+      
+    } else {
+      showStatus('danger', `
+        <i class="bi bi-exclamation-circle me-2"></i>
+        ${data.message}
+      `);
+      document.getElementById('startScanBtn').style.display = 'block';
+    }
+    
+  } catch (error) {
+    showStatus('danger', 'Error processing QR code: ' + error.message);
+    document.getElementById('startScanBtn').style.display = 'block';
+  }
+  
+  isScanning = false;
+}
+
+// Show status message
+function showStatus(type, message) {
+  const messageEl = document.getElementById('status-message');
+  const alertEl = document.getElementById('status-alert');
+  
+  alertEl.className = `alert alert-${type}`;
+  alertEl.innerHTML = message;
+  messageEl.style.display = 'block';
+  
+  // Auto-hide success after 5 seconds
+  if (type === 'success') {
+    setTimeout(() => {
+      messageEl.style.display = 'none';
+    }, 5000);
+  }
+}
+
+// Request camera permission on load
+document.addEventListener('DOMContentLoaded', () => {
+  // Just prepare, don't auto-start
+  console.log('Scanner ready');
+});
+</script>
+{% endblock %}
