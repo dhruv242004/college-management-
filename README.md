@@ -418,3 +418,4 @@ Create additional faculty/students via Admin screens or direct SQL inserts as ne
 ### License
 
 MIT
+"# college_management" 
