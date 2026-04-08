@@ -3,29 +3,33 @@
 {% block content %}
 <h2 class="mb-4">My Attendance</h2>
 <div class="card border-0 shadow-sm">
-  <div class="card-header bg-transparent" style="color: #a5b4fc; border-bottom: 1px solid rgba(99, 102, 241, 0.15);">Subject-wise</div>
+  <div class="card-header bg-transparent">Subject-wise</div>
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead style="background: rgba(30, 41, 59, 0.3);">
+      <thead>
         <tr>
-          <th style="color: #a5b4fc;">Subject</th>
-          <th style="color: #a5b4fc;">Present</th>
-          <th style="color: #a5b4fc;">Total</th>
-          <th style="color: #a5b4fc;">%</th>
+          <th>Subject</th>
+          <th>Present</th>
+          <th>Total</th>
+          <th>%</th>
         </tr>
       </thead>
       <tbody>
         {% for r in stats %}
-        <tr style="background: rgba(30, 41, 59, 0.2);">
-          <td style="color: #cbd5e1;">{{ r.subject.name }} ({{ r.subject.code }})</td>
-          <td style="color: #cbd5e1;">{{ r.present }}</td>
-          <td style="color: #cbd5e1;">{{ r.total }}</td>
+        <tr>
+          <td class="fw-bold">{{ r.subject.name }} ({{ r.subject.code }})</td>
+          <td>{{ r.present }}</td>
+          <td>{{ r.total }}</td>
           <td>
-            <span class="badge {{ 'bg-success' if r.percent >= 75 else ('bg-warning' if r.percent >= 50 else 'bg-danger') }}" style="color: white;">{{ r.percent }}%</span>
+            <span
+              class="badge {{ 'bg-success' if r.percent >= 75 else ('bg-warning' if r.percent >= 50 else 'bg-danger') }}">{{
+              r.percent }}%</span>
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="4" class="text-center text-muted">No attendance records.</td></tr>
+        <tr>
+          <td colspan="4" class="text-center text-muted">No attendance records.</td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -33,55 +37,69 @@
 </div>
 {% if stats %}
 <div class="mt-4">
-  <div class="card border-0 shadow-sm" style="background: rgba(15, 23, 42, 0.8);">
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0"><i class="bi bi-pie-chart-fill me-2"></i>Attendance Overview</h5>
+    </div>
     <div class="card-body">
-      <h6 class="mb-3" style="color: #a5b4fc; font-weight: 600;">Attendance Overview</h6>
-      <canvas id="attChart" width="400" height="150"></canvas>
+      <div style="height: 350px; position: relative;" 
+           id="attChartContainer" 
+           data-labels='[{% for r in stats %}"{{ r.subject.code }}"{% if not loop.last %}, {% endif %}{% endfor %}]'
+           data-values="[{% for r in stats %}{{ r.percent }}{% if not loop.last %}, {% endif %}{% endfor %}]">
+        <canvas id="attChart"></canvas>
+      </div>
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-(function(){
-  var ctx = document.getElementById('attChart');
-  if (!ctx) return;
-  new Chart(ctx.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: [{% for r in stats %}'{{ r.subject.code }}'{% if not loop.last %},{% endif %}{% endfor %}],
-      datasets: [{
-        label: 'Attendance %',
-        data: [{% for r in stats %}{{ r.percent }}{% if not loop.last %},{% endif %}{% endfor %}],
-        backgroundColor: 'rgba(99, 102, 241, 0.7)',
-        borderColor: 'rgba(165, 180, 252, 0.8)',
-        borderWidth: 2,
-        borderRadius: 8,
-        hoverBackgroundColor: 'rgba(99, 102, 241, 0.9)'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      plugins: {
-        legend: {
-          labels: { color: '#cbd5e1', font: { size: 12, weight: 500 } }
-        }
+  (function () {
+    const container = document.getElementById('attChartContainer');
+    const ctx = document.getElementById('attChart');
+    if (!ctx || !container) return;
+    
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: JSON.parse(container.dataset.labels || '[]'),
+        datasets: [{
+          label: 'Attendance %',
+          data: JSON.parse(container.dataset.values || '[]'),
+          backgroundColor: '#FFD700',
+          borderColor: '#FFD700',
+          borderWidth: 1,
+          borderRadius: 8
+        }]
       },
-      scales: {
-        y: { 
-          beginAtZero: true, 
-          max: 100,
-          ticks: { color: '#cbd5e1' },
-          grid: { color: 'rgba(99, 102, 241, 0.1)' }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1C2541',
+            titleColor: '#FFD700',
+            bodyColor: '#CBD5E1',
+            borderColor: '#3A506B',
+            borderWidth: 1
+          }
         },
-        x: {
-          ticks: { color: '#cbd5e1' },
-          grid: { color: 'rgba(99, 102, 241, 0.1)' }
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            grid: { color: 'rgba(255, 215, 0, 0.05)' },
+            ticks: { color: '#CBD5E1' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#CBD5E1' }
+          }
         }
       }
-    }
-  });
-})();
+    });
+  })();
 </script>
 {% endif %}
 {% endblock %}

@@ -1,632 +1,172 @@
 {% extends "base.html" %}
 {% block title %}Dashboard – College CMS{% endblock %}
 {% block content %}
-<style>
-  /* Hero Section */
-  .dashboard-hero {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(37, 99, 235, 0.9));
-    border: 1px solid rgba(129, 140, 248, 0.6);
-    border-radius: 24px;
-    padding: 3rem;
-    margin-bottom: 2.5rem;
-    backdrop-filter: blur(18px);
-    animation: slideDown 0.6s ease-out;
-    box-shadow:
-      0 24px 80px rgba(15, 23, 42, 0.95),
-      0 0 0 1px rgba(148, 163, 184, 0.35);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .dashboard-hero::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--royal-blue), var(--gold));
-    border-radius: 24px 24px 0 0;
-  }
-
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .hero-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #e5e7eb;
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    letter-spacing: -1px;
-  }
-
-  .hero-title i {
-    margin-right: 1rem;
-    color: #facc15;
-    font-size: 2.8rem;
-  }
-
-  .hero-subtitle {
-    color: #cbd5f5;
-    font-size: 1.05rem;
-    margin-bottom: 1rem;
-    font-weight: 500;
-  }
-
-  .hero-subtitle strong {
-    color: #e5e7eb;
-    font-weight: 700;
-  }
-
-  .hero-meta {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    font-size: 0.95rem;
-    color: #bfdbfe;
-    flex-wrap: wrap;
-  }
-
-  .hero-meta i {
-    margin-right: 0.5rem;
-    color: #facc15;
-  }
-
-  /* Stats Grid */
-  .stats-grid-4 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2.5rem;
-  }
-  /* Card & Layout Improvements to prevent overlap */
-  .stat-card {
-    background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.9));
-    border-radius: 18px;
-    padding: 1.5rem 1.5rem;
-    box-shadow:
-      0 18px 45px rgba(15, 23, 42, 0.9),
-      0 0 0 1px rgba(30, 64, 175, 0.7);
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
-  }
-
-  .stat-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .stat-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .stat-info h5 {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #e5e7eb;
-    font-weight: 700;
-  }
-
-  .stat-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    color: #fff;
-  }
-
-  .stat-value {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #f9fafb;
-    line-height: 1;
-  }
-
-  .stat-footer a {
-    color: var(--royal-blue);
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  .glass-card {
-    background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(17, 24, 39, 0.96));
-    border-radius: 18px;
-    padding: 1.5rem;
-    box-shadow:
-      0 18px 45px rgba(15, 23, 42, 0.9),
-      0 0 0 1px rgba(30, 64, 175, 0.7);
-    min-height: 160px;
-  }
-
-  .bottom-sections {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.25rem;
-    margin-top: 1.5rem;
-  }
-
-  .list-group-item {
-    align-items: center;
-    gap: 0.75rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  @media (min-width: 1200px) {
-    .stat-value { font-size: 2.4rem; }
-    .stat-icon { width: 64px; height: 64px; font-size: 1.4rem; }
-  }
-    {# Removed duplicate dashboard content (hero, role-specific stats and bottom sections) #}
-
-  .btn-outline-info:hover {
-    background: #3498DB;
-    color: white;
-  }
-
-  .btn-outline-primary {
-    color: var(--royal-blue);
-    border: 2px solid var(--royal-blue);
-  }
-
-  .btn-outline-primary:hover {
-    background: var(--royal-blue);
-    color: white;
-  }
-
-  /* Text Colors */
-  .text-primary {
-    color: var(--royal-blue) !important;
-  }
-
-  .text-secondary {
-    color: var(--gold) !important;
-  }
-
-  .text-success {
-    color: #27AE60 !important;
-  }
-
-  .text-warning {
-    color: #F39C12 !important;
-  }
-
-  .text-info {
-    color: #3498DB !important;
-  }
-
-  /* Background Colors */
-  .bg-primary {
-    background-color: var(--royal-blue) !important;
-  }
-
-  .bg-opacity-10 {
-    opacity: 0.1;
-  }
-
-  /* Progress Bar */
-  .progress {
-    background-color: rgba(15, 23, 42, 0.85) !important;
-    border-radius: 10px;
-  }
-
-  .progress-bar {
-    background: linear-gradient(90deg, var(--primary), var(--accent)) !important;
-  }
-
-  /* Accountant Card */
-  .accountant-card {
-    grid-column: 1 / -1;
-    max-width: 100%;
-  }
-
-  /* Main Content Area - Override global styles */
-  main, .main-content, [role="main"] {
-    background: transparent !important;
-    width: 100% !important;
-    padding: 0 !important;
-  }
-
-  .container, .container-fluid {
-    background: transparent !important;
-    padding: 2rem 1rem !important;
-  }
-
-  /* Responsive Design */
-  @media (max-width: 992px) {
-    .student-stats {
-      grid-template-columns: 1fr;
-    }
-
-    .bottom-sections {
-      grid-template-columns: 1fr;
-    }
-
-    .stats-grid-2 {
-      grid-template-columns: 1fr;
-    }
-
-    .dashboard-hero {
-      padding: 2rem;
-    }
-
-    .hero-title {
-      font-size: 2rem;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .dashboard-hero {
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-title {
-      font-size: 1.8rem;
-    }
-
-    .hero-title i {
-      font-size: 2rem;
-      margin-right: 0.75rem;
-    }
-
-    .hero-meta {
-      font-size: 0.85rem;
-      gap: 1rem;
-    }
-
-    .stats-grid-4,
-    .stats-grid-2 {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .stat-card {
-      padding: 1.5rem;
-    }
-
-    .stat-value {
-      font-size: 2.2rem;
-    }
-
-    .bottom-sections {
-      gap: 1.5rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .hero-title {
-      font-size: 1.5rem;
-    }
-
-    .hero-title i {
-      font-size: 1.5rem;
-    }
-
-    .stat-card {
-      padding: 1.25rem;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
-    }
-
-    .card-header {
-      padding: 1.25rem;
-    }
-
-    .card-body {
-      padding: 1.5rem;
-    }
-
-    .stat-icon {
-      width: 48px;
-      height: 48px;
-      font-size: 1.5rem;
-    }
-  }
-</style>
-
-<!-- Dashboard Hero Section -->
-<div class="dashboard-hero" data-aos="fade-down">
-  <h1 class="hero-title">
-    <i class="bi bi-house-fill"></i>Dashboard
-  </h1>
-  <p class="hero-subtitle">Welcome back, <strong>{{ user.username }}</strong>! Here's your quick overview.</p>
-  <div class="hero-meta">
-    <div><i class="bi bi-calendar-event"></i>{{ "now"|date("%B %d, %Y") }}</div>
-    <div><i class="bi bi-clock"></i>{{ "now"|date("%I:%M %p") }}</div>
-  </div>
-</div>
-
-<!-- Admin Dashboard -->
-{% if role == 'admin' %}
-<div class="stats-grid-4">
-  <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Total Students</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #4169E1, #6B8FE8);">
-          <i class="bi bi-people-fill"></i>
-        </div>
-      </div>
-      <div class="stat-value">{{ stats.students }}</div>
-      <div class="stat-footer">
-        <a href="{{ url_for('students_bp.list_students') }}">
-          View Details <i class="bi bi-arrow-right"></i>
-        </a>
-      </div>
+<div class="">
+  <!-- Dashboard Hero Section -->
+  <div class="dashboard-hero">
+    <h1 class="hero-title mb-2">
+      <i class="bi bi-house-fill me-2"></i>Dashboard
+    </h1>
+    <p class="hero-subtitle opacity-75">Welcome back, <strong>{{ user.username }}</strong>! Here's your quick overview.
+    </p>
+    <div class="d-flex gap-4 mt-3 opacity-50 small">
+      <div><i class="bi bi-calendar-event me-2"></i>{{ "now"|date("%B %d, %Y") }}</div>
+      <div><i class="bi bi-clock me-2"></i>{{ "now"|date("%I:%M %p") }}</div>
     </div>
   </div>
 
-  <div class="stat-card" data-aos="fade-up" data-aos-delay="150">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Total Faculty</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #27AE60, #2ECC71);">
-          <i class="bi bi-person-badge-fill"></i>
-        </div>
-      </div>
-      <div class="stat-value">{{ stats.faculty }}</div>
-      <div class="stat-footer">
-        <a href="{{ url_for('faculty_bp.list_faculty') }}">
-          View Faculty <i class="bi bi-arrow-right"></i>
-        </a>
+  <!-- Role-Based Stats -->
+  <div class="row g-4 mb-5">
+    {% if role == 'admin' %}
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-primary"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value">{{ stats.students }}</div>
+        <a href="{{ url_for('students_bp.list_students') }}" class="mt-3 small text-secondary">View Details <i
+            class="bi bi-arrow-right ms-1"></i></a>
       </div>
     </div>
-  </div>
-
-  <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Active Courses</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #D4A574, #E8B987);">
-          <i class="bi bi-book-fill"></i>
-        </div>
-      </div>
-      <div class="stat-value">{{ stats.courses }}</div>
-      <div class="stat-footer">
-        <a href="{{ url_for('academic_bp.list_courses') }}">
-          Manage Courses <i class="bi bi-arrow-right"></i>
-        </a>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-success"><i class="bi bi-person-badge-fill"></i></div>
+        <div class="stat-label">Total Faculty</div>
+        <div class="stat-value">{{ stats.faculty }}</div>
+        <a href="{{ url_for('faculty_bp.list_faculty') }}" class="mt-3 small text-secondary">View Faculty <i
+            class="bi bi-arrow-right ms-1"></i></a>
       </div>
     </div>
-  </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-warning"><i class="bi bi-book-fill"></i></div>
+        <div class="stat-label">Active Courses</div>
+        <div class="stat-value">{{ stats.courses }}</div>
+        <a href="{{ url_for('academic_bp.list_courses') }}" class="mt-3 small text-secondary">Manage <i
+            class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-danger"><i class="bi bi-megaphone-fill"></i></div>
+        <div class="stat-label">Total Notices</div>
+        <div class="stat-value">{{ stats.notices }}</div>
+        <a href="{{ url_for('notice_bp.list_notices') }}" class="mt-3 small text-secondary">Post Notice <i
+            class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
 
-  <div class="stat-card" data-aos="fade-up" data-aos-delay="250">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Notices</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #E74C3C, #EC7063);">
-          <i class="bi bi-megaphone-fill"></i>
+    {% elif role == 'faculty' %}
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon bg-primary"><i class="bi bi-journal-check"></i></div>
+        <div class="stat-label">Subject Assignments</div>
+        <div class="stat-value">{{ stats.assignments }}</div>
+        <a href="{{ url_for('attendance_bp.index') }}" class="mt-3 small text-secondary">Manage Classes <i
+            class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon bg-info"><i class="bi bi-chat-dots-fill"></i></div>
+        <div class="stat-label">Unread Messages</div>
+        <div class="stat-value">{{ stats.unread_messages or 0 }}</div>
+        <a href="{{ url_for('chat_bp.index') }}" class="mt-3 small text-secondary">Open Inbox <i
+            class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon bg-warning text-dark"><i class="bi bi-lightning-fill"></i></div>
+        <div class="stat-label">Quick Actions</div>
+        <div class="d-flex gap-2 mt-3">
+          <a href="{{ url_for('attendance_bp.index') }}" class="btn btn-sm btn-primary flex-grow-1">Attendance</a>
+          <a href="{{ url_for('exam_bp.index') }}" class="btn btn-sm btn-primary flex-grow-1">Marks</a>
         </div>
       </div>
-      <div class="stat-value">{{ stats.notices }}</div>
-      <div class="stat-footer">
-        <a href="{{ url_for('notice_bp.list_notices') }}">
-          Post Notice <i class="bi bi-arrow-right"></i>
-        </a>
+    </div>
+
+    {% elif role == 'student' %}
+    <div class="col-md-6">
+      <div class="stat-card">
+        <div class="stat-icon bg-primary"><i class="bi bi-pie-chart-fill"></i></div>
+        <div class="stat-label">Attendance Overall</div>
+        <div class="d-flex align-items-baseline gap-2">
+          <div class="stat-value text-secondary">{{ (stats.present / stats.total * 100)|round|int if stats.total else 0
+            }}%</div>
+          <span class="small opacity-50">Present</span>
+        </div>
+        <div class="progress mt-3">
+          <div class="progress-bar"
+            style="width: {{ (stats.present / stats.total * 100)|round if stats.total else 0 }}%;"></div>
+        </div>
+        <p class="mt-3 mb-0 small opacity-75">You attended {{ stats.present }} of {{ stats.total }} classes</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="stat-card">
+        <div class="stat-icon bg-warning text-dark"><i class="bi bi-lightning-fill"></i></div>
+        <div class="stat-label">Quick Links</div>
+        <div class="row g-2 mt-1">
+          <div class="col-6"><a href="{{ url_for('exam_bp.my_results') }}"
+              class="btn btn-sm btn-secondary w-100">Results</a></div>
+          <div class="col-6"><a href="{{ url_for('fees_bp.my_fees') }}" class="btn btn-sm btn-secondary w-100">Fees</a>
+          </div>
+          <div class="col-6"><a href="{{ url_for('timetable_bp.my_timetable') }}"
+              class="btn btn-sm btn-secondary w-100">Timetable</a></div>
+          <div class="col-6"><a href="{{ url_for('chat_bp.index') }}" class="btn btn-sm btn-primary w-100">Messages</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Bottom Sections -->
+  <div class="row g-4">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="card-title"><i class="bi bi-megaphone-fill me-2"></i>Recent Notices</span>
+          <a href="{{ url_for('notice_bp.list_notices') }}" class="btn btn-sm btn-primary">View All</a>
+        </div>
+        <div class="card-body">
+          <div class="text-center py-5">
+            <i class="bi bi-megaphone fs-1 d-block mb-3 opacity-25"></i>
+            <p class="opacity-75 mb-4">Check the Notices section for the latest institutional updates.</p>
+            <a href="{{ url_for('notice_bp.list_notices') }}" class="btn btn-primary">Check Updates</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><i class="bi bi-link-45deg me-2"></i>Important Links</span>
+        </div>
+        <div class="list-group list-group-flush bg-transparent">
+          <a href="#"
+            class="list-group-item list-group-item-action bg-transparent text-muted py-3 border-bottom border-secondary border-opacity-10 d-flex align-items-center">
+            <i class="bi bi-calendar3 me-3 text-secondary"></i> Academic Calendar
+          </a>
+          <a href="#"
+            class="list-group-item list-group-item-action bg-transparent text-muted py-3 border-bottom border-secondary border-opacity-10 d-flex align-items-center">
+            <i class="bi bi-file-earmark-text me-3 text-secondary"></i> Exam Schedule
+          </a>
+          <a href="#"
+            class="list-group-item list-group-item-action bg-transparent text-muted py-3 border-0 d-flex align-items-center">
+            <i class="bi bi-info-circle me-3 text-secondary"></i> Student Help Desk
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Faculty Dashboard -->
-{% elif role == 'faculty' %}
-<div class="stats-grid-2">
-  <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Subject Assignments</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #4169E1, #6B8FE8);">
-          <i class="bi bi-journal-check"></i>
-        </div>
-      </div>
-      <div class="stat-value">{{ stats.assignments }}</div>
-      <div class="stat-footer">
-        <a href="{{ url_for('attendance_bp.index') }}">
-          Manage Classes <i class="bi bi-arrow-right"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <div class="stat-card" data-aos="fade-up" data-aos-delay="150">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Quick Actions</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #D4A574, #E8B987);">
-          <i class="bi bi-lightning-fill"></i>
-        </div>
-      </div>
-      <div style="display: flex; gap: 0.75rem; margin: 1rem 0;">
-        <a href="{{ url_for('attendance_bp.index') }}" class="btn btn-sm btn-primary" style="flex: 1;">
-          <i class="bi bi-check-circle me-1"></i>Attendance
-        </a>
-        <a href="{{ url_for('exam_bp.index') }}" class="btn btn-sm btn-primary" style="flex: 1;">
-          <i class="bi bi-pencil-square me-1"></i>Marks
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Messages</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #0EA5E9, #38BDF8);">
-          <i class="bi bi-chat-dots-fill"></i>
-        </div>
-      </div>
-      <div class="stat-value">{{ stats.unread_messages or 0 }}</div>
-      <div class="stat-footer">
-        <a href="{{ url_for('chat_bp.index') }}">
-          Open Messages <i class="bi bi-arrow-right"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Student Dashboard -->
-{% elif role == 'student' %}
-<div class="student-stats">
-  <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Attendance Overview</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #4169E1, #6B8FE8);">
-          <i class="bi bi-pie-chart-fill"></i>
-        </div>
-      </div>
-      <div style="margin: 1rem 0;">
-        <div style="display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 1rem;">
-          <div class="stat-value" style="color: var(--royal-blue-dark);">{{ (stats.present / stats.total * 100)|round|int if stats.total else 0 }}<span style="font-size: 1.2rem; font-weight: 500;">%</span></div>
-          <span style="color: #888; font-size: 0.9rem;">Present</span>
-        </div>
-        <p style="color: #888; font-size: 0.9rem; margin: 0.5rem 0;">You attended {{ stats.present }} of {{ stats.total }} classes</p>
-        <div class="progress" style="height: 8px; margin-top: 1rem;">
-          <div class="progress-bar" role="progressbar" style="width: {{ (stats.present / stats.total * 100)|round if stats.total else 0 }}%;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="stat-card" data-aos="fade-up" data-aos-delay="150">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Quick Access</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #D4A574, #E8B987);">
-          <i class="bi bi-lightning-fill"></i>
-        </div>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
-        <a href="{{ url_for('exam_bp.my_results') }}" class="btn btn-sm btn-outline-primary">
-          <i class="bi bi-trophy-fill me-1"></i>Results
-        </a>
-        <a href="{{ url_for('fees_bp.my_fees') }}" class="btn btn-sm btn-outline-success">
-          <i class="bi bi-wallet2 me-1"></i>Fees
-        </a>
-        <a href="{{ url_for('timetable_bp.my_timetable') }}" class="btn btn-sm btn-outline-info">
-          <i class="bi bi-calendar3 me-1"></i>Timetable
-        </a>
-        <a href="{{ url_for('chat_bp.index') }}" class="btn btn-sm btn-outline-primary">
-          <i class="bi bi-chat-dots-fill me-1"></i>Messages ({{ stats.unread_messages or 0 }})
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Accountant Dashboard -->
-{% else %}
-<div class="stats-grid-4">
-  <div class="stat-card accountant-card" data-aos="fade-up" data-aos-delay="100">
-    <div class="stat-content">
-      <div class="stat-header">
-        <div class="stat-info">
-          <h5>Fee Management</h5>
-        </div>
-        <div class="stat-icon" style="background: linear-gradient(135deg, #8E2DE2, #B44FC7);">
-          <i class="bi bi-wallet2"></i>
-        </div>
-      </div>
-      <p style="color: #888; margin: 1rem 0;">Manage student fees, structures, and payments effectively.</p>
-      <div class="stat-footer">
-        <a href="{{ url_for('fees_bp.index') }}">
-          Go to Fees Management <i class="bi bi-arrow-right"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
-
-<!-- Bottom Sections -->
-<div class="bottom-sections">
-  <div class="glass-card" data-aos="fade-up" data-aos-delay="200">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Recent Notices</h5>
-      <a href="{{ url_for('notice_bp.list_notices') }}" class="btn btn-sm btn-primary rounded-pill">View All</a>
-    </div>
-    <div class="card-body">
-      <div class="text-center py-4">
-        <i class="bi bi-inbox fs-1 d-block mb-2" style="color: rgba(148, 163, 184, 0.7);"></i>
-        <p style="color: #cbd5f5; font-size: 0.95rem; margin-bottom: 1.5rem;">Check the Notices section for the latest updates.</p>
-        <a href="{{ url_for('notice_bp.list_notices') }}" class="btn btn-primary btn-sm rounded-pill">Go to Notices</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="glass-card" data-aos="fade-up" data-aos-delay="300">
-    <div class="card-header">
-      <h5 class="mb-0"><i class="bi bi-link-45deg me-2 text-secondary"></i>Quick Links</h5>
-    </div>
-    <div class="list-group list-group-flush" style="border-radius: 0;">
-      <a href="#" class="list-group-item list-group-item-action d-flex align-items-center py-3 px-0">
-        <span style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(65, 105, 225, 0.1); border-radius: 10px; color: var(--royal-blue); margin-right: 1rem;"><i class="bi bi-calendar3"></i></span>
-        <span>Academic Calendar</span>
-      </a>
-      <a href="#" class="list-group-item list-group-item-action d-flex align-items-center py-3 px-0">
-        <span style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(212, 165, 116, 0.1); border-radius: 10px; color: var(--gold); margin-right: 1rem;"><i class="bi bi-file-earmark-text"></i></span>
-        <span>Exam Schedule</span>
-      </a>
-      <a href="#" class="list-group-item list-group-item-action d-flex align-items-center py-3 px-0">
-        <span style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(52, 152, 219, 0.1); border-radius: 10px; color: #3498DB; margin-right: 1rem;"><i class="bi bi-info-circle"></i></span>
-        <span>Help Desk</span>
-      </a>
-    </div>
-  </div>
-</div>
 {% if role == 'student' %}
-  {# AI College Assistant Chatbot widget #}
-  {% include "chatbot.html" %}
+{% include "chatbot.html" %}
 {% endif %}
-<!-- Dashboard Hero Section -->
-{# Removed duplicate dashboard content (hero, role-specific stats and bottom sections) #}
 {% endblock %}
 
 {% block scripts %}
-  {{ super() }}
-  <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 {% endblock %}
-

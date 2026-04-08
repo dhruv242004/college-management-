@@ -37,7 +37,7 @@
 <div class="card border-0 shadow-sm">
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead class="table-light">
+      <thead>
         <tr>
           <th>Enrollment</th>
           <th>Name</th>
@@ -45,14 +45,14 @@
           <th>Semester</th>
           <th>Course</th>
           <th>Department</th>
-          <th></th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for s in students %}
         <tr>
-          <td><code>{{ s.enrollment_no }}</code></td>
-          <td>{{ s.first_name }} {{ s.last_name }}</td>
+          <td><code class="text-secondary bg-opacity-10">{{ s.enrollment_no }}</code></td>
+          <td class="fw-bold">{{ s.first_name }} {{ s.last_name }}</td>
           <td>{{ s.email }}</td>
           <td>{{ s.current_semester }}</td>
           <td>{{ s.course_name }}</td>
@@ -78,3 +78,4 @@
   </div>
 </div>
 {% endblock %}
+

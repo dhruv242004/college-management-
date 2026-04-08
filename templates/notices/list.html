@@ -1,50 +1,84 @@
 {% extends "base.html" %}
 {% block title %}Notices – College CMS{% endblock %}
 {% block content %}
-<h2 class="mb-4">Notices</h2>
-{% if current_user.role_name in ['admin','faculty'] %}
-<p><a href="{{ url_for('notice_bp.add') }}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>Add notice</a></p>
-{% endif %}
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-body">
-    <form method="get" class="row g-3">
-      <div class="col-md-4">
-        <select name="category" class="form-select">
-          <option value="">All categories</option>
-          <option value="Exam" {% if category == 'Exam' %}selected{% endif %}>Exam</option>
-          <option value="Event" {% if category == 'Event' %}selected{% endif %}>Event</option>
-          <option value="Holiday" {% if category == 'Holiday' %}selected{% endif %}>Holiday</option>
-          <option value="General" {% if category == 'General' %}selected{% endif %}>General</option>
-          <option value="Academic" {% if category == 'Academic' %}selected{% endif %}>Academic</option>
-        </select>
-      </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-primary">Filter</button>
-      </div>
-    </form>
+<div class="">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Notices</h2>
+    {% if current_user.role_name in ['admin','faculty'] %}
+    <a href="{{ url_for('notice_bp.add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Notice</a>
+    {% endif %}
   </div>
-</div>
-<div class="card border-0 shadow-sm">
-  <div class="list-group list-group-flush">
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label small opacity-50">Filter by Category</label>
+          <select name="category" class="form-select">
+            <option value="">All Categories</option>
+            <option value="Exam" {% if category=='Exam' %}selected{% endif %}>Exam</option>
+            <option value="Event" {% if category=='Event' %}selected{% endif %}>Event</option>
+            <option value="Holiday" {% if category=='Holiday' %}selected{% endif %}>Holiday</option>
+            <option value="General" {% if category=='General' %}selected{% endif %}>General</option>
+            <option value="Academic" {% if category=='Academic' %}selected{% endif %}>Academic</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-secondary w-100">Filter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row g-4">
     {% for n in notices %}
-    <div class="list-group-item">
-      <div class="d-flex justify-content-between">
-        <h6 class="mb-1">{{ n.title }}</h6>
-        <span class="badge bg-secondary">{{ n.category }}</span>
+    <div class="col-12">
+      <div class="card h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <span class="badge bg-primary mb-2">{{ n.category }}</span>
+              <h4 class="card-title mb-0" style="color: var(--secondary); font-weight: 700;">{{ n.title }}</h4>
+            </div>
+            <div class="text-end opacity-50 small">
+              <i class="bi bi-clock me-1"></i>{{ n.created_at.strftime('%b %d, %Y') if n.created_at else '' }}
+            </div>
+          </div>
+
+          <p class="card-text opacity-75 mb-4" style="line-height: 1.6; white-space: pre-wrap;">{{ n.content }}</p>
+
+          <div
+            class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">
+            <div class="small opacity-50">
+              <i class="bi bi-person-circle me-1"></i>Posted by <span class="text-white">{{ n.username }}</span>
+            </div>
+
+            {% if current_user.role_name in ['admin','faculty'] %}
+            <div class="d-flex gap-2">
+              <a href="{{ url_for('notice_bp.edit', nid=n.id) }}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-pencil-square me-1"></i>Edit
+              </a>
+              <form action="{{ url_for('notice_bp.delete', nid=n.id) }}" method="post" class="d-inline"
+                onsubmit="return confirm('Delete this notice?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-trash me-1"></i>Delete
+                </button>
+              </form>
+            </div>
+            {% endif %}
+          </div>
+        </div>
       </div>
-      <p class="text-muted small mb-1">{{ (n.content or '')[:200] }}{% if (n.content or '')|length > 200 %}…{% endif %}</p>
-      <small class="text-muted">By {{ n.username }} · {{ n.created_at.strftime('%Y-%m-%d %H:%M') if n.created_at else '' }}</small>
-      {% if current_user.role_name in ['admin','faculty'] %}
-      <div class="mt-2">
-        <a href="{{ url_for('notice_bp.edit', nid=n.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-        <form action="{{ url_for('notice_bp.delete', nid=n.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete?');">
-          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-        </form>
-      </div>
-      {% endif %}
     </div>
     {% else %}
-    <div class="list-group-item text-center text-muted">No notices.</div>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <i class="bi bi-megaphone display-4 d-block mb-3 opacity-25"></i>
+          <p class="opacity-50 mb-0">No notices posted yet.</p>
+        </div>
+      </div>
+    </div>
     {% endfor %}
   </div>
 </div>

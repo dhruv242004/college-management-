@@ -1,68 +1,135 @@
 {% extends "base.html" %}
 {% block title %}{{ student.first_name }} {{ student.last_name }} – College CMS{% endblock %}
 {% block content %}
-<h2 class="mb-4">Student Profile</h2>
-<div class="row">
-  <div class="col-md-4">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body text-center">
-        {% if student.photo_path %}
-        <img src="{{ url_for('static', filename=student.photo_path) }}" alt="Photo" class="rounded-circle mb-2" style="width:120px;height:120px;object-fit:cover;">
-        {% else %}
-        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width:120px;height:120px; background: rgba(30,41,59,0.4); color: #cbd5e1;">
-          <i class="bi bi-person display-4 text-muted"></i>
-        </div>
-        {% endif %}
-        <h5>{{ student.first_name }} {{ student.last_name }}</h5>
-        <code>{{ student.enrollment_no }}</code>
-        <p class="text-muted small mb-0">{{ student.course_name }} · Sem {{ student.current_semester }}</p>
-        {% if current_user.role_name == 'admin' %}
-        <hr>
-        <a href="{{ url_for('students_bp.edit', sid=student.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-        {% endif %}
-      </div>
-    </div>
+<div class="">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Student Profile</h2>
+    {% if current_user.role_name == 'admin' %}
+    <a href="{{ url_for('students_bp.edit', sid=student.id) }}" class="btn btn-primary"><i
+        class="bi bi-pencil-square me-1"></i>Edit Profile</a>
+    {% endif %}
   </div>
-  <div class="col-md-8">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body">
-        <div class="profile-info-section">
-          <h6 class="text-muted mb-3">Personal</h6>
-          <table class="table table-sm table-borderless">
-            <tr><td class="text-muted" width="140">Email</td><td>{{ student.email }}</td></tr>
-            <tr><td class="text-muted">Phone</td><td>{{ student.phone or '—' }}</td></tr>
-            <tr><td class="text-muted">DOB</td><td>{{ student.date_of_birth or '—' }}</td></tr>
-            <tr><td class="text-muted">Gender</td><td>{{ 'Male' if student.gender == 'M' else ('Female' if student.gender == 'F' else ('Other' if student.gender == 'O' else '—')) }}</td></tr>
-            <tr><td class="text-muted">Address</td><td>{{ student.address or '—' }}</td></tr>
-          </table>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card text-center p-4">
+        <div class="mb-4">
+          {% if student.photo_path %}
+          <img src="{{ url_for('static', filename=student.photo_path) }}" alt="Photo"
+            class="rounded-circle shadow-lg border border-secondary border-opacity-25"
+            style="width:150px; height:150px; object-fit:cover;">
+          {% else %}
+          <div
+            class="avatar-circle-lg bg-primary bg-opacity-10 text-primary mx-auto shadow-sm border border-primary border-opacity-10">
+            <i class="bi bi-person display-3"></i>
+          </div>
+          {% endif %}
         </div>
-        <div class="profile-info-section">
-          <h6 class="text-muted mb-3">Academic</h6>
-          <table class="table table-sm table-borderless">
-            <tr><td class="text-muted" width="140">Department</td><td>{{ student.dept_name }} ({{ student.dept_code }})</td></tr>
-            <tr><td class="text-muted">Course</td><td>{{ student.course_name }} ({{ student.course_code }})</td></tr>
-            <tr><td class="text-muted">Semester</td><td>{{ student.current_semester }}</td></tr>
-            <tr><td class="text-muted">Admission</td><td>{{ student.admission_date or '—' }}</td></tr>
-          </table>
+        <h4 class="fw-bold text-white mb-1">{{ student.first_name }} {{ student.last_name }}</h4>
+        <div class="mb-3"><code
+            class="text-secondary bg-opacity-10 px-2 py-1 rounded">{{ student.enrollment_no }}</code></div>
+
+        <div class="p-3 rounded bg-white bg-opacity-5">
+          <div class="small opacity-50 mb-1">Course & Semester</div>
+          <div class="fw-bold text-secondary">{{ student.course_name }}</div>
+          <div class="badge bg-secondary mt-2">Semester {{ student.current_semester }}</div>
         </div>
-        {% if current_user.role_name == 'student' and current_user.extra_id == student.id %}
-        <h6 class="text-muted mb-3 mt-4">Check my details</h6>
+      </div>
+
+      {% if current_user.role_name == 'admin' and not student.user_id %}
+      <div class="card mt-4 p-3 bg-opacity-10 border-info border-opacity-25">
+        <div class="d-flex align-items-center gap-3">
+          <div class="stat-icon bg-info m-0"><i class="bi bi-key"></i></div>
+          <div>
+            <div class="fw-bold small">No Login Created</div>
+            <a href="{{ url_for('students_bp.create_login', sid=student.id) }}" class="small text-info">Create login
+              now</a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title"><i class="bi bi-info-circle-fill me-2"></i>Personal Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            <div class="col-sm-6">
+              <label class="small opacity-50 d-block">Full Name</label>
+              <div class="fw-bold">{{ student.first_name }} {{ student.last_name }}</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="small opacity-50 d-block">Email Address</label>
+              <div class="fw-bold">{{ student.email }}</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="small opacity-50 d-block">Phone Number</label>
+              <div class="fw-bold">{{ student.phone or '—' }}</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="small opacity-50 d-block">Date of Birth</label>
+              <div class="fw-bold">{{ student.date_of_birth or '—' }}</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="small opacity-50 d-block">Gender</label>
+              <div class="fw-bold">{{ 'Male' if student.gender == 'M' else ('Female' if student.gender == 'F' else
+                'Other') }}</div>
+            </div>
+            <div class="col-12">
+              <label class="small opacity-50 d-block">Address</label>
+              <div class="opacity-75">{{ student.address or '—' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header">
+          <h5 class="card-title"><i class="bi bi-mortarboard-fill me-2"></i>Academic Details</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            <div class="col-sm-6">
+              <label class="small opacity-50 d-block">Department</label>
+              <div class="fw-bold">{{ student.dept_name }} ({{ student.dept_code }})</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="small opacity-50 d-block">Course</label>
+              <div class="fw-bold">{{ student.course_name }} ({{ student.course_code }})</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="small opacity-50 d-block">Current Semester</label>
+              <div class="fw-bold">Semester {{ student.current_semester }}</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="small opacity-50 d-block">Admission Date</label>
+              <div class="fw-bold">{{ student.admission_date or '—' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if current_user.role_name == 'student' and current_user.extra_id == student.id %}
+      <div class="card mt-4 p-4 border-primary border-opacity-10">
+        <h6 class="text-secondary fw-bold mb-3">Quick Navigation</h6>
         <div class="d-flex flex-wrap gap-2">
-          <a href="{{ url_for('attendance_bp.my_attendance') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-calendar-check me-1"></i>My Attendance</a>
-          <a href="{{ url_for('exam_bp.my_results') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-trophy me-1"></i>My Results</a>
-          <a href="{{ url_for('fees_bp.my_fees') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-currency-rupee me-1"></i>My Fees</a>
-          <a href="{{ url_for('timetable_bp.my_timetable') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-calendar3 me-1"></i>My Timetable</a>
-          <a href="{{ url_for('students_bp.id_card', sid=student.id) }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-badge-ad me-1"></i>Digital ID Card</a>
+          <a href="{{ url_for('attendance_bp.my_attendance') }}" class="btn btn-sm btn-outline-primary rounded-pill"><i
+              class="bi bi-calendar-check me-2"></i>Attendance</a>
+          <a href="{{ url_for('exam_bp.my_results') }}" class="btn btn-sm btn-outline-primary rounded-pill"><i
+              class="bi bi-trophy me-2"></i>Results</a>
+          <a href="{{ url_for('fees_bp.my_fees') }}" class="btn btn-sm btn-outline-primary rounded-pill"><i
+              class="bi bi-wallet2 me-2"></i>Fees</a>
+          <a href="{{ url_for('timetable_bp.my_timetable') }}" class="btn btn-sm btn-outline-primary rounded-pill"><i
+              class="bi bi-calendar3 me-2"></i>Timetable</a>
+          <a href="{{ url_for('students_bp.id_card', sid=student.id) }}" class="btn btn-sm btn-primary rounded-pill"><i
+              class="bi bi-person-badge-fill me-2"></i>Digital ID Card</a>
         </div>
-        {% endif %}
       </div>
+      {% endif %}
     </div>
   </div>
 </div>
-{% if current_user.role_name == 'admin' and not student.user_id %}
-<div class="mt-3">
-  <a href="{{ url_for('students_bp.create_login', sid=student.id) }}" class="btn btn-success btn-sm"><i class="bi bi-key me-1"></i>Create login</a>
-  <span class="text-muted small ms-2">Student can then log in to see profile &amp; details.</span>
-</div>
-{% endif %}
 {% endblock %}

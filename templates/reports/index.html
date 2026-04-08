@@ -1,48 +1,67 @@
 {% extends "base.html" %}
 {% block title %}Reports – College CMS{% endblock %}
 {% block content %}
-<h2 class="mb-4">Reports</h2>
-<div class="row g-3">
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-body">
-        <i class="bi bi-people display-6 text-primary"></i>
-        <h5 class="mt-2">Student list</h5>
-        <p class="text-muted">By course / semester. Export CSV.</p>
-        <a href="{{ url_for('reports_bp.students_report') }}" class="btn btn-outline-primary">Open</a>
+<div class="dashboard-hero mb-4">
+  <h1>Reports Dashboard</h1>
+  <p class="opacity-75">Generate and export academic and administrative reports.</p>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-6 col-lg-4">
+    <div class="card h-100 hover-lift">
+      <div class="card-body text-center p-4">
+        <div class="stat-icon bg-primary bg-opacity-10 text-primary mx-auto mb-3">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <h5 class="fw-bold">Student Statistics</h5>
+        <p class="small opacity-50">Detailed student lists by course, semester, and department.</p>
+        <a href="{{ url_for('reports_bp.students_report') }}"
+          class="btn btn-outline-primary btn-sm rounded-pill px-4 mt-2">Generate Report</a>
       </div>
     </div>
   </div>
+
   {% if current_user.role_name in ['admin','faculty'] %}
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-body">
-        <i class="bi bi-calendar-check display-6 text-success"></i>
-        <h5 class="mt-2">Attendance report</h5>
-        <p class="text-muted">By course / subject.</p>
-        <a href="{{ url_for('reports_bp.attendance_report') }}" class="btn btn-outline-primary">Open</a>
+  <div class="col-md-6 col-lg-4">
+    <div class="card h-100 hover-lift text-center">
+      <div class="card-body p-4">
+        <div class="stat-icon bg-success bg-opacity-10 text-success mx-auto mb-3">
+          <i class="bi bi-calendar-check"></i>
+        </div>
+        <h5 class="fw-bold">Attendance Analysis</h5>
+        <p class="small opacity-50">Track attendance patterns by subject and student enrollment.</p>
+        <a href="{{ url_for('reports_bp.attendance_report') }}"
+          class="btn btn-outline-primary btn-sm rounded-pill px-4 mt-2">Generate Report</a>
       </div>
     </div>
   </div>
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-body">
-        <i class="bi bi-clipboard-data display-6 text-info"></i>
-        <h5 class="mt-2">Result report</h5>
-        <p class="text-muted">Published results by course / subject.</p>
-        <a href="{{ url_for('reports_bp.results_report') }}" class="btn btn-outline-primary">Open</a>
+
+  <div class="col-md-6 col-lg-4">
+    <div class="card h-100 hover-lift text-center">
+      <div class="card-body p-4">
+        <div class="stat-icon bg-info bg-opacity-10 text-info mx-auto mb-3">
+          <i class="bi bi-clipboard-data"></i>
+        </div>
+        <h5 class="fw-bold">Academic Performance</h5>
+        <p class="small opacity-50">Comprehensive result reports and performance metrics.</p>
+        <a href="{{ url_for('reports_bp.results_report') }}"
+          class="btn btn-outline-primary btn-sm rounded-pill px-4 mt-2">Generate Report</a>
       </div>
     </div>
   </div>
   {% endif %}
+
   {% if current_user.role_name in ['admin','accountant'] %}
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-body">
-        <i class="bi bi-currency-rupee display-6 text-warning"></i>
-        <h5 class="mt-2">Fees pending</h5>
-        <p class="text-muted">Students with pending dues.</p>
-        <a href="{{ url_for('reports_bp.fees_pending_report') }}" class="btn btn-outline-primary">Open</a>
+  <div class="col-md-6 col-lg-4">
+    <div class="card h-100 hover-lift text-center">
+      <div class="card-body p-4">
+        <div class="stat-icon bg-warning bg-opacity-10 text-warning mx-auto mb-3">
+          <i class="bi bi-currency-rupee"></i>
+        </div>
+        <h5 class="fw-bold">Fee Tracking</h5>
+        <p class="small opacity-50">Analyze pending dues and payment history across departments.</p>
+        <a href="{{ url_for('reports_bp.fees_pending_report') }}"
+          class="btn btn-outline-primary btn-sm rounded-pill px-4 mt-2">Generate Report</a>
       </div>
     </div>
   </div>

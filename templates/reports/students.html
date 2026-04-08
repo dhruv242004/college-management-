@@ -1,58 +1,59 @@
 {% extends "base.html" %}
-{% block title %}Students report – College CMS{% endblock %}
+{% block title %}Student List Report – College CMS{% endblock %}
 {% block content %}
-<h2 class="mb-4">Students report</h2>
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-body">
-    <form method="get" class="row g-3">
-      <div class="col-md-3">
-        <select name="course_id" class="form-select">
-          <option value="">All courses</option>
-          {% for c in courses %}
-          <option value="{{ c.id }}" {% if course_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+<div class="">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 text-white"><i class="bi bi-people-fill me-2"></i>Student Population Report</h2>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('reports_bp.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i>Back
+      </a>
+      <button onclick="window.print()" class="btn btn-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-printer me-1"></i>Print
+      </button>
+    </div>
+  </div>
+
+  <div class="card overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th class="ps-4">Enrollment</th>
+            <th>Full Name</th>
+            <th>Course</th>
+            <th>Semester</th>
+            <th>Blood Group</th>
+            <th class="pe-4 text-end">Contact</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td class="ps-4"><code>{{ r.enrollment_no }}</code></td>
+            <td class="fw-bold text-white">{{ r.first_name }} {{ r.last_name }}</td>
+            <td class="text-secondary fw-semibold">{{ r.course_name }}</td>
+            <td>Sem {{ r.current_semester }}</td>
+            <td>
+              <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2">
+                {{ r.blood_group or '—' }}
+              </span>
+            </td>
+            <td class="pe-4 text-end opacity-75">
+              <span class="d-block small">{{ r.email }}</span>
+              <span class="d-block small fw-bold">{{ r.phone or '' }}</span>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="text-center py-5 opacity-50">No students found matching your criteria.</td>
+          </tr>
           {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-2">
-        <input type="number" name="semester" class="form-control" placeholder="Semester" min="1" max="10" value="{{ semester or '' }}">
-      </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-primary">Filter</button>
-      </div>
-      <div class="col-md-2">
-        <a href="{{ url_for('reports_bp.students_report', export='csv', course_id=course_id or '', semester=semester or '') }}" class="btn btn-success">Export CSV</a>
-      </div>
-    </form>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
-<div class="card border-0 shadow-sm">
-  <div class="table-responsive">
-    <table class="table table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Enrollment</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Semester</th>
-          <th>Course</th>
-          <th>Department</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in rows %}
-        <tr>
-          <td><code>{{ r.enrollment_no }}</code></td>
-          <td>{{ r.first_name }} {{ r.last_name }}</td>
-          <td>{{ r.email }}</td>
-          <td>{{ r.current_semester }}</td>
-          <td>{{ r.course_name }}</td>
-          <td>{{ r.dept_name }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="6" class="text-center text-muted">No data.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
+
 {% endblock %}
+

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Payment Failed{% endblock %}
 {% block content %}
-<div class="container py-5" data-aos="zoom-in">
+<div class="container py-5" >
   <div class="text-center">
     <div class="mb-4">
       <svg width="96" height="96" viewBox="0 0 24 24" fill="none">
@@ -22,12 +22,6 @@
       </a>
     </div>
   </div>
-  <div class="position-fixed top-0 start-0 w-100 h-100" style="pointer-events:none; z-index:-1;">
-    <div class="floating" style="position:absolute; left:15%; top:25%; width:8px; height:8px; background: #ef4444; border-radius:50%; animation: float 6s ease-in-out infinite;"></div>
-    <div class="floating" style="position:absolute; left:75%; top:45%; width:6px; height:6px; background: #4f46e5; border-radius:50%; animation: float 7s ease-in-out infinite;"></div>
-  </div>
 </div>
-<style>
-@keyframes float { 0%{ transform: translateY(0) } 50%{ transform: translateY(-12px) } 100%{ transform: translateY(0)} }
-</style>
 {% endblock %}
+

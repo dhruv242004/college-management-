@@ -3,25 +3,27 @@
 {% block content %}
 <h2 class="mb-4">Exams & Results</h2>
 <div class="card border-0 shadow-sm">
-  <div class="card-header bg-transparent">Subjects – Enter marks</div>
+  <div class="card-header bg-transparent" style="color: var(--secondary); border-bottom: 1px solid var(--border-color);">Subjects – Enter marks</div>
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Subject</th>
-          <th>Course</th>
-          <th>Semester</th>
-          <th></th>
+      <thead style="background: rgba(255, 255, 255, 0.05);">
+        <tr style="border-bottom: 2px solid var(--border-color);">
+          <th style="color: var(--text-main);">Subject</th>
+          <th style="color: var(--text-main);">Course</th>
+          <th style="color: var(--text-main);">Semester</th>
+          <th style="color: var(--text-main);"></th>
         </tr>
       </thead>
       <tbody>
         {% for s in subjects %}
-        <tr>
-          <td>{{ s.name }} ({{ s.code }})</td>
-          <td>{{ s.course_name }}</td>
-          <td>{{ s.semester }}</td>
+        <tr class="border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+          <td style="color: var(--text-muted);">{{ s.name }} ({{ s.code }})</td>
+          <td style="color: var(--text-muted);">{{ s.course_name }}</td>
+          <td style="color: var(--text-muted);">{{ s.semester }}</td>
           <td>
-            <a href="{{ url_for('exam_bp.marks_entry', subject_id=s.id) }}" class="btn btn-sm btn-primary">Marks</a>
+            <a href="{{ url_for('exam_bp.marks_entry', subject_id=s.id) }}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+              <i class="bi bi-pencil-square me-1"></i>Marks
+            </a>
           </td>
         </tr>
         {% else %}
@@ -32,3 +34,4 @@
   </div>
 </div>
 {% endblock %}
+

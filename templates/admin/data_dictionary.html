@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Data Dictionary – College CMS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Database Data Dictionary</h2>
+        <p class="text-muted small mb-0">Live introspection of all system tables and schemas</p>
+    </div>
+    <div class="dropdown">
+        <button class="btn btn-gold btn-lg dropdown-toggle shadow-lg" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-file-earmark-medical me-2"></i> Bulk Export Full Dictionary
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow">
+            <li><a class="dropdown-item py-2" href="{{ url_for('admin_bp.export_all_tables', fmt='pdf') }}">
+                <i class="bi bi-file-earmark-pdf text-danger me-2"></i>Export All as Full PDF
+            </a></li>
+            <li><a class="dropdown-item py-2" href="{{ url_for('admin_bp.export_all_tables', fmt='docx') }}">
+                <i class="bi bi-file-earmark-word text-primary me-2"></i>Export All as Full Word Doc
+            </a></li>
+            <li><a class="dropdown-item py-2" href="{{ url_for('admin_bp.export_all_tables', fmt='pptx') }}">
+                <i class="bi bi-file-earmark-slides text-warning me-2"></i>Export All as Full PowerPoint
+            </a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for table in data_dict %}
+    <div class="col-12">
+        <div class="glass-panel p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="bg-secondary bg-opacity-10 p-2 rounded-circle me-3">
+                        <i class="bi bi-table text-secondary fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 text-white ls-1">{{ table.table_name | upper }}</h4>
+                        <span
+                            class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 small">Base
+                            Table</span>
+                    </div>
+                </div>
+
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button"
+                        data-bs-toggle="dropdown">
+                        <i class="bi bi-download me-1"></i> Export Table
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow">
+                        <li><a class="dropdown-item small"
+                                href="{{ url_for('admin_bp.export_table', table_name=table.table_name, fmt='pdf') }}"><i
+                                    class="bi bi-file-earmark-pdf text-danger me-2"></i>Export as PDF</a></li>
+                        <li><a class="dropdown-item small"
+                                href="{{ url_for('admin_bp.export_table', table_name=table.table_name, fmt='docx') }}"><i
+                                    class="bi bi-file-earmark-word text-primary me-2"></i>Export as Word</a></li>
+                        <li><a class="dropdown-item small"
+                                href="{{ url_for('admin_bp.export_table', table_name=table.table_name, fmt='pptx') }}"><i
+                                    class="bi bi-file-earmark-slides text-warning me-2"></i>Export as PowerPoint</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Column Name</th>
+                            <th>Data Type</th>
+                            <th>Null</th>
+                            <th>Default</th>
+                            <th>Max Length</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for col in table.columns %}
+                        <tr>
+                            <td class="fw-bold text-white">{{ col.column_name }}</td>
+                            <td>
+                                <code class="text-secondary bg-dark px-2 py-1 rounded small">
+                                    {{ col.data_type | upper }}
+                                </code>
+                            </td>
+                            <td>
+                                {% if col.is_nullable == 'YES' %}
+                                <span class="text-success small"><i class="bi bi-check2 me-1"></i>Yes</span>
+                                {% else %}
+                                <span class="text-danger small"><i class="bi bi-x-lg me-1"></i>No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="opacity-50 small">{{ col.column_default if col.column_default else '-'
+                                    }}</span>
+                            </td>
+                            <td>
+                                <span class="opacity-50 small">{{ col.character_maximum_length if
+                                    col.character_maximum_length else '-' }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

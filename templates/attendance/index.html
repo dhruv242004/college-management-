@@ -15,7 +15,7 @@
   <!-- Student View -->
   <div class="row g-3 mb-4">
     <div class="col-md-6">
-      <div class="card glass-panel shadow-lg border-0 animate__animated animate__fadeInUp">
+      <div class="card glass-panel shadow-lg border-0">
         <div class="card-body text-center py-5">
           <i class="bi bi-camera-fill display-4 text-primary mb-3 d-block"></i>
           <h5 class="card-title">Scan QR Code</h5>
@@ -26,9 +26,9 @@
         </div>
       </div>
     </div>
-    
+
     <div class="col-md-6">
-      <div class="card glass-panel shadow-lg border-0 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+      <div class="card glass-panel shadow-lg border-0">
         <div class="card-body text-center py-5">
           <i class="bi bi-graph-up display-4 text-info mb-3 d-block"></i>
           <h5 class="card-title">My Attendance</h5>
@@ -46,7 +46,7 @@
   <!-- Quick Actions -->
   <div class="row g-3 mb-4">
     <div class="col-md-4">
-      <div class="card glass-panel shadow-lg border-0 animate__animated animate__fadeInUp">
+      <div class="card glass-panel shadow-lg border-0">
         <div class="card-body text-center py-4">
           <i class="bi bi-qr-code display-4 text-success mb-3 d-block"></i>
           <h5 class="card-title">Generate QR Code</h5>
@@ -57,9 +57,9 @@
         </div>
       </div>
     </div>
-    
+
     <div class="col-md-4">
-      <div class="card glass-panel shadow-lg border-0 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+      <div class="card glass-panel shadow-lg border-0">
         <div class="card-body text-center py-4">
           <i class="bi bi-pencil display-4 text-primary mb-3 d-block"></i>
           <h5 class="card-title">Manual Entry</h5>
@@ -70,9 +70,9 @@
         </div>
       </div>
     </div>
-    
+
     <div class="col-md-4">
-      <div class="card glass-panel shadow-lg border-0 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+      <div class="card glass-panel shadow-lg border-0">
         <div class="card-body text-center py-4">
           <i class="bi bi-file-earmark-text display-4 text-warning mb-3 d-block"></i>
           <h5 class="card-title">Reports</h5>
@@ -100,7 +100,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="col-md-6">
       <div class="card glass-panel border-0 shadow">
         <div class="card-body text-center py-4">
@@ -123,12 +123,13 @@
         <i class="bi bi-book me-2"></i>Your Subjects / Assignments
       </h5>
     </div>
-    
+
     {% if assignments|length > 0 and not is_faculty_assigned %}
-      <div class="alert alert-warning alert-soft m-3 mb-0" role="alert">
-        <i class="bi bi-exclamation-triangle me-2"></i>
-        <strong>Note:</strong> No specific subjects are assigned to you for the current year. Showing all available subjects as a fallback.
-      </div>
+    <div class="alert alert-warning alert-soft m-3 mb-0" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <strong>Note:</strong> No specific subjects are assigned to you for the current year. Showing all available
+      subjects as a fallback.
+    </div>
     {% endif %}
 
     <div class="table-responsive">
@@ -149,14 +150,12 @@
             <td class="text-center">{{ a.semester }}</td>
             <td class="text-center">
               <div class="btn-group btn-group-sm" role="group">
-                <a href="{{ url_for('attendance_bp.qr_generate') }}" 
-                   class="btn btn-outline-success" 
-                   title="Generate QR Code">
+                <a href="{{ url_for('attendance_bp.qr_generate') }}" class="btn btn-outline-success"
+                  title="Generate QR Code">
                   <i class="bi bi-qr-code"></i>
                 </a>
-                <a href="{{ url_for('attendance_bp.mark', subject_id=a.subject_id, course_id=a.course_id, semester=a.semester) }}" 
-                   class="btn btn-outline-primary" 
-                   title="Manual Mark">
+                <a href="{{ url_for('attendance_bp.mark', subject_id=a.subject_id, course_id=a.course_id, semester=a.semester) }}"
+                  class="btn btn-outline-primary" title="Manual Mark">
                   <i class="bi bi-pencil"></i>
                 </a>
               </div>
@@ -166,7 +165,8 @@
           <tr>
             <td colspan="4" class="text-center text-muted py-5">
               <i class="bi bi-inbox fs-1 mb-2 d-block"></i>
-              No subjects assigned. {% if is_faculty %}Contact your admin to assign subjects.{% else %}Add subjects from Academic menu.{% endif %}
+              No subjects assigned. {% if is_faculty %}Contact your admin to assign subjects.{% else %}Add subjects from
+              Academic menu.{% endif %}
             </td>
           </tr>
           {% endfor %}
@@ -194,7 +194,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="col-md-6">
       <div class="card glass-panel border-0 shadow">
         <div class="card-header bg-light border-0">
@@ -228,8 +228,8 @@
         <p class="text-muted mb-3">Choose a subject to mark attendance manually:</p>
         <div class="list-group">
           {% for a in assignments %}
-          <a href="{{ url_for('attendance_bp.mark', subject_id=a.subject_id, course_id=a.course_id, semester=a.semester) }}" 
-             class="list-group-item list-group-item-action">
+          <a href="{{ url_for('attendance_bp.mark', subject_id=a.subject_id, course_id=a.course_id, semester=a.semester) }}"
+            class="list-group-item list-group-item-action">
             {{ a.subject_name }} - {{ a.course_name }} (Sem {{ a.semester }})
           </a>
           {% endfor %}
@@ -239,10 +239,4 @@
   </div>
 </div>
 
-<style>
-.btn-group-sm .btn {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-}
-</style>
 {% endblock %}

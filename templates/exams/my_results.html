@@ -1,38 +1,62 @@
 {% extends "base.html" %}
 {% block title %}My Results – College CMS{% endblock %}
 {% block content %}
-<h2 class="mb-4">My Results</h2>
-{% if student %}
-<p class="text-muted">{{ student.first_name }} {{ student.last_name }} · {{ student.enrollment_no }} · {{ student.course_name }}</p>
-{% endif %}
-<div class="card border-0 shadow-sm">
-  <div class="table-responsive">
-    <table class="table table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Subject</th>
-          <th>Credits</th>
-          <th>Internal</th>
-          <th>External</th>
-          <th>Total</th>
-          <th>Grade</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in results %}
-        <tr>
-          <td>{{ r.subject_name }} ({{ r.subject_code }})</td>
-          <td>{{ r.credits }}</td>
-          <td>{{ r.internal_marks or '—' }}</td>
-          <td>{{ r.external_marks or '—' }}</td>
-          <td>{{ r.total_marks or '—' }}</td>
-          <td><strong>{{ r.grade or '—' }}</strong></td>
-        </tr>
-        {% else %}
-        <tr><td colspan="6" class="text-center text-muted">No published results.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="">
+  <!-- Results Hero -->
+  <div class="dashboard-hero mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2 class="hero-title mb-1"><i class="bi bi-trophy-fill me-2"></i>My Results</h2>
+        {% if student %}
+        <p class="hero-subtitle mb-0 opacity-75">
+          {{ student.first_name }} {{ student.last_name }} 
+          <span class="mx-2 opacity-50">•</span> {{ student.enrollment_no }}
+          <span class="mx-2 opacity-50">•</span> {{ student.course_name }}
+        </p>
+        {% endif %}
+      </div>
+      <div class="d-none d-md-block">
+        <span class="badge bg-secondary p-3 shadow-sm">
+          <i class="bi bi-mortarboard fs-4 d-block mb-1"></i>
+          Academic Year 2023-24
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th class="text-center">Credits</th>
+            <th class="text-center">Internal</th>
+            <th class="text-center">External</th>
+            <th class="text-center">Total</th>
+            <th class="text-center">Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in results %}
+          <tr>
+            <td class="fw-bold text-white">{{ r.subject_name }} <br><small class="opacity-50 fw-normal">{{ r.subject_code }}</small></td>
+            <td class="text-center fw-bold text-primary">{{ r.credits }}</td>
+            <td class="text-center opacity-75">{{ r.internal_marks or '—' }}</td>
+            <td class="text-center opacity-75">{{ r.external_marks or '—' }}</td>
+            <td class="text-center fw-bold">{{ r.total_marks or '—' }}</td>
+            <td class="text-center">
+              <span class="badge {{ 'bg-success' if r.grade in ['O','A+','A'] else 'bg-primary' }} px-3 py-2 fs-6">
+                {{ r.grade or '—' }}
+              </span>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted py-5">No published results found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}

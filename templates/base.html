@@ -1,201 +1,841 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}College Management System{% endblock %}</title>
-  
+
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-  <!-- Animate.css -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <!-- AOS Animation Library -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-  <!-- Custom CSS -->
-  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <style>
+    /* 
+     * ==========================================================
+     * COLLEGE MANAGEMENT SYSTEM - DESIGN SYSTEM
+     * Theme: Royal Blue & Premium Gold
+     * ==========================================================
+     */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --primary: #4169E1;
+      --primary-dark: #3151B1;
+      --secondary: #FFD700;
+      --secondary-dark: #D4AF37;
+      --bg-deep: #0B132B;
+      --card-surface: #1C2541;
+      --sidebar-surface: #F5F5DC;
+      --text-primary: #FFD700;
+      --text-muted: #CBD5E1;
+      --text-dark: #1C2541;
+      --border-color: rgba(255, 215, 0, 0.15);
+      --sidebar-width: 280px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --text-main: var(--text-primary);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-muted);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-deep);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: var(--text-primary);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    a {
+      color: var(--secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    a:hover {
+      filter: brightness(1.2);
+    }
+
+    #sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-surface);
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      transition: var(--transition);
+      border-right: 2px solid var(--secondary);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--secondary) transparent;
+    }
+
+    main {
+      margin-left: var(--sidebar-width);
+      width: calc(100% - var(--sidebar-width));
+      min-height: 100vh;
+      padding: 2rem;
+      transition: var(--transition);
+    }
+
+    @media (max-width: 768px) {
+      #sidebar {
+        left: -100%;
+      }
+
+      main {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+      }
+
+      body.sidebar-open #sidebar {
+        left: 0;
+      }
+    }
+
+    .nav-link {
+      color: var(--text-dark);
+      padding: 12px 20px;
+      margin: 4px 12px;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .nav-link i {
+      font-size: 1.25rem;
+      margin-right: 12px;
+      color: var(--primary);
+    }
+
+    .nav-link:hover {
+      background: rgba(65, 105, 225, 0.1);
+      color: var(--primary);
+    }
+
+    .nav-link.active {
+      background: var(--primary);
+      color: #fff !important;
+      box-shadow: 0 4px 15px rgba(65, 105, 225, 0.3);
+    }
+
+    .nav-link.active i {
+      color: #fff;
+    }
+
+    .card {
+      background: var(--card-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      margin-bottom: 2rem;
+      overflow: hidden;
+      position: relative;
+      transition: var(--transition);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .card:hover {
+      border-color: var(--secondary);
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-header {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+    }
+
+    .card-title {
+      color: var(--secondary);
+      font-size: 1.1rem;
+      margin-bottom: 0;
+    }
+
+    .stat-card {
+      background: var(--card-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      border-color: var(--secondary);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      color: #fff;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .progress {
+      background: rgba(255, 255, 255, 0.05);
+      height: 8px;
+      border-radius: 4px;
+    }
+
+    .progress-bar {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .bg-success {
+      background-color: #10B981 !important;
+    }
+
+    .bg-warning {
+      background-color: #F59E0B !important;
+    }
+
+    .bg-danger {
+      background-color: #EF4444 !important;
+    }
+
+    .bg-info {
+      background-color: #3B82F6 !important;
+    }
+
+    .form-control,
+    .form-select {
+      background-color: var(--card-surface) !important;
+      border: 1px solid var(--border-color) !important;
+      color: #fff !important;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23FFD700' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+      background-position: right 1.25rem center !important;
+      background-size: 16px 12px !important;
+    }
+
+    .form-select option {
+      background-color: var(--card-surface);
+      color: #fff;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      border-color: var(--secondary) !important;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.2) !important;
+      outline: none;
+    }
+
+    .form-label {
+      color: var(--text-muted) !important;
+      font-weight: 500 !important;
+      margin-bottom: 0.5rem !important;
+      display: block !important;
+      ss
+    }
+
+    .input-group-text {
+      background-color: rgba(255, 255, 255, 0.02) !important;
+      border-color: var(--border-color) !important;
+      color: var(--secondary) !important;
+      padding: 0 1rem;
+    }
+
+    ::placeholder {
+      color: rgba(255, 255, 255, 0.35) !important;
+    }
+
+    .table {
+      color: var(--text-muted) !important;
+      background-color: transparent !important;
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+    }
+
+    .table thead th {
+      color: var(--secondary) !important;
+      border-bottom: 2px solid var(--border-color) !important;
+      background-color: rgba(255, 255, 255, 0.02) !important;
+      padding: 1.25rem 1rem !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      font-size: 0.85rem !important;
+    }
+
+    .table td {
+      padding: 1rem !important;
+      vertical-align: middle !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      background-color: transparent !important;
+      color: var(--text-muted) !important;
+    }
+
+    .table-responsive {
+      background: transparent !important;
+    }
+
+    .table-hover tbody tr:hover {
+      background: rgba(255, 215, 0, 0.05) !important;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border: none;
+    }
+
+    .btn-secondary {
+      background: var(--card-surface);
+      border: 1px solid var(--border-color);
+      color: var(--secondary);
+    }
+
+    .ai-chat-toggle {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg-deep);
+      font-size: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.3);
+      cursor: pointer;
+      z-index: 2000;
+      transition: var(--transition);
+    }
+
+    .ai-chat-toggle:hover {
+      filter: brightness(1.2);
+    }
+
+    .ai-chat-window {
+      position: fixed;
+      bottom: 110px;
+      right: 30px;
+      width: 400px;
+      height: 600px;
+      background: var(--card-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      z-index: 2000;
+      overflow: hidden;
+    }
+
+    .ai-chat-window.open {
+      display: flex !important;
+    }
+
+    .ai-chat-header {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      padding: 1.5rem;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ai-chat-messages {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .ai-chat-bubble {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      position: relative;
+      font-size: 0.95rem;
+    }
+
+    .ai-chat-bubble.bot {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .ai-chat-bubble.user {
+      background: var(--primary);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai-chat-input-row {
+      padding: 1.25rem;
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      gap: 10px;
+    }
+
+    @media print {
+
+      .sidebar,
+      #sidebar,
+      .btn,
+      .ai-chat-toggle,
+      .ai-chat-window,
+      mobile-toggle,
+      #sidebarToggle {
+        display: none !important;
+      }
+
+      main {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+
+      .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+      }
+
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+    }
+
+    .ls-1 {
+      letter-spacing: 1px;
+    }
+
+    .ls-2 {
+      letter-spacing: 2px;
+    }
+
+    .opacity-10 {
+      opacity: 0.1;
+    }
+
+    .no-print {
+      display: none !important;
+    }
+
+    .tracking-widest {
+      letter-spacing: 0.2em;
+    }
+
+    /* Missing Components */
+    .glass-panel,
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+    }
+
+    .auth-card {
+      background: var(--card-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Authentication Pages Layout */
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 10% 20%, var(--card-surface) 0%, var(--bg-deep) 90%);
+      padding: 2rem;
+    }
+
+    .auth-container {
+      display: flex;
+      gap: 4rem;
+      max-width: 1200px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .auth-info-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .auth-form-side {
+      flex: 0 0 450px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .info-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+
+    .info-item:hover {
+      border-color: var(--secondary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Auth Page specific Nav Link overides (Force Light Theme) */
+    .auth-page .nav-link {
+      color: rgba(255, 255, 255, 0.5) !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+      border-bottom: 2px solid transparent !important;
+    }
+
+    .auth-page .nav-link:hover {
+      color: var(--secondary) !important;
+      background: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    .auth-page .nav-link.active {
+      color: var(--secondary) !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-bottom-color: var(--secondary) !important;
+    }
+
+    @media (max-width: 1024px) {
+      .auth-container {
+        flex-direction: column;
+        gap: 3rem;
+        padding: 2rem 0;
+      }
+
+      .auth-form-side {
+        flex: 1;
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .auth-info-side {
+        text-align: center;
+      }
+
+      .info-grid {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-<body class="d-flex">
-  
-  <!-- Animated Background -->
-  <div class="bg-animated"></div>
+
+<body class="min-vh-100">
 
   {% if current_user %}
-  <nav id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 text-white">
-    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-      <i class="bi bi-mortarboard-fill fs-2 me-2 animate__animated animate__rotateIn"></i>
-      <span class="fs-4 fw-bold">College CMS</span>
-    </a>
-    <div class="mt-2 mb-4 text-white-50 small text-center glass-panel py-1">
-      {{ current_user.role_name|title }}
-    </div>
-    <hr>
-    <ul class="nav nav-pills flex-column mb-auto">
-      <li class="nav-item">
-        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
-          <i class="bi bi-grid-fill me-2"></i>
-          Dashboard
-        </a>
-      </li>
-      
-      {% if current_user.role_name in ['admin','faculty','accountant'] %}
-      <li class="nav-item">
-        <a href="{{ url_for('students_bp.list_students') }}" class="nav-link {% if 'student' in request.endpoint %}active{% endif %}">
-          <i class="bi bi-people-fill me-2"></i>
-          Students
-        </a>
-      </li>
-      {% endif %}
+  <!-- Sidebar Menu -->
+  <aside id="sidebar">
+    <div class="p-3">
+      <!-- Desktop Brand Header -->
+      <a href="/" class="d-flex align-items-center mb-4 text-decoration-none">
+        <i class="bi bi-mortarboard-fill fs-2 me-2"></i>
+        <span class="fs-4 fw-bold">College CMS</span>
+      </a>
 
-      {% if current_user.role_name == 'student' %}
-      <li class="nav-item">
-        <a href="{{ url_for('students_bp.profile', sid=current_user.extra_id) if current_user.extra_id else '#' }}" class="nav-link">
-          <i class="bi bi-person-circle me-2"></i>
-          My Profile
-        </a>
-      </li>
-      {% endif %}
+      <div class="mb-4 small text-center border-top border-bottom py-2 text-dark opacity-75">
+        {{ current_user.role_name|title }}
+      </div>
 
-      {% if current_user.role_name == 'faculty' %}
-      <li class="nav-item">
-        <a href="{{ url_for('faculty_bp.profile', fid=current_user.extra_id) if current_user.extra_id else '#' }}" class="nav-link">
-          <i class="bi bi-person-badge-fill me-2"></i>
-          My Profile
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{{ url_for('timetable_bp.faculty_timetable', fid=current_user.extra_id) if current_user.extra_id else '#' }}" class="nav-link">
-          <i class="bi bi-calendar-week-fill me-2"></i>
-          My Timetable
-        </a>
-      </li>
-      {% endif %}
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+          <a href="{{ url_for('dashboard') }}"
+            class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+            <i class="bi bi-grid-fill"></i>
+            Dashboard
+          </a>
+        </li>
 
-      {% if current_user.role_name == 'admin' %}
-      <li class="nav-item">
-        <a href="{{ url_for('faculty_bp.list_faculty') }}" class="nav-link {% if 'faculty' in request.endpoint %}active{% endif %}">
-          <i class="bi bi-person-lines-fill me-2"></i>
-          Faculty
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link dropdown-toggle text-white" href="#" data-bs-toggle="collapse" data-bs-target="#academic-collapse">
-          <i class="bi bi-book-half me-2"></i> Academic
-        </a>
-        <div class="collapse" id="academic-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-4">
-            <li><a href="{{ url_for('academic_bp.list_departments') }}" class="nav-link text-white-50"><i class="bi bi-building me-2"></i>Departments</a></li>
-            <li><a href="{{ url_for('academic_bp.list_courses') }}" class="nav-link text-white-50"><i class="bi bi-journal-album me-2"></i>Courses</a></li>
-            <li><a href="{{ url_for('academic_bp.list_subjects') }}" class="nav-link text-white-50"><i class="bi bi-journal-text me-2"></i>Subjects</a></li>
+        {% if current_user.role_name in ['admin','faculty','accountant'] %}
+        <li class="nav-item">
+          <a href="{{ url_for('students_bp.list_students') }}"
+            class="nav-link {% if 'student' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-people-fill"></i>
+            Students
+          </a>
+        </li>
+        {% endif %}
+
+        {% if current_user.role_name == 'student' %}
+        <li class="nav-item">
+          <a href="{{ url_for('students_bp.profile', sid=current_user.extra_id) if current_user.extra_id else '#' }}"
+            class="nav-link">
+            <i class="bi bi-person-circle"></i>
+            My Profile
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('attendance_bp.my_attendance') }}" class="nav-link">
+            <i class="bi bi-check2-circle"></i>
+            My Attendance
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('exam_bp.my_results') }}" class="nav-link">
+            <i class="bi bi-trophy-fill"></i>
+            My Results
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('fees_bp.my_fees') }}" class="nav-link">
+            <i class="bi bi-cash-coin"></i>
+            My Fees
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('timetable_bp.my_timetable') }}" class="nav-link">
+            <i class="bi bi-calendar3"></i>
+            My Timetable
+          </a>
+        </li>
+        {% endif %}
+
+        {% if current_user.role_name == 'faculty' %}
+        <li class="nav-item">
+          <a href="{{ url_for('faculty_bp.profile', fid=current_user.extra_id) if current_user.extra_id else '#' }}"
+            class="nav-link">
+            <i class="bi bi-person-badge-fill"></i>
+            My Profile
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('timetable_bp.faculty_timetable', fid=current_user.extra_id) if current_user.extra_id else '#' }}"
+            class="nav-link">
+            <i class="bi bi-calendar-week-fill"></i>
+            My Timetable
+          </a>
+        </li>
+        {% endif %}
+
+        {% if current_user.role_name == 'admin' %}
+        <li class="nav-item">
+          <a href="{{ url_for('faculty_bp.list_faculty') }}"
+            class="nav-link {% if 'faculty' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-person-lines-fill"></i>
+            Faculty
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#academic-collapse">
+            <i class="bi bi-book-half"></i> Academic
+          </a>
+          <div class="collapse" id="academic-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-4">
+              <li><a href="{{ url_for('academic_bp.list_departments') }}" class="nav-link"><i
+                    class="bi bi-building me-2 text-primary"></i>Departments</a></li>
+              <li><a href="{{ url_for('academic_bp.list_courses') }}" class="nav-link"><i
+                    class="bi bi-journal-album me-2 text-primary"></i>Courses</a></li>
+              <li><a href="{{ url_for('academic_bp.list_subjects') }}" class="nav-link"><i
+                    class="bi bi-journal-text me-2 text-primary"></i>Subjects</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('admin_bp.data_dictionary') }}"
+            class="nav-link {% if 'data_dictionary' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-database-fill"></i>
+            Data Dictionary
+          </a>
+        </li>
+        {% endif %}
+
+        {% if current_user.role_name in ['admin','faculty'] %}
+        <li class="nav-item">
+          <a href="{{ url_for('attendance_bp.index') }}"
+            class="nav-link {% if 'attendance' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-check-circle-fill"></i>
+            Attendance
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('exam_bp.index') }}"
+            class="nav-link {% if 'exam' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-pencil-square"></i>
+            Exams
+          </a>
+        </li>
+        {% endif %}
+
+        {% if current_user.role_name in ['admin','accountant'] %}
+        <li class="nav-item">
+          <a href="{{ url_for('fees_bp.index') }}"
+            class="nav-link {% if 'fees' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-wallet2"></i>
+            Fees
+          </a>
+        </li>
+        {% endif %}
+
+        <li class="nav-item">
+          <a href="{{ url_for('notice_bp.list_notices') }}"
+            class="nav-link {% if 'notice' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-megaphone-fill"></i>
+            Notices
+          </a>
+        </li>
+
+        {% if current_user.role_name in ['admin','faculty'] %}
+        <li class="nav-item">
+          <a href="{{ url_for('timetable_bp.index') }}"
+            class="nav-link {% if 'timetable' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-calendar-week"></i>
+            Timetable
+          </a>
+        </li>
+        {% endif %}
+
+        {% if current_user.role_name in ['admin','faculty','accountant'] %}
+        <li class="nav-item">
+          <a href="{{ url_for('reports_bp.index') }}"
+            class="nav-link {% if 'report' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-graph-up-arrow"></i>
+            Reports
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+
+      <div class="mt-auto pt-4 border-top">
+        <div class="dropdown">
+          <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle p-2"
+            id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://ui-avatars.com/api/?name={{ current_user.username }}&background=4169E1&color=fff" alt=""
+              width="32" height="32" class="rounded-circle me-2">
+            <strong>{{ current_user.username }}</strong>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark shadow" aria-labelledby="dropdownUser">
+            <li><a class="dropdown-item" href="{{ url_for('auth_bp.logout') }}">Sign out</a></li>
           </ul>
         </div>
-      </li>
-      {% endif %}
-
-      {% if current_user.role_name in ['admin','faculty'] %}
-      <li class="nav-item">
-        <a href="{{ url_for('attendance_bp.index') }}" class="nav-link {% if 'attendance' in request.endpoint %}active{% endif %}">
-          <i class="bi bi-check-circle-fill me-2"></i>
-          Attendance
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{{ url_for('exam_bp.index') }}" class="nav-link {% if 'exam' in request.endpoint %}active{% endif %}">
-          <i class="bi bi-pencil-square me-2"></i>
-          Exams
-        </a>
-      </li>
-      {% endif %}
-
-      {% if current_user.role_name == 'student' %}
-      <li class="nav-item">
-        <a href="{{ url_for('attendance_bp.my_attendance') }}" class="nav-link">
-          <i class="bi bi-check2-circle me-2"></i>
-          My Attendance
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{{ url_for('exam_bp.my_results') }}" class="nav-link">
-          <i class="bi bi-trophy-fill me-2"></i>
-          My Results
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{{ url_for('fees_bp.my_fees') }}" class="nav-link">
-          <i class="bi bi-cash-coin me-2"></i>
-          My Fees
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{{ url_for('timetable_bp.my_timetable') }}" class="nav-link">
-          <i class="bi bi-calendar3 me-2"></i>
-          My Timetable
-        </a>
-      </li>
-      {% endif %}
-
-      {% if current_user.role_name in ['admin','accountant'] %}
-      <li class="nav-item">
-        <a href="{{ url_for('fees_bp.index') }}" class="nav-link {% if 'fees' in request.endpoint %}active{% endif %}">
-          <i class="bi bi-wallet2 me-2"></i>
-          Fees
-        </a>
-      </li>
-      {% endif %}
-
-      <li class="nav-item">
-        <a href="{{ url_for('notice_bp.list_notices') }}" class="nav-link {% if 'notice' in request.endpoint %}active{% endif %}">
-          <i class="bi bi-megaphone-fill me-2"></i>
-          Notices
-        </a>
-      </li>
-
-      {% if current_user.role_name in ['admin','faculty'] %}
-      <li class="nav-item">
-        <a href="{{ url_for('timetable_bp.index') }}" class="nav-link {% if 'timetable' in request.endpoint %}active{% endif %}">
-          <i class="bi bi-calendar-week me-2"></i>
-          Timetable
-        </a>
-      </li>
-      {% endif %}
-
-      {% if current_user.role_name in ['admin','faculty','accountant'] %}
-      <li class="nav-item">
-        <a href="{{ url_for('reports_bp.index') }}" class="nav-link {% if 'report' in request.endpoint %}active{% endif %}">
-          <i class="bi bi-graph-up-arrow me-2"></i>
-          Reports
-        </a>
-      </li>
-      {% endif %}
-    </ul>
-    <hr>
-    <div class="dropdown">
-      <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle glass-panel p-2" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="https://ui-avatars.com/api/?name={{ current_user.username }}&background=random" alt="" width="32" height="32" class="rounded-circle me-2">
-        <strong>{{ current_user.username }}</strong>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-        <li><a class="dropdown-item" href="{{ url_for('auth_bp.logout') }}">Sign out</a></li>
-      </ul>
+      </div>
     </div>
-  </nav>
+  </aside>
+
+  <!-- Mobile Toggle -->
+  <button class="btn btn-primary d-md-none position-fixed bottom-0 end-0 m-3 rounded-circle shadow-lg"
+    style="z-index: 1100; width: 60px; height: 60px;" id="sidebarToggle">
+    <i class="bi bi-list fs-3"></i>
+  </button>
   {% endif %}
 
-  <main class="flex-grow-1 overflow-auto">
-    <div class="container-fluid py-4">
+  <main>
+    <div class="container-fluid">
       {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for cat, msg in messages %}
-          <div class="alert alert-{{ 'danger' if cat == 'error' else cat }} alert-dismissible fade show glass-card animate__animated animate__fadeInDown" role="alert">
-            {{ msg }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-          {% endfor %}
-        {% endif %}
+      {% if messages %}
+      {% for cat, msg in messages %}
+      <div
+        class="alert alert-{{ 'danger' if cat == 'error' else cat }} alert-dismissible fade show card border-0 border-start border-4 border-{{ 'danger' if cat == 'error' else cat }} text-white bg-dark mb-4"
+        role="alert">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+          {{ msg }}
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+      {% endif %}
       {% endwith %}
-      
-      <div class="animate__animated animate__fadeIn">
+
+      <div class="page-content">
         {% block content %}{% endblock %}
       </div>
     </div>
@@ -203,14 +843,19 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    AOS.init({
-      duration: 800,
-      once: true
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggle = document.getElementById('sidebarToggle');
+      const body = document.body;
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          body.classList.toggle('sidebar-open');
+        });
+      }
     });
   </script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
+
 </html>

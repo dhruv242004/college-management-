@@ -10,297 +10,63 @@
   {% endif %}
   <style>
     :root {
-      --id-bg: #020617;
-      --id-surface: rgba(15, 23, 42, 0.96);
-      --id-highlight: #38bdf8;
-      --id-gold: #fbbf24;
+      --id-bg: #FFFFFF;
+      --id-surface: #FDFBF7;
+      --id-primary: #4169E1;
+      --id-secondary: #FFD700;
+      --id-text: #1C2541;
+      --id-text-muted: #64748B;
     }
     html, body {
       margin: 0;
       padding: 0;
-      background: {% if is_pdf %}#f5f5f5{% else %}radial-gradient(circle at top, #020617 0%, #020617 35%, #000 100%){% endif %};
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #e5e7eb;
     }
-    .id-page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: {% if is_pdf %}24px{% else %}40px{% endif %};
-    }
-    .id-card-3d-wrapper {
-      perspective: 1600px;
-    }
-    .id-card-3d {
-      width: 360px;
-      max-width: 100%;
-      aspect-ratio: 85 / 54;
-      border-radius: 24px;
-      position: relative;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.28), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(250, 204, 21, 0.28), transparent 55%),
-        linear-gradient(135deg, #020617, #020617);
-      box-shadow:
-        0 24px 80px rgba(15, 23, 42, 1),
-        0 0 0 1px rgba(148, 163, 184, 0.4);
-      overflow: hidden;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      padding: 18px 18px 16px;
-      transform-style: preserve-3d;
-      {% if not is_pdf %}
-      transform: rotateX(12deg) rotateY(-18deg);
-      animation: idFloat 8s ease-in-out infinite alternate;
-      {% endif %}
-    }
-    @keyframes idFloat {
-      0% { transform: rotateX(12deg) rotateY(-18deg) translateY(0); }
-      50% { transform: rotateX(10deg) rotateY(-14deg) translateY(-6px); }
-      100% { transform: rotateX(13deg) rotateY(-20deg) translateY(0); }
-    }
-    .id-border-glow {
-      position: absolute;
-      inset: -1px;
-      border-radius: 24px;
-      padding: 1px;
-      background: conic-gradient(from 140deg,
-        rgba(56, 189, 248, 0.8),
-        rgba(250, 204, 21, 0.85),
-        rgba(129, 140, 248, 0.9),
-        rgba(56, 189, 248, 0.8));
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: {% if is_pdf %}0.35{% else %}0.85{% endif %};
-      pointer-events: none;
-    }
-    .id-card-inner {
-      position: relative;
-      z-index: 2;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-    }
-    .id-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .id-logo-circle {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #facc15, #f97316);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #020617;
-      font-weight: 800;
-      box-shadow:
-        0 0 20px rgba(250, 204, 21, 0.7),
-        0 0 0 2px rgba(15, 23, 42, 0.7);
-      font-size: 1.3rem;
-      text-transform: uppercase;
-    }
-    .id-title-block {
-      flex: 1;
-      min-width: 0;
-    }
-    .id-college-name {
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: #e5e7eb;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .id-college-tagline {
-      font-size: 0.72rem;
-      color: #9ca3af;
-    }
-    .id-badge-chip {
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(129, 140, 248, 0.4));
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: #e5e7eb;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
-    }
-    .id-body {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-    .id-photo-block {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-    }
-    .id-photo-frame {
-      width: 84px;
-      height: 96px;
-      border-radius: 16px;
-      overflow: hidden;
-      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.25), rgba(15, 23, 42, 0.95));
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .id-photo-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .id-photo-placeholder {
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      border: 2px solid rgba(148, 163, 184, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      color: #9ca3af;
-    }
-    .id-student-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #f9fafb;
-      margin-top: 2px;
-    }
-    .id-student-course {
-      font-size: 0.76rem;
-      color: #cbd5f5;
-    }
-    .id-student-course span {
-      color: #a5b4fc;
-    }
-    .id-info-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 4px 8px;
-      font-size: 0.7rem;
-      margin-top: 4px;
-    }
-    .id-label {
-      color: #9ca3af;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-      font-size: 0.68rem;
-    }
-    .id-value {
-      color: #e5e7eb;
-      font-weight: 500;
-    }
-    .id-qr-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      gap: 4px;
-    }
-    .id-qr-frame {
-      width: 88px;
-      height: 88px;
-      border-radius: 18px;
-      padding: 4px;
-      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 1));
-      box-shadow:
-        0 0 0 1px rgba(148, 163, 184, 0.6),
-        0 10px 25px rgba(15, 23, 42, 0.9);
-    }
-    .id-qr-frame img {
-      width: 100%;
-      height: 100%;
-      border-radius: 12px;
-      background: #fff;
-      padding: 2px;
-    }
-    .id-qr-text {
-      font-size: 0.64rem;
-      color: #9ca3af;
-      text-align: center;
-    }
-    .id-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.65rem;
-      color: #9ca3af;
-      border-top: 1px solid rgba(51, 65, 85, 0.9);
-      padding-top: 5px;
-      margin-top: 4px;
-    }
-    .id-validity {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .id-valid-label {
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-      font-size: 0.64rem;
-      color: #94a3b8;
-    }
-    .id-valid-dates {
-      font-weight: 500;
-      color: #e5e7eb;
-    }
-    .id-signature {
-      text-align: right;
-    }
-    .id-signature span {
-      display: block;
-    }
-    .id-signature-name {
-      color: #e5e7eb;
-      font-weight: 500;
-    }
-    .id-signature-role {
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
+    .id-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .id-card { width: 360px; max-width: 100%; aspect-ratio: 85 / 54; border-radius: 16px; position: relative; background: white; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); border: 1px solid #E5E7EB; overflow: hidden; display: grid; grid-template-rows: auto 1fr auto; padding: 18px; }
+    .id-border-glow { position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--id-secondary); box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); pointer-events: none; }
+    .id-card-inner { position: relative; z-index: 2; display: grid; grid-template-rows: auto 1fr auto; }
+    .id-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .id-logo-circle { width: 42px; height: 42px; border-radius: 8px; background: var(--id-primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.2rem; }
+    .id-title-block { flex: 1; min-width: 0; }
+    .id-college-name { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: var(--id-primary); }
+    .id-college-tagline { font-size: 0.7rem; color: var(--id-text-muted); }
+    .id-badge-chip { padding: 4px 10px; border-radius: 999px; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; background: #F3F4F6; border: 1px solid #E5E7EB; color: var(--id-primary); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .id-body { display: grid; grid-template-columns: 1.1fr 1fr; gap: 8px; margin-bottom: 4px; }
+    .id-photo-block { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+    .id-photo-frame { width: 84px; height: 96px; border-radius: 16px; overflow: hidden; background: #F9FAFB; border: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: center; }
+    .id-photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .id-photo-placeholder { width: 42px; height: 42px; border-radius: 999px; border: 2px solid rgba(148, 163, 184, 0.9); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: #9ca3af; }
+    .id-student-name { font-size: 1rem; font-weight: 700; color: var(--id-primary); margin-top: 2px; }
+    .id-student-course span { color: var(--id-secondary); }
+    .id-info-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 4px 8px; font-size: 0.7rem; margin-top: 4px; }
+    .id-label { color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; font-size: 0.68rem; }
+    .id-value { color: var(--id-text); font-weight: 600; }
+    .id-qr-block { display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 4px; }
+    .id-qr-frame { width: 80px; height: 80px; border-radius: 8px; padding: 4px; background: white; border: 1px solid #E5E7EB; }
+    .id-qr-frame img { width: 100%; height: 100%; border-radius: 12px; background: #fff; padding: 2px; }
+    .id-qr-text { font-size: 0.64rem; color: #9ca3af; text-align: center; }
+    .id-footer { display: flex; align-items: center; justify-content: space-between; font-size: 0.65rem; color: #9ca3af; border-top: 1px solid rgba(51, 65, 85, 0.9); padding-top: 5px; margin-top: 4px; }
+    .id-validity { display: flex; flex-direction: column; gap: 2px; }
+    .id-valid-label { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; font-size: 0.64rem; color: #94a3b8; }
+    .id-valid-dates { font-weight: 600; color: var(--id-text); }
+    .id-signature { text-align: right; }
+    .id-signature span { display: block; }
+    .id-signature-name { color: var(--id-text); font-weight: 600; }
+    .id-signature-role { text-transform: uppercase; letter-spacing: 0.08em; }
     @media print {
-      body {
-        background: #ffffff;
-      }
-      .id-page {
-        padding: 0;
-      }
-      .id-card-3d {
-        transform: none !important;
-        animation: none !important;
-        box-shadow: none;
-      }
-      .id-border-glow {
-        opacity: 0.25;
-      }
+      body { background: #ffffff; }
+      .id-page { padding: 0; }
+      .id-card { transform: none !important; box-shadow: none; border: 1px solid #eee; }
+      .id-border-glow { opacity: 0.25; }
     }
   </style>
 </head>
-<body>
-  <div class="id-page">
-    <div class="id-card-3d-wrapper">
-      <div class="id-card-3d">
-        <div class="id-border-glow"></div>
+<body style="background: var(--bg-color); color: var(--text-main);">
+  <div class="id-page" style="padding: {% if is_pdf %}24px{% else %}40px{% endif %};">
+    <div class="id-card-wrapper">
+      <div class="id-card">
+        <div class="id-border-glow" style="opacity: {% if is_pdf %}0.35{% else %}1{% endif %};"></div>
         <div class="id-card-inner">
           <header class="id-header">
             <div class="id-logo-circle">
@@ -381,4 +147,5 @@
   </div>
 </body>
 </html>
+
 

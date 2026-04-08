@@ -1,80 +1,93 @@
 {% extends "base.html" %}
-{% block title %}Add timetable – College CMS{% endblock %}
+{% block title %}Manage Timetable – College CMS{% endblock %}
 {% block content %}
-<h2 class="mb-4">Add timetable entry</h2>
-<p><a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary btn-sm">← Timetable</a></p>
-<div class="card border-0 shadow-sm">
-  <div class="card-body">
-    <form method="post" data-validate>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label required">Course</label>
-          <select name="course_id" class="form-select" required>
-            <option value="">Select</option>
-            {% for c in courses %}
-            <option value="{{ c.id }}">{{ c.name }} ({{ c.code }})</option>
-            {% endfor %}
-          </select>
+<div class="">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 text-white"><i class="bi bi-calendar-plus-fill me-2"></i>Add Schedule Entry</h2>
+    <a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+      <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body p-4 p-md-5">
+      <form method="post" data-validate>
+        <div class="row g-4">
+          <!-- Main Content -->
+          <div class="col-md-6">
+            <label class="form-label small opacity-50">Course</label>
+            <select name="course_id" class="form-select" required>
+              <option value="">-- Select Course --</option>
+              {% for c in courses %}
+              <option value="{{ c.id }}">{{ c.name }} ({{ c.code }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small opacity-50">Subject</label>
+            <select name="subject_id" class="form-select" required>
+              <option value="">-- Choose Subject --</option>
+              {% for s in subjects %}
+              <option value="{{ s.id }}" data-course="{{ s.course_id }}">{{ s.name }} (Sem {{ s.semester }})</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small opacity-50">Faculty Member</label>
+            {% if is_faculty %}
+              <div class="form-control bg-light opacity-75">
+                {{ faculty[0].first_name }} {{ faculty[0].last_name }} ({{ faculty[0].emp_id }})
+              </div>
+              <input type="hidden" name="faculty_id" value="{{ faculty[0].id }}">
+            {% else %}
+              <select name="faculty_id" class="form-select" required>
+                <option value="">-- Select Faculty --</option>
+                {% for f in faculty %}
+                <option value="{{ f.id }}">{{ f.first_name }} {{ f.last_name }} ({{ f.emp_id }})</option>
+                {% endfor %}
+              </select>
+            {% endif %}
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small opacity-50">Semester</label>
+            <input type="number" name="semester" class="form-control" min="1" max="10" value="1" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small opacity-50">Day of Week</label>
+            <select name="day_of_week" class="form-select" required>
+              <option value="1">Monday</option>
+              <option value="2">Tuesday</option>
+              <option value="3">Wednesday</option>
+              <option value="4">Thursday</option>
+              <option value="5">Friday</option>
+              <option value="6">Saturday</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small opacity-50">Start Time</label>
+            <input type="time" name="start_time" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small opacity-50">End Time</label>
+            <input type="time" name="end_time" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small opacity-50">Room / Hall</label>
+            <input type="text" name="room" class="form-control" placeholder="e.g. A-101">
+          </div>
+
+          <div class="col-12 pt-3">
+            <button type="submit" class="btn btn-primary px-5 rounded-pill shadow">
+              <i class="bi bi-check2-circle me-2"></i>Save Entry
+            </button>
+            <a href="{{ url_for('timetable_bp.index') }}" class="btn btn-link text-secondary text-decoration-none ms-2">Cancel</a>
+          </div>
         </div>
-        <div class="col-md-6">
-          <label class="form-label required">Subject</label>
-          <select name="subject_id" class="form-select" required>
-            <option value="">Select</option>
-            {% for s in subjects %}
-            <option value="{{ s.id }}" data-course="{{ s.course_id }}">{{ s.name }} (Sem {{ s.semester }})</option>
-            {% endfor %}
-          </select>
-        </div>
-        {% if is_faculty %}
-        <div class="col-md-6">
-          <label class="form-label required">Faculty</label>
-          <input type="text" class="form-control" value="{{ faculty[0].first_name }} {{ faculty[0].last_name }} ({{ faculty[0].emp_id }})" disabled>
-          <input type="hidden" name="faculty_id" value="{{ faculty[0].id }}">
-        </div>
-        {% else %}
-        <div class="col-md-6">
-          <label class="form-label required">Faculty</label>
-          <select name="faculty_id" class="form-select" required>
-            <option value="">Select</option>
-            {% for f in faculty %}
-            <option value="{{ f.id }}">{{ f.first_name }} {{ f.last_name }} ({{ f.emp_id }})</option>
-            {% endfor %}
-          </select>
-        </div>
-        {% endif %}
-        <div class="col-md-3">
-          <label class="form-label required">Semester</label>
-          <input type="number" name="semester" class="form-control" min="1" max="10" value="1" required>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label required">Day</label>
-          <select name="day_of_week" class="form-select" required>
-            <option value="1">Monday</option>
-            <option value="2">Tuesday</option>
-            <option value="3">Wednesday</option>
-            <option value="4">Thursday</option>
-            <option value="5">Friday</option>
-            <option value="6">Saturday</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label required">Start time</label>
-          <input type="time" name="start_time" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label required">End time</label>
-          <input type="time" name="end_time" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Room</label>
-          <input type="text" name="room" class="form-control" placeholder="e.g. A101">
-        </div>
-        <div class="col-12">
-          <button type="submit" class="btn btn-primary">Add</button>
-          <a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary">Cancel</a>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -87,26 +100,18 @@
 
   function filterSubjects(){
     const cid = courseSelect.value;
-    let foundAny = false;
     Array.from(subjectSelect.options).forEach(opt => {
       const c = opt.getAttribute('data-course');
-      if(!c) return; // keep placeholder
-      if (!cid || cid === c){
-        opt.style.display = '';
-        foundAny = true;
-      } else {
-        opt.style.display = 'none';
-      }
+      if(!c) return; 
+      opt.style.display = (!cid || cid === c) ? '' : 'none';
     });
-    // if selected option hidden, reset
-    if (subjectSelect.selectedOptions.length && subjectSelect.selectedOptions[0].style.display === 'none'){
+    if (subjectSelect.selectedOptions[0] && subjectSelect.selectedOptions[0].style.display === 'none'){
       subjectSelect.value = '';
     }
   }
   courseSelect.addEventListener('change', filterSubjects);
-  // initial run
   filterSubjects();
 })();
 </script>
-
 {% endblock %}
+

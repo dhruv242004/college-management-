@@ -1,39 +1,52 @@
 {% extends "base.html" %}
-{% block title %}Fees pending – College CMS{% endblock %}
+{% block title %}Fees Pending – College CMS{% endblock %}
 {% block content %}
-<h2 class="mb-4">Fees pending report</h2>
-<div class="card border-0 shadow-sm">
-  <div class="table-responsive">
-    <table class="table table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Enrollment</th>
-          <th>Name</th>
-          <th>Semester</th>
-          <th>Course</th>
-          <th>Total</th>
-          <th>Paid</th>
-          <th>Pending</th>
-          <th>Due date</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in rows %}
-        <tr>
-          <td><code>{{ r.enrollment_no }}</code></td>
-          <td>{{ r.first_name }} {{ r.last_name }}</td>
-          <td>{{ r.current_semester }}</td>
-          <td>{{ r.course_name }}</td>
-          <td>₹ {{ "%.2f"|format(r.amount) }}</td>
-          <td>₹ {{ "%.2f"|format(r.paid) }}</td>
-          <td class="text-danger">₹ {{ "%.2f"|format(r.pending) }}</td>
-          <td>{{ r.due_date or '—' }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="8" class="text-center text-muted">No pending fees.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 text-white"><i class="bi bi-currency-rupee me-2"></i>Fee Arrears Report</h2>
+    <a href="{{ url_for('reports_bp.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+      <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+  </div>
+
+  <div class="card overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th class="ps-4">Enrollment</th>
+            <th>Student Name</th>
+            <th>Semester</th>
+            <th>Course</th>
+            <th class="text-end">Total Amount</th>
+            <th class="text-end">Paid</th>
+            <th class="pe-4 text-end">Pending Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td class="ps-4"><code>{{ r.enrollment_no }}</code></td>
+            <td class="fw-bold text-white">{{ r.first_name }} {{ r.last_name }}</td>
+            <td>Sem {{ r.current_semester }}</td>
+            <td>{{ r.course_name }}</td>
+            <td class="text-end">₹ {{ "%.2f"|format(r.amount) }}</td>
+            <td class="text-end text-success">₹ {{ "%.2f"|format(r.paid) }}</td>
+            <td class="pe-4 text-end">
+              <span class="text-danger fw-bold">₹ {{ "%.2f"|format(r.pending) }}</span>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="text-center py-5 opacity-50">
+              <i class="bi bi-check-circle-fill text-success d-block mb-2 fs-1"></i>
+              No pending fees found. All accounts clear.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}

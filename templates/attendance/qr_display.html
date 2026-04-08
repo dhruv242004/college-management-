@@ -15,7 +15,7 @@
   <div class="row g-3">
     <!-- QR Code Display -->
     <div class="col-lg-6">
-      <div class="card glass-panel shadow-lg border-0 h-100 animate__animated animate__fadeInLeft">
+      <div class="card glass-panel shadow-lg border-0 h-100">
         <div class="card-header bg-gradient border-0">
           <h5 class="card-title mb-0">
             <i class="bi bi-qr-code me-2"></i>Scan QR Code
@@ -83,7 +83,7 @@
 
     <!-- Live Attendance -->
     <div class="col-lg-6">
-      <div class="card glass-panel shadow-lg border-0 animate__animated animate__fadeInRight">
+      <div class="card glass-panel shadow-lg border-0">
         <div class="card-header bg-gradient border-0">
           <h5 class="card-title mb-0">
             <i class="bi bi-people-check me-2"></i>Live Attendance
@@ -138,35 +138,6 @@
   </div>
 </div>
 
-<style>
-.alert-soft {
-  background-color: rgba(13, 202, 240, 0.1);
-  border-color: rgba(13, 202, 240, 0.3);
-}
-
-#attendanceList {
-  border: 1px solid rgba(0,0,0,0.1);
-  border-radius: 0.375rem;
-  background: rgba(255,255,255,0.5);
-}
-
-.attendance-item {
-  padding: 0.75rem;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  animation: slideIn 0.3s ease-in-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-</style>
 
 <script>
 const sessionId = "{{ session.session_id }}";
@@ -281,3 +252,4 @@ window.addEventListener('beforeunload', () => {
 });
 </script>
 {% endblock %}
+

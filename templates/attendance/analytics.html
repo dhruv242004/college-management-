@@ -27,7 +27,7 @@
   <!-- Summary Cards -->
   <div class="row mb-4 g-3">
     <div class="col-md-3">
-      <div class="card glass-panel shadow border-0 animate__animated animate__fadeInUp">
+      <div class="card glass-panel shadow border-0">
         <div class="card-body text-center">
           <div class="display-6 fw-bold text-primary">
             {{ analytics|length }}
@@ -37,7 +37,7 @@
       </div>
     </div>
     <div class="col-md-3">
-      <div class="card glass-panel shadow border-0 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+      <div class="card glass-panel shadow border-0">
         <div class="card-body text-center">
           <div class="display-6 fw-bold text-success">
             {% set total_students = (analytics|map(attribute='total_students')|sum) %}
@@ -48,7 +48,7 @@
       </div>
     </div>
     <div class="col-md-3">
-      <div class="card glass-panel shadow border-0 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+      <div class="card glass-panel shadow border-0">
         <div class="card-body text-center">
           <div class="display-6 fw-bold text-info">
             {% set total_scans = (analytics|map(attribute='total_scans')|sum) %}
@@ -59,7 +59,7 @@
       </div>
     </div>
     <div class="col-md-3">
-      <div class="card glass-panel shadow border-0 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+      <div class="card glass-panel shadow border-0">
         <div class="card-body text-center">
           <div class="display-6 fw-bold text-warning">
             {% set total_classes = (analytics|map(attribute='class_count')|sum) %}
@@ -331,3 +331,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endblock %}
+

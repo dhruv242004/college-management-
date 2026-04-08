@@ -15,20 +15,20 @@
   <div class="card border-0 shadow-sm">
     <div class="table-responsive">
       <table class="table table-hover mb-0">
-        <thead style="background: rgba(30, 41, 59, 0.3);">
+        <thead style="background: rgba(255, 255, 255, 0.03);">
           <tr>
-            <th style="color: #a5b4fc;">Enrollment</th>
-            <th style="color: #a5b4fc;">Name</th>
-            <th style="color: #a5b4fc;">Status</th>
+            <th style="color: var(--text-main);">Enrollment</th>
+            <th style="color: var(--text-main);">Name</th>
+            <th style="color: var(--text-main);">Status</th>
           </tr>
         </thead>
         <tbody>
           {% for s in students %}
-          <tr style="background: rgba(30, 41, 59, 0.2);">
-            <td><code style="background: rgba(30, 41, 59, 0.4); padding: 0.5rem; border-radius: 6px; color: #a5b4fc;">{{ s.enrollment_no }}</code></td>
-            <td style="color: #cbd5e1;">{{ s.first_name }} {{ s.last_name }}</td>
+          <tr style="background: transparent;">
+            <td><code style="background: rgba(255, 215, 0, 0.1); padding: 0.5rem; border-radius: 6px; color: var(--secondary); border: 1px solid rgba(255, 215, 0, 0.2);">{{ s.enrollment_no }}</code></td>
+            <td style="color: var(--text-muted);">{{ s.first_name }} {{ s.last_name }}</td>
             <td>
-              <select name="att_{{ s.id }}" class="form-select form-select-sm" style="width:auto;">
+              <select name="att_{{ s.id }}" class="form-select form-select-sm" style="width:auto; background: var(--card-bg); color: var(--text-main); border-color: var(--border-color);">
                 <option value="P" {% if existing.get(s.id) == 'P' %}selected{% endif %}>Present</option>
                 <option value="A" {% if existing.get(s.id) == 'A' %}selected{% endif %}>Absent</option>
                 <option value="L" {% if existing.get(s.id) == 'L' %}selected{% endif %}>Late</option>
@@ -49,3 +49,4 @@
 </form>
 {% endif %}
 {% endblock %}
+

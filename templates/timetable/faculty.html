@@ -1,41 +1,72 @@
 {% extends "base.html" %}
 {% block title %}Timetable – {{ faculty.first_name }} {{ faculty.last_name }}{% endblock %}
 {% block content %}
-<h2 class="mb-4">Timetable – {{ faculty.first_name }} {{ faculty.last_name }} ({{ faculty.emp_id }})</h2>
-<p>
-  <a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary btn-sm">← Timetable</a>
-  {% if current_user.role_name in ['admin'] or (current_user.role_name == 'faculty' and current_user.extra_id == faculty.id) %}
-  <a href="{{ url_for('timetable_bp.add') }}" class="btn btn-primary btn-sm ms-2">Add New Entry</a>
-  {% endif %}
-</p>
-<div class="card border-0 shadow-sm">
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Day</th>
-          <th>Time</th>
-          <th>Subject</th>
-          <th>Course</th>
-          <th>Sem</th>
-          <th>Room</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in slots %}
-        <tr>
-          <td>{{ days[t.day_of_week] if t.day_of_week < days|length else t.day_of_week }}</td>
-          <td>{{ t.start_time }} – {{ t.end_time }}</td>
-          <td>{{ t.subject_name }}</td>
-          <td>{{ t.course_name }}</td>
-          <td>{{ t.semester }}</td>
-          <td>{{ t.room or '—' }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="6" class="text-center text-muted">No slots.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1 text-white"><i class="bi bi-person-badge-fill me-2"></i>Schedule: {{ faculty.first_name }} {{ faculty.last_name }}</h2>
+      <p class="text-muted mb-0">Employee ID: <span class="badge bg-secondary bg-opacity-10 text-secondary px-2">{{ faculty.emp_id }}</span></p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('timetable_bp.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i>Back
+      </a>
+      {% if current_user.role_name in ['admin'] or (current_user.role_name == 'faculty' and current_user.extra_id == faculty.id) %}
+      <a href="{{ url_for('timetable_bp.add') }}" class="btn btn-primary btn-sm rounded-pill px-3 shadow">
+        <i class="bi bi-plus-lg me-1"></i>Add Entry
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th class="ps-4">Day</th>
+            <th>Timing</th>
+            <th>Subject</th>
+            <th>Course</th>
+            <th class="text-center">Semester</th>
+            <th class="pe-4 text-end">Room</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in slots %}
+          <tr>
+            <td class="ps-4">
+              <span class="fw-bold text-secondary">{{ days[t.day_of_week] if t.day_of_week < days|length else t.day_of_week }}</span>
+            </td>
+            <td>
+              <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3">
+                <i class="bi bi-clock me-1"></i>{{ t.start_time }} – {{ t.end_time }}
+              </span>
+            </td>
+            <td>
+              <div class="text-white fw-bold">{{ t.subject_name }}</div>
+            </td>
+            <td>
+              <div class="badge bg-primary bg-opacity-10 text-primary px-3 rounded-pill">{{ t.course_name }}</div>
+            </td>
+            <td class="text-center">Sem {{ t.semester }}</td>
+            <td class="pe-4 text-end">
+              {% if t.room %}
+              <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3">{{ t.room }}</span>
+              {% else %}
+              <span class="opacity-25">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="text-center py-5 opacity-50">No teaching assignments found in the schedule.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}
+

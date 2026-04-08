@@ -1,7 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Receipt {{ payment.receipt_no }} – College CMS{% endblock %}
 {% block content %}
-<div class="container mt-4" data-aos="zoom-in">
+<style>
+  .receipt-header-bg {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    transform: skewY(-2deg);
+    transform-origin: top left;
+  }
+  #receipt-card {
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .hover-primary:hover {
+    color: var(--primary) !important;
+  }
+  @media print {
+    body { background: white !important; }
+    .glass-panel { background: transparent !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
+    .container { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+    .card { box-shadow: none !important; border: 1px solid #eee !important; }
+    .receipt-header-bg { opacity: 0.05 !important; }
+  }
+</style>
+<div class="container mt-4" >
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="glass-panel p-4 position-relative overflow-hidden">
@@ -12,28 +33,26 @@
 
         <div class="card border-0 shadow-lg" id="receipt-card">
           <div class="card-header bg-white text-center py-5 border-bottom-0 position-relative overflow-hidden">
-            <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary opacity-10" style="transform: skewY(-3deg); transform-origin: top left;"></div>
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary opacity-10 receipt-header-bg"></div>
             <div class="position-relative z-1">
                 <h2 class="mb-1 fw-bold text-primary">College Management System</h2>
-                <p class="text-uppercase letter-spacing-2 text-muted mb-0">Official Fee Receipt</p>
+                <p class="text-uppercase ls-2 text-muted mb-0">Official Fee Receipt</p>
             </div>
           </div>
           <div class="card-body px-5 py-4">
             <div class="row mb-5 align-items-end">
               <div class="col-6">
-                <small class="text-uppercase text-muted fw-bold letter-spacing-1">Receipt Number</small>
-                <h4 class="fw-bold text-dark mb-0">#{{ payment.receipt_no }}</h4>
+                <h4 class="fw-bold mb-0 text-primary">#{{ payment.receipt_no }}</h4>
               </div>
               <div class="col-6 text-end">
                 <small class="text-uppercase text-muted fw-bold letter-spacing-1">Date Issued</small>
-                <h5 class="fw-bold text-dark mb-0">{{ payment.payment_date }}</h5>
+                <h5 class="fw-bold mb-0" style="color: var(--primary);">{{ payment.payment_date }}</h5>
               </div>
             </div>
             
             <div class="row mb-5">
               <div class="col-12">
-                <div class="p-4 rounded-3 bg-light border-start border-4 border-primary">
-                    <h6 class="text-uppercase text-primary fw-bold letter-spacing-1 mb-3">Student Information</h6>
+                    <h6 class="text-uppercase fw-bold ls-1 mb-3 text-primary">Student Information</h6>
                     <h4 class="fw-bold mb-1">{{ payment.first_name }} {{ payment.last_name }}</h4>
                     <p class="mb-1 text-muted"><span class="fw-medium text-dark">Enrollment:</span> {{ payment.enrollment_no }}</p>
                     <p class="mb-0 text-muted"><span class="fw-medium text-dark">Course:</span> {{ payment.course_name }} <span class="mx-2">•</span> <span class="fw-medium text-dark">Semester:</span> {{ payment.current_semester }}</p>
@@ -64,7 +83,7 @@
                     <td></td>
                   </tr>
                 </tbody>
-                <tfoot class="bg-primary text-white rounded-bottom-3">
+                <tfoot class="rounded-bottom-3" style="background: var(--primary); color: white;">
                   <tr class="rounded-3">
                     <th class="py-3 ps-4 rounded-start-3">Total Paid</th>
                     <th class="text-end py-3 pe-4 rounded-end-3 fs-4">₹ {{ "%.2f"|format(payment.amount_paid) }}</th>
@@ -101,51 +120,5 @@
   </div>
 </div>
 
-<style>
-  .letter-spacing-1 { letter-spacing: 1px; }
-  .letter-spacing-2 { letter-spacing: 2px; }
-  .opacity-10 { opacity: 0.1; }
-  
-  @media print {
-    body {
-      background: #fff !important;
-      visibility: hidden;
-    }
-    .glass-panel {
-        background: none !important;
-        backdrop-filter: none !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-    }
-    #receipt-card, #receipt-card * {
-      visibility: visible;
-    }
-    #receipt-card {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      box-shadow: none !important;
-      border: 1px solid #ddd !important;
-      margin: 0 !important;
-    }
-    .no-print {
-      display: none !important;
-    }
-    /* Ensure colors print */
-    .bg-primary {
-        background-color: #4f46e5 !important;
-        color: white !important;
-        -webkit-print-color-adjust: exact;
-    }
-    .bg-light {
-        background-color: #f8fafc !important;
-        -webkit-print-color-adjust: exact;
-    }
-    .text-primary {
-        color: #4f46e5 !important;
-    }
-  }
-</style>
 {% endblock %}
+

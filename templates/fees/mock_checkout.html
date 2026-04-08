@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Simulated Payment Gateway{% endblock %}
 {% block content %}
-<div class="container py-5" data-aos="fade-up">
+<div class="container py-5" >
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="glass-panel p-5 text-center">
                 <div class="mb-4">
-                    <div class="display-6 fw-bold mb-2" style="background: linear-gradient(45deg, #4f46e5, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    <div class="display-6 fw-bold mb-2" style="color: var(--primary);">
                         Simulated Bank
                     </div>
                     <p class="text-muted">This is a testing environment. No real money will be charged.</p>
@@ -23,20 +23,20 @@
                     </div>
                 </div>
 
-                <div class="card bg-dark border-secondary mb-4 p-3 text-start">
-                    <h6 class="text-uppercase small fw-bold mb-3 text-secondary">Card Details (Simulated)</h6>
+                <div class="card bg-light border-0 mb-4 p-4 text-start">
+                    <h6 class="text-uppercase small fw-bold mb-3" style="color: var(--primary);">Card Details (Simulated)</h6>
                     <div class="mb-3">
                         <label class="form-label small text-muted">Card Number</label>
-                        <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="4111 1111 1111 1111" value="4111 1111 1111 1111" readonly>
+                        <input type="text" class="form-control border-secondary" placeholder="4111 1111 1111 1111" value="4111 1111 1111 1111" readonly>
                     </div>
                     <div class="row">
                         <div class="col-6">
                             <label class="form-label small text-muted">Expiry</label>
-                            <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="12/29" value="12/29" readonly>
+                            <input type="text" class="form-control border-secondary" placeholder="12/29" value="12/29" readonly>
                         </div>
                         <div class="col-6">
                             <label class="form-label small text-muted">CVV</label>
-                            <input type="password" class="form-control bg-dark border-secondary text-white" value="123" readonly>
+                            <input type="password" class="form-control border-secondary" value="123" readonly>
                         </div>
                     </div>
                 </div>
@@ -64,3 +64,4 @@
     </div>
 </div>
 {% endblock %}
+

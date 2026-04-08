@@ -1,7 +1,7 @@
 """College Management System - Flask application."""
 import os
 import datetime
-from flask import Flask, redirect, url_for, render_template
+from flask import Flask, redirect, url_for, render_template, request
 from config import config
 from auth import get_current_user, require_login, require_roles
 from database import db_cursor
@@ -29,6 +29,7 @@ from routes.timetable_routes import timetable_bp
 from routes.reports_routes import reports_bp
 from routes.chat_routes import chat_bp
 from routes.payment_routes import payment_bp
+from routes.admin_routes import admin_bp
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(students_bp, url_prefix="/students")
@@ -42,6 +43,7 @@ app.register_blueprint(timetable_bp, url_prefix="/timetable")
 app.register_blueprint(reports_bp, url_prefix="/reports")
 app.register_blueprint(chat_bp, url_prefix="/chat")
 app.register_blueprint(payment_bp)
+app.register_blueprint(admin_bp, url_prefix="/admin")
 
 
 @socketio.on("connect")

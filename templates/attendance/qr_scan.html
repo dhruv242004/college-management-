@@ -26,7 +26,7 @@
 
   <div class="row">
     <div class="col-lg-8 mx-auto">
-      <div class="card glass-panel shadow-lg border-0 animate__animated animate__fadeInUp">
+      <div class="card glass-panel shadow-lg border-0">
         <div class="card-header bg-gradient border-0">
           <h5 class="card-title mb-0">
             <i class="bi bi-camera me-2"></i>QR Code Scanner
@@ -135,31 +135,6 @@
 <!-- Include QR.js library -->
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
-<style>
-.alert-soft {
-  background-color: rgba(13, 202, 240, 0.1);
-  border-color: rgba(13, 202, 240, 0.3);
-}
-
-#status-message {
-  animation: slideDown 0.3s ease-in-out;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.spinner-border {
-  color: #0d6efd;
-}
-</style>
 
 <script>
 let video = document.getElementById('video');
@@ -382,3 +357,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endblock %}
+

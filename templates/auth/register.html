@@ -1,1040 +1,187 @@
 {% extends "base.html" %}
 {% block title %}Student Registration – College Management System{% endblock %}
-{% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-<style>
-  :root {
-    --royal-blue: #4169E1;
-    --royal-blue-dark: #2E4DB8;
-    --royal-blue-light: #6B8FE8;
-    --beige: #F5F5DC;
-    --beige-dark: #E8E0D0;
-    --beige-warm: #EBE3D9;
-    --gold: #D4A574;
-    --gold-dark: #B8905F;
-    --text-dark: #2C3E50;
-    --text-light: #F5F5DC;
-  }
-
-  * {
-    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  }
-
-  html, body {
-    background: linear-gradient(135deg, #F5F5DC 0%, #E8E0D0 50%, #EBE3D9 100%) !important;
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-    color: var(--text-dark) !important;
-    background-attachment: fixed !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  #sidebar {
-    display: none !important;
-  }
-
-  .bg-animated {
-    display: none !important;
-  }
-
-  /* Background Shapes */
-  .register-bg-shapes {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .shape {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.15;
-  }
-
-  .shape-1 {
-    width: 400px;
-    height: 400px;
-    background: var(--royal-blue);
-    top: -100px;
-    left: -150px;
-  }
-
-  .shape-2 {
-    width: 350px;
-    height: 350px;
-    background: var(--gold);
-    bottom: -100px;
-    right: -100px;
-  }
-
-  .shape-3 {
-    display: none;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(20px, 20px); }
-  }
-
-  .shape-1 { animation: float 15s infinite ease-in-out; }
-  .shape-2 { animation: float 18s infinite ease-in-out 1s; }
-
-  .d-flex {
-    display: flex !important;
-  }
-
-  main, .main-content {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-  }
-  .register-container {
-    position: relative;
-    z-index: 10;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .register-header {
-    text-align: center;
-    margin-bottom: 50px;
-  }
-
-  .register-header h1 {
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: var(--royal-blue-dark);
-    margin-bottom: 10px;
-    letter-spacing: -1px;
-  }
-
-  .register-header p {
-    font-size: 1.1rem;
-    color: var(--gold-dark);
-    margin: 0;
-    font-weight: 500;
-  }
-
-  /* Layout */
-  .register-content {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 50px;
-    align-items: center;
-    position: relative;
-  }
-
-  /* Left Column - Highlights */
-  .college-highlights {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .highlight-card {
-    background: white;
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    padding: 24px;
-    border: 2px solid var(--beige-dark);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 24px rgba(65, 105, 225, 0.08);
-  }
-
-  .highlight-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--royal-blue);
-    box-shadow: 0 16px 40px rgba(65, 105, 225, 0.15);
-  }
-
-  .highlight-card-icon {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, var(--royal-blue), var(--royal-blue-light));
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    margin-bottom: 14px;
-    font-size: 1.6rem;
-  }
-
-  .highlight-card h4 {
-    color: var(--royal-blue-dark);
-    margin-bottom: 8px;
-    font-weight: 700;
-    font-size: 1.1rem;
-  }
-
-  .highlight-card p {
-    color: #666;
-    margin: 0;
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  /* Form Wrapper */
-  .register-form-wrapper {
-    position: relative;
-    background: linear-gradient(135deg, white 0%, #FAFAF8 100%);
-    border-radius: 24px;
-    padding: 48px;
-    border: 2px solid var(--beige-dark);
-    box-shadow: 0 20px 60px rgba(65, 105, 225, 0.12);
-    overflow: hidden;
-  }
-
-  .register-form-wrapper::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--royal-blue), var(--gold));
-    border-radius: 24px 24px 0 0;
-  }
-
-  .register-form-title {
-    color: var(--royal-blue-dark);
-    font-size: 1.6rem;
-    font-weight: 800;
-    margin-bottom: 8px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-
-  .register-form-title i {
-    color: var(--gold);
-    font-size: 1.8rem;
-  }
-
-  .form-subtitle {
-    color: #888;
-    font-size: 0.95rem;
-    margin-bottom: 28px;
-    font-weight: 400;
-  }
-
-  /* Form Sections */
-  .form-section {
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--beige-dark);
-  }
-
-  .form-section:last-of-type {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
-  }
-
-  .form-section-title {
-    color: var(--royal-blue);
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 700;
-    margin-bottom: 18px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .form-section-title i {
-    font-size: 1.1rem;
-    color: var(--gold);
-  }
-
-  /* Form Grid */
-  .form-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    margin-bottom: 24px;
-    align-items: start;
-  }
-
-  .form-row.full {
-    grid-template-columns: 1fr;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-
-  .form-group label {
-    color: var(--royal-blue-dark);
-    font-size: 0.95rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .form-group label .required {
-    color: #E74C3C;
-    font-weight: 700;
-    font-size: 1.1rem;
-  }
-
-  /* Input Icons */
-  .input-with-icon {
-    position: relative;
-  }
-
-  .form-input-icon {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--gold);
-    font-size: 1.1rem;
-    pointer-events: none;
-    transition: color 0.2s ease;
-  }
-
-  .input-with-icon:focus-within .form-input-icon {
-    color: var(--royal-blue);
-  }
-
-  .input-with-icon input,
-  .input-with-icon select {
-    padding-left: 48px;
-  }
-
-  /* Inputs and Selects */
-  .form-group input,
-  .form-group select {
-    padding: 14px 16px;
-    background: white;
-    border: 2px solid var(--beige-dark);
-    border-radius: 12px;
-    color: var(--text-dark);
-    font-size: 0.95rem;
-    width: 100%;
-    box-sizing: border-box;
-    min-height: 50px;
-    line-height: 1.4;
-    transition: all 0.3s ease;
-    font-weight: 500;
-  }
-
-  .form-group select {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234169E1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 20px;
-    padding-right: 40px;
-  }
-
-  .form-group input[type="date"] {
-    padding-left: 48px;
-  }
-
-  .form-group input::-webkit-calendar-picker-indicator {
-    filter: invert(0.3) sepia(1) hue-rotate(180deg) saturate(1.2);
-    cursor: pointer;
-  }
-
-  .form-group input::placeholder {
-    color: #BBB;
-  }
-
-  .form-group input:focus,
-  .form-group select:focus {
-    outline: none;
-    border-color: var(--royal-blue);
-    background-color: #FAFAF8;
-    box-shadow: 0 0 0 4px rgba(65, 105, 225, 0.1);
-  }
-
-  .form-help-text {
-    color: #888;
-    font-size: 0.85rem;
-    margin-top: 8px;
-    font-weight: 400;
-  }
-
-  /* Password Strength */
-  .password-strength {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-
-  .strength-bar {
-    flex: 1;
-    height: 8px;
-    border-radius: 4px;
-    background: var(--beige-dark);
-    transition: all 0.3s ease;
-  }
-
-  .strength-bar.weak {
-    background: linear-gradient(90deg, #E74C3C, #C0392B);
-  }
-
-  .strength-bar.medium {
-    background: linear-gradient(90deg, #F39C12, #D68910);
-  }
-
-  .strength-bar.strong {
-    background: linear-gradient(90deg, #27AE60, #1E8449);
-  }
-
-  /* Alerts */
-  .alert {
-    padding: 16px 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    font-weight: 500;
-  }
-
-  .alert i {
-    font-size: 1.2rem;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .alert-danger {
-    background: #FADBD8;
-    border: 2px solid #F5B7B1;
-    color: #C0392B;
-  }
-
-  .alert-success {
-    background: #D5F4E6;
-    border: 2px solid #ABEBC6;
-    color: #27AE60;
-  }
-
-  /* Button */
-  .btn-register {
-    width: 100%;
-    padding: 16px 24px;
-    margin-top: 32px;
-    background: linear-gradient(135deg, var(--royal-blue), var(--royal-blue-light));
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    font-size: 1.05rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    box-shadow: 0 12px 32px rgba(65, 105, 225, 0.25);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .btn-register:hover:not(:disabled) {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 48px rgba(65, 105, 225, 0.35);
-  }
-
-  .btn-register:active:not(:disabled) {
-    transform: translateY(-2px);
-  }
-
-  .btn-register:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-    box-shadow: 0 8px 20px rgba(65, 105, 225, 0.12);
-  }
-
-  .btn-register i {
-    font-size: 1.2rem;
-  }
-
-  /* Footer */
-  .form-footer {
-    text-align: center;
-    margin-top: 28px;
-    padding-top: 20px;
-    border-top: 1px solid var(--beige-dark);
-  }
-
-  .form-footer p {
-    color: #666;
-    margin: 0;
-    font-weight: 500;
-  }
-
-  .form-footer a {
-    color: var(--royal-blue);
-    font-weight: 700;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  .form-footer a:hover {
-    color: var(--gold);
-  }
-
-  /* Enrollment Preview */
-  .enrollment-preview {
-    background: linear-gradient(135deg, rgba(65, 105, 225, 0.1), rgba(212, 165, 116, 0.1));
-    border: 2px solid var(--royal-blue-light);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-top: 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--royal-blue-dark);
-    font-size: 0.95rem;
-    font-weight: 600;
-  }
-
-  .enrollment-preview i {
-    font-size: 1.1rem;
-    color: var(--gold);
-  }
-
-  .enrollment-preview strong {
-    color: var(--royal-blue);
-    font-weight: 700;
-  }
-
-  /* Main Content Area - Override global styles */
-  main, .main-content, [role="main"] {
-    background: transparent !important;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  .container, .container-fluid {
-    background: transparent !important;
-    padding: 0 !important;
-  }
-
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-    .register-content {
-      grid-template-columns: 1fr;
-      gap: 40px;
-    }
-
-    .register-form-wrapper {
-      padding: 40px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .register-header h1 {
-      font-size: 2.2rem;
-    }
-
-    .form-row {
-      grid-template-columns: 1fr;
-      gap: 18px;
-    }
-
-    .register-form-wrapper {
-      padding: 32px 24px;
-    }
-
-    .college-highlights {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 640px) {
-    .register-header h1 {
-      font-size: 1.8rem;
-    }
-
-    .register-header p {
-      font-size: 0.95rem;
-    }
-
-    .register-form-wrapper {
-      border-radius: 20px;
-      padding: 24px 18px;
-    }
-
-    .register-form-title {
-      font-size: 1.3rem;
-    }
-
-    .college-highlights {
-      grid-template-columns: 1fr;
-    }
-
-    .btn-register {
-      padding: 14px 20px;
-      font-size: 1rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .register-container {
-      padding: 20px 12px;
-    }
-
-    .register-header {
-      margin-bottom: 30px;
-    }
-
-    .register-header h1 {
-      font-size: 1.5rem;
-    }
-
-    .register-form-wrapper {
-      padding: 20px 16px;
-      margin-top: 20px;
-    }
-
-    .form-section-title {
-      font-size: 0.8rem;
-      letter-spacing: 1.5px;
-    }
-
-    .form-row {
-      gap: 14px;
-    }
-  }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="register-bg-shapes">
-  <div class="shape shape-1"></div>
-  <div class="shape shape-2"></div>
-</div>
-
-<div class="register-container">
-  <!-- Header -->
-  <div class="register-header">
-    <h1>Welcome to Academics</h1>
-    <p>Join our prestigious institution and begin your journey to success</p>
-  </div>
-
-  <!-- Main Content -->
-  <div class="register-content">
-    <!-- Left Side - College Highlights -->
-    <div class="college-highlights">
-      <div class="highlight-card" data-aos="fade-up">
-        <div class="highlight-card-icon">
-          <i class="bi bi-mortarboard-fill"></i>
-        </div>
-        <h4>Quality Education</h4>
-        <p>World-class curriculum designed by industry experts to ensure your success in the competitive world.</p>
+<div class="auth-page">
+  <div class="auth-container">
+    <!-- Left Side: Why Join Us -->
+    <div class="auth-info-side d-none d-lg-flex">
+      <div class="college-brand">
+        <h1 class="text-white fw-800">Start Your <br><span class="text-secondary">Journey</span> With Us</h1>
+        <p class="opacity-75 fs-5">Join our prestigious institution and begin your journey to excellence. Premium
+          education for future leaders.</p>
       </div>
 
-      <div class="highlight-card" data-aos="fade-up" data-aos-delay="100">
-        <div class="highlight-card-icon">
-          <i class="bi bi-people-fill"></i>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="stat-icon bg-primary mb-3"><i class="bi bi-mortarboard"></i></div>
+          <h5 class="mb-1">Quality Education</h5>
+          <p class="small opacity-50 mb-0">World-class curriculum designed by industry experts.</p>
         </div>
-        <h4>Expert Faculty</h4>
-        <p>Learn from highly qualified professors with years of industry experience and dedication to teaching.</p>
-      </div>
-
-      <div class="highlight-card" data-aos="fade-up" data-aos-delay="200">
-        <div class="highlight-card-icon">
-          <i class="bi bi-laptop"></i>
+        <div class="info-item">
+          <div class="stat-icon bg-info mb-3"><i class="bi bi-people"></i></div>
+          <h5 class="mb-1">Expert Faculty</h5>
+          <p class="small opacity-50 mb-0">Learn from highly qualified professors.</p>
         </div>
-        <h4>Modern Facilities</h4>
-        <p>State-of-the-art infrastructure with laboratories, libraries, and technology hubs for optimal learning.</p>
-      </div>
-
-      <div class="highlight-card" data-aos="fade-up" data-aos-delay="300">
-        <div class="highlight-card-icon">
-          <i class="bi bi-graph-up-arrow"></i>
+        <div class="info-item">
+          <div class="stat-icon bg-success mb-3"><i class="bi bi-laptop"></i></div>
+          <h5 class="mb-1">Modern Facilities</h5>
+          <p class="small opacity-50 mb-0">State-of-the-art infrastructure and technology hubs.</p>
         </div>
-        <h4>Career Growth</h4>
-        <p>Strong placement record with top companies recruiting from our campus every year consistently.</p>
+        <div class="info-item">
+          <div class="stat-icon bg-warning mb-3"><i class="bi bi-graph-up-arrow"></i></div>
+          <h5 class="mb-1">Career Growth</h5>
+          <p class="small opacity-50 mb-0">Strong placement record with top global companies.</p>
+        </div>
       </div>
     </div>
 
-    <!-- Right Side - Registration Form -->
-    <div class="register-form-wrapper" data-aos="fade-left">
-      <div class="register-form-title">
-        <i class="bi bi-pen-fill"></i>
-        Create Your Account
-      </div>
-      <div class="form-subtitle">Fill in your details to get started with your academic journey</div>
-
-      <!-- Flash Messages -->
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-              <i class="bi bi-{% if category == 'danger' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
-              <span>{{ message }}</span>
-            </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
-
-      <form method="POST" id="registerForm">
-        <!-- Personal Information -->
-        <div class="form-section">
-          <div class="form-section-title">
-            <i class="bi bi-person"></i> Personal Information
-          </div>
-
-          <div class="form-row">
-            <div class="form-group input-with-icon">
-              <label for="first_name">
-                First Name <span class="required">*</span>
-              </label>
-              <i class="bi bi-person-fill form-input-icon" aria-hidden="true"></i>
-              <input 
-                type="text" 
-                id="first_name" 
-                name="first_name" 
-                placeholder="Enter your first name"
-                required
-                autocomplete="off"
-              >
-            </div>
-
-            <div class="form-group input-with-icon">
-              <label for="last_name">
-                Last Name <span class="required">*</span>
-              </label>
-              <i class="bi bi-person form-input-icon" aria-hidden="true"></i>
-              <input 
-                type="text" 
-                id="last_name" 
-                name="last_name" 
-                placeholder="Enter your last name"
-                required
-                autocomplete="off"
-              >
-            </div>
-          </div>
-
-          <div class="form-row full">
-            <div class="form-group input-with-icon">
-              <label for="email">
-                Email Address <span class="required">*</span>
-              </label>
-              <i class="bi bi-envelope-fill form-input-icon" aria-hidden="true"></i>
-              <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                placeholder="Enter your email address"
-                required
-                autocomplete="off"
-              >
-              <p class="form-help-text">We'll use this to verify your account and send important updates</p>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group input-with-icon">
-              <label for="phone">Phone Number</label>
-              <i class="bi bi-telephone-fill form-input-icon" aria-hidden="true"></i>
-              <input 
-                type="tel" 
-                id="phone" 
-                name="phone" 
-                placeholder="Enter your phone number"
-                autocomplete="off"
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="gender">
-                Gender <span class="required">*</span>
-              </label>
-              <select id="gender" name="gender" required>
-                <option value="">Select your gender</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-                <option value="O">Other</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row full">
-            <div class="form-group input-with-icon">
-              <label for="blood_group">
-                Blood Group <span class="required">*</span>
-              </label>
-              <i class="bi bi-droplet-fill form-input-icon" aria-hidden="true"></i>
-              <input 
-                type="text" 
-                id="blood_group" 
-                name="blood_group" 
-                placeholder="e.g. A+, B-, O+, AB+"
-                required
-                autocomplete="off"
-              >
-              <p class="form-help-text">Blood group will be printed on your digital ID card for safety purposes.</p>
-            </div>
-          </div>
-
-          <div class="form-row full">
-            <div class="form-group input-with-icon">
-              <label for="date_of_birth">
-                Date of Birth <span class="required">*</span>
-              </label>
-              <i class="bi bi-calendar-date form-input-icon" aria-hidden="true"></i>
-              <input 
-                type="date" 
-                id="date_of_birth" 
-                name="date_of_birth"
-                required
-                autocomplete="off"
-              >
-            </div>
-          </div>
+    <!-- Right Side: Registration Form -->
+    <div class="auth-form-side" style="flex: 0 0 600px;">
+      <div class="card p-0 overflow-hidden">
+        <div class="card-header bg-primary text-white p-4">
+          <h3 class="mb-1">Create Your Account</h3>
+          <p class="small opacity-75 mb-0">Please fill in your details to get started</p>
         </div>
 
-        <!-- Academic Information -->
-        <div class="form-section">
-          <div class="form-section-title">
-            <i class="bi bi-book-fill"></i> Academic Information
+        <div class="card-body p-4 p-md-5">
+          <!-- Flash Messages -->
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }} border-0 shadow-sm mb-4">
+            <i class="bi bi-exclamation-circle me-2"></i>{{ message }}
           </div>
+          {% endfor %}
+          {% endif %}
+          {% endwith %}
 
-          <div class="form-row full">
-            <div class="form-group input-with-icon">
-              <label for="course_id">
-                Select Course <span class="required">*</span>
-              </label>
-              <i class="bi bi-book-fill form-input-icon" aria-hidden="true"></i>
-              <select 
-                id="course_id" 
-                name="course_id" 
-                required
-                onchange="updateEnrollmentPreview()"
-              >
-                <option value="">-- Choose Your Course --</option>
-                {% for course in courses %}
+          <form method="POST" id="registerForm">
+            <!-- Personal Info -->
+            <div class="mb-4">
+              <h6 class="text-secondary fw-bold mb-3"><i class="bi bi-person-circle me-2"></i>Personal Information</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small">First Name</label>
+                  <input type="text" name="first_name" class="form-control" placeholder="John" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Last Name</label>
+                  <input type="text" name="last_name" class="form-control" placeholder="Doe" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label small">Email Address</label>
+                  <input type="email" name="email" class="form-control" placeholder="john@example.com" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Phone</label>
+                  <input type="tel" name="phone" class="form-control" placeholder="+91 ...">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Gender</label>
+                  <select name="gender" class="form-select" required>
+                    <option value="">Select</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Blood Group</label>
+                  <input type="text" name="blood_group" class="form-control" placeholder="O+" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Date of Birth</label>
+                  <input type="date" name="date_of_birth" class="form-control" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Academic Info -->
+            <div class="mb-4">
+              <h6 class="text-secondary fw-bold mb-3"><i class="bi bi-mortarboard-fill me-2"></i>Academic Information
+              </h6>
+              <div class="col-12">
+                <label class="form-label small">Choose Course</label>
+                <select name="course_id" class="form-select" required onchange="updateEnrollmentPreview(this)">
+                  <option value="">-- Select Your Course --</option>
+                  {% for course in courses %}
                   <option value="{{ course.id }}" data-code="{{ course.code }}">
                     {{ course.dept_name }} - {{ course.name }} ({{ course.code }})
                   </option>
-                {% endfor %}
-              </select>
-              <div id="enrollmentPreview" class="enrollment-preview" style="display: none;">
-                <i class="bi bi-award"></i>
-                <span>Your enrollment number will be: <strong id="enrollmentText">BCA2025XXX</strong></span>
+                  {% endfor %}
+                </select>
+                <div id="enrollmentPreview" class="mt-3 p-3 rounded bg-white bg-opacity-5 d-none">
+                  <i class="bi bi-info-circle text-primary me-2"></i>
+                  <span class="small">Expected Enrollment: <strong id="enrollmentText"
+                      class="text-secondary">...</strong></span>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Account Information -->
-        <div class="form-section">
-          <div class="form-section-title">
-            <i class="bi bi-shield-lock"></i> Account Information
-          </div>
-
-          <div class="form-row full">
-            <div class="form-group input-with-icon">
-              <label for="password">
-                Password <span class="required">*</span>
-              </label>
-              <i class="bi bi-lock-fill form-input-icon" aria-hidden="true"></i>
-              <input 
-                type="password" 
-                id="password" 
-                name="password" 
-                placeholder="Create a strong password (min. 6 characters)"
-                required
-                autocomplete="off"
-                oninput="checkPasswordStrength()"
-              >
-              <div class="password-strength">
-                <div class="strength-bar" id="bar1"></div>
-                <div class="strength-bar" id="bar2"></div>
-                <div class="strength-bar" id="bar3"></div>
+            <!-- Security -->
+            <div class="mb-4">
+              <h6 class="text-secondary fw-bold mb-3"><i class="bi bi-shield-lock-fill me-2"></i>Security</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small">Password</label>
+                  <input type="password" name="password" class="form-control" placeholder="Min. 6 characters" required
+                    oninput="checkStrength(this)">
+                  <div class="progress mt-2" style="height: 4px;">
+                    <div id="strengthBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Confirm Password</label>
+                  <input type="password" name="confirm_password" class="form-control" placeholder="••••••••" required>
+                </div>
               </div>
-              <p class="form-help-text">Use a combination of uppercase, lowercase, and numbers for security</p>
             </div>
-          </div>
 
-          <div class="form-row full">
-            <div class="form-group input-with-icon">
-              <label for="confirm_password">
-                Confirm Password <span class="required">*</span>
-              </label>
-              <i class="bi bi-lock form-input-icon" aria-hidden="true"></i>
-              <input 
-                type="password" 
-                id="confirm_password" 
-                name="confirm_password" 
-                placeholder="Re-enter your password"
-                required
-                autocomplete="off"
-                oninput="checkPasswordMatch()"
-              >
-              <p class="form-help-text" id="matchText"></p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Submit -->
-        <div class="form-row full">
-          <div class="form-group">
-            <button type="submit" id="submitBtn" class="btn-register" disabled>
-              <i class="bi bi-check-circle"></i>
-              Complete Registration
+            <button type="submit" class="btn btn-primary w-100 btn-lg shadow-lg mt-3">
+              Complete Registration <i class="bi bi-check-circle-fill ms-2"></i>
             </button>
+          </form>
+
+          <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-10">
+            <p class="small opacity-50 mb-0">Already have an account? <a href="{{ url_for('auth_bp.login') }}"
+                class="text-secondary fw-bold">Sign In</a></p>
           </div>
         </div>
-
-        <div class="form-footer">
-          <p>
-            Already have an account? 
-            <a href="{{ url_for('auth_bp.login') }}">Login here</a>
-          </p>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-  // Initialize AOS
-  AOS.init({
-    duration: 800,
-    once: true,
-    offset: 100
-  });
+  function updateEnrollmentPreview(select) {
+    const preview = document.getElementById('enrollmentPreview');
+    const text = document.getElementById('enrollmentText');
+    const selected = select.options[select.selectedIndex];
 
-  // Update enrollment preview
-  function updateEnrollmentPreview() {
-    const courseSelect = document.getElementById('course_id');
-    const selected = courseSelect.options[courseSelect.selectedIndex];
-    const courseCode = selected.getAttribute('data-code');
-    const currentYear = new Date().getFullYear();
-    
-    if (courseCode) {
-      const preview = `${courseCode}${currentYear}001`;
-      document.getElementById('enrollmentText').textContent = preview;
-      document.getElementById('enrollmentPreview').style.display = 'flex';
+    if (selected.value) {
+      const code = selected.getAttribute('data-code');
+      const year = new Date().getFullYear();
+      text.textContent = `${code}${year}XXX`;
+      preview.classList.remove('d-none');
     } else {
-      document.getElementById('enrollmentPreview').style.display = 'none';
+      preview.classList.add('d-none');
     }
   }
 
-  // Check password strength
-  function checkPasswordStrength() {
-    const pwd = document.getElementById('password').value;
-    const bars = document.querySelectorAll('.strength-bar');
-    
-    bars.forEach(bar => bar.className = 'strength-bar');
-    
-    if (pwd.length >= 6) {
-      bars[0].classList.add('weak');
-    }
-    if (pwd.length >= 10 && /[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) {
-      bars[1].classList.add('medium');
-    }
-    if (pwd.length >= 12 && /[a-z]/.test(pwd) && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) {
-      bars[2].classList.add('strong');
-    }
+  function checkStrength(input) {
+    const bar = document.getElementById('strengthBar');
+    const val = input.value;
+    let strength = 0;
 
-    updateSubmitState();
+    if (val.length >= 6) strength += 30;
+    if (/[A-Z]/.test(val)) strength += 20;
+    if (/[0-9]/.test(val)) strength += 30;
+    if (/[^A-Za-z0-9]/.test(val)) strength += 20;
+
+    bar.style.width = strength + '%';
+    if (strength < 50) bar.className = 'progress-bar bg-danger';
+    else if (strength < 80) bar.className = 'progress-bar bg-warning';
+    else bar.className = 'progress-bar bg-success';
   }
-
-  // Check password match and update submit state
-  function checkPasswordMatch() {
-    const pwd = document.getElementById('password').value;
-    const confirm = document.getElementById('confirm_password').value;
-    const matchText = document.getElementById('matchText');
-    
-    if (confirm === '') {
-      matchText.textContent = '';
-      updateSubmitState();
-      return;
-    }
-    
-    if (pwd === confirm) {
-      matchText.textContent = '✓ Passwords match';
-      matchText.style.color = '#27AE60';
-    } else {
-      matchText.textContent = '✗ Passwords do not match';
-      matchText.style.color = '#E74C3C';
-    }
-    updateSubmitState();
-  }
-
-  // Enable/disable submit based on simple validation
-  function updateSubmitState() {
-    const submitBtn = document.getElementById('submitBtn');
-    if (!submitBtn) return;
-
-    const pwd = document.getElementById('password') ? document.getElementById('password').value : '';
-    const confirm = document.getElementById('confirm_password') ? document.getElementById('confirm_password').value : '';
-    const first = document.getElementById('first_name') ? document.getElementById('first_name').value.trim() : '';
-    const last = document.getElementById('last_name') ? document.getElementById('last_name').value.trim() : '';
-    const email = document.getElementById('email') ? document.getElementById('email').value.trim() : '';
-    const course = document.getElementById('course_id') ? document.getElementById('course_id').value : '';
-    const gender = document.getElementById('gender') ? document.getElementById('gender').value : '';
-    const dob = document.getElementById('date_of_birth') ? document.getElementById('date_of_birth').value : '';
-
-    const basicOK = first && last && email && course && gender && dob;
-    const pwdOK = pwd.length >= 6 && pwd === confirm;
-
-    submitBtn.disabled = !(basicOK && pwdOK);
-  }
-
-  // Run on load
-  document.addEventListener('DOMContentLoaded', function(){
-    updateEnrollmentPreview();
-    updateSubmitState();
-
-    const pwdEl = document.getElementById('password');
-    if(pwdEl) {
-      pwdEl.addEventListener('input', checkPasswordStrength);
-    }
-
-    const confirmEl = document.getElementById('confirm_password');
-    if(confirmEl) {
-      confirmEl.addEventListener('input', checkPasswordMatch);
-    }
-
-    ['first_name','last_name','email'].forEach(id => {
-      const el = document.getElementById(id);
-      if(el) el.addEventListener('input', updateSubmitState);
-    });
-
-    const courseEl = document.getElementById('course_id');
-    if(courseEl) {
-      courseEl.addEventListener('change', function(){ updateEnrollmentPreview(); updateSubmitState(); });
-    }
-
-    const genderEl = document.getElementById('gender');
-    if(genderEl) {
-      genderEl.addEventListener('change', updateSubmitState);
-    }
-
-    const dobEl = document.getElementById('date_of_birth');
-    if(dobEl) {
-      dobEl.addEventListener('change', updateSubmitState);
-    }
-  });
 </script>
 {% endblock %}
