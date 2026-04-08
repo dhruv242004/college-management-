@@ -320,6 +320,20 @@ These styles are mainly defined in `static/css/style.css` and used across templa
 
 ---
 
+### Deployment (Render / PostgreSQL)
+
+1. **Connect to GitHub**: Link your repository to a Render **Web Service**.
+2. **Environment Variables**: Set the following in the Render dashboard:
+   - `FLASK_ENV`: `production`
+   - `DATABASE_URL`: Your Render PostgreSQL External/Internal Database URL
+   - `SECRET_KEY`: A random secure string
+3. **Build Command**: `pip install -r requirements.txt`
+4. **Start Command**: `gunicorn --worker-class eventlet -w 1 -b 0.0.0.0:$PORT app:app`
+
+**Note**: The system automatically detects PostgreSQL when `DATABASE_URL` is present and switches from MySQL to PostgreSQL.
+
+---
+
 ### Project Structure
 
 ```text

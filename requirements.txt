@@ -13,5 +13,8 @@ psycopg2-binary==2.9.9
 eventlet==0.33.3
 gunicorn==21.2.0
 python-dotenv==1.0.0
+reportlab==4.0.9
+python-docx==1.1.0
+python-pptx==0.6.21
 WeasyPrint
 openai
