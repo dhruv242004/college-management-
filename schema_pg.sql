@@ -96,6 +96,8 @@ CREATE TABLE students (
     course_id INTEGER NOT NULL,
     current_semester INTEGER NOT NULL DEFAULT 1,
     admission_date DATE,
+    is_verified BOOLEAN DEFAULT FALSE,
+    photo_change_count INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,

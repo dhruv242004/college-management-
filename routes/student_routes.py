@@ -362,6 +362,59 @@ def profile(sid):
     return render_template("students/profile.html", student=student)
 
 
+@students_bp.route("/<int:sid>/update-photo", methods=["POST"])
+@require_login
+@require_roles("student")
+def update_photo(sid):
+    """Allow student to update their photo only once."""
+    user = get_current_user()
+    if user.get("extra_id") != sid:
+        flash("Unauthorized action.", "danger")
+        return redirect(url_for("dashboard"))
+
+    with db_cursor() as (conn, cur):
+        cur.execute("SELECT photo_path, photo_change_count FROM students WHERE id = %s", (sid,))
+        student = cur.fetchone()
+
+    if not student:
+        flash("Student record not found.", "danger")
+        return redirect(url_for("dashboard"))
+
+    if student.get("photo_change_count", 0) >= 1:
+        flash("Profile photo can only be updated once.", "warning")
+        return redirect(url_for("students_bp.profile", sid=sid))
+
+    if "photo" not in request.files:
+        flash("No photo uploaded.", "danger")
+        return redirect(url_for("students_bp.profile", sid=sid))
+
+    f = request.files["photo"]
+    if f and allowed_file(f.filename):
+        # Create unique filename
+        ext = f.filename.rsplit(".", 1)[1].lower()
+        filename = f"student_{sid}_{uuid.uuid4().hex}.{ext}"
+        
+        # Ensure directory exists
+        os.makedirs(config.UPLOAD_FOLDER, exist_ok=True)
+        save_path = os.path.join(config.UPLOAD_FOLDER, filename)
+        
+        # Save file
+        f.save(save_path)
+        
+        # Update DB
+        rel_path = f"uploads/{filename}"
+        with db_cursor() as (conn, cur):
+            cur.execute(
+                "UPDATE students SET photo_path = %s, photo_change_count = photo_change_count + 1 WHERE id = %s",
+                (rel_path, sid)
+            )
+        flash("Profile photo updated successfully! You cannot change it again.", "success")
+    else:
+        flash("Invalid file type. Please upload an image (png, jpg, jpeg).", "danger")
+
+    return redirect(url_for("students_bp.profile", sid=sid))
+
+
 @students_bp.route("/<int:sid>/id-card")
 @require_login
 @require_roles("admin", "faculty", "student", "accountant")
@@ -382,13 +435,19 @@ def id_card(sid):
     # Build verification URL and QR image
     verify_url = url_for("students_bp.id_card_verify", token=card.qr_token, _external=True)
     qr_rel_path = default_id_card_service.generate_qr_image(verify_url, sid)
-    qr_image_url = url_for("static", filename=qr_rel_path)
+    qr_image_url = url_for("static", filename=qr_rel_path, _external=True)
 
     # Load richer student info for the card UI
     card2, full_meta = default_id_card_service.get_card_with_student(sid)
     if card2:
         card = card2
     meta = full_meta or student_meta
+    
+    # Ensure student photo is absolute for PDF generation
+    if meta.get("photo_path"):
+        meta["photo_url"] = url_for("static", filename=meta["photo_path"], _external=True)
+    else:
+        meta["photo_url"] = None
 
     return render_template(
         "students/id_card.html",
@@ -418,10 +477,17 @@ def id_card_pdf(sid):
 
     verify_url = url_for("students_bp.id_card_verify", token=card.qr_token, _external=True)
     qr_rel_path = default_id_card_service.generate_qr_image(verify_url, sid)
-    qr_image_url = url_for("static", filename=qr_rel_path)
+    qr_image_url = url_for("static", filename=qr_rel_path, _external=True)
+    
     card2, meta = default_id_card_service.get_card_with_student(sid)
     if card2:
         card = card2
+        
+    # Ensure student photo is absolute for PDF generation
+    if meta.get("photo_path"):
+        meta["photo_url"] = url_for("static", filename=meta["photo_path"], _external=True)
+    else:
+        meta["photo_url"] = None
 
     try:
         from weasyprint import HTML  # type: ignore

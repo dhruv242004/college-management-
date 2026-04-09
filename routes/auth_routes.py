@@ -1,12 +1,20 @@
 """Authentication routes: login, logout, student registration."""
+import os
+import uuid
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from datetime import date
+from werkzeug.utils import secure_filename
 
 from auth import login_user, logout_user, get_current_user, require_login, hash_password
 from database import db_cursor
+from config import config
 from id_card_service import default_id_card_service
 
 auth_bp = Blueprint("auth_bp", __name__)
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in config.ALLOWED_EXTENSIONS
 
 
 def get_next_enrollment_for_course(course_code: str) -> str:
@@ -158,6 +166,23 @@ def student_register():
                 flash(error, "danger")
             return render_template("auth/register.html", courses=courses)
         
+        # Handle Photo Upload
+        photo_path = None
+        if "photo" in request.files:
+            f = request.files["photo"]
+            if f and f.filename and allowed_file(f.filename):
+                ext = f.filename.rsplit(".", 1)[1].lower()
+                fn = f"student_{uuid.uuid4().hex[:12]}.{ext}"
+                target_dir = os.path.join(config.UPLOAD_FOLDER)
+                os.makedirs(target_dir, exist_ok=True)
+                path = os.path.join(target_dir, fn)
+                f.save(path)
+                photo_path = f"uploads/{fn}"
+        
+        if not photo_path:
+            flash("Profile photo is compulsory for registration.", "danger")
+            return render_template("auth/register.html", courses=courses)
+        
         # Check if email already exists
         with db_cursor() as (conn, cur):
             cur.execute("SELECT id FROM users WHERE email = %s", (email,))
@@ -199,7 +224,7 @@ def student_register():
                         """,
                         (email, enrollment_no.lower(), hash_password(password))
                     )
-                    user_id = cur.fetchone()['id']
+                    user_id = cur.fetchone()["id"]
                 else:
                     cur.execute(
                         """
@@ -210,38 +235,30 @@ def student_register():
                     )
                     user_id = cur.lastrowid
                 
-                # Create student record
-                if is_pg:
-                    cur.execute(
-                        """
-                        INSERT INTO students (user_id, enrollment_no, first_name, last_name, email, phone, 
-                            date_of_birth, gender, course_id, current_semester, admission_date)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1, %s) RETURNING id
-                        """,
-                        (user_id, enrollment_no, first_name, last_name, email, phone or None, 
-                         dob, gender, course_id, date.today())
+                # Create student profile
+                cur.execute(
+                    """
+                    INSERT INTO students (
+                        user_id, enrollment_no, first_name, last_name, 
+                        email, phone, date_of_birth, gender, 
+                        photo_path, course_id, current_semester, admission_date
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    (
+                        user_id, enrollment_no, first_name, last_name,
+                        email, phone or None, dob, gender,
+                        photo_path, course_id, 1, date.today()
                     )
-                    student_id = cur.fetchone()['id']
-                else:
-                    cur.execute(
-                        """
-                        INSERT INTO students (user_id, enrollment_no, first_name, last_name, email, phone, 
-                            date_of_birth, gender, course_id, current_semester, admission_date)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1, %s)
-                        """,
-                        (user_id, enrollment_no, first_name, last_name, email, phone or None, 
-                         dob, gender, course_id, date.today())
-                    )
-                    student_id = cur.lastrowid
-
-            # Create a digital ID card record for the new student (best effort)
-            try:
-                default_id_card_service.ensure_card_record(student_id, blood_group=blood_group)
-            except Exception:
-                # Do not block registration if ID card creation fails
-                pass
+                )
+                
+                # Initial card record (blood group added from form)
+                cur.execute("SELECT id FROM students WHERE enrollment_no = %s", (enrollment_no,))
+                sid = cur.fetchone()["id"]
+                default_id_card_service.ensure_card_record(sid, blood_group=blood_group)
+                
+                conn.commit()
             
-            flash(f"Registration successful! Your enrollment number is: {enrollment_no}. Please login with your enrollment number and password.", "success")
+            flash(f"Registration successful! Your enrollment number is: {enrollment_no}. Please wait for admin approval before logging in.", "success")
             return redirect(url_for("auth_bp.login"))
         
         except Exception as e:

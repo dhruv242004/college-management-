@@ -18,7 +18,7 @@ def login_user(username: str, password: str) -> tuple[bool, str, dict]:
         cur.execute(
             """
             SELECT u.id, u.username, u.email, u.password_hash, u.role_id, r.name AS role_name,
-                   s.id AS student_id, f.id AS faculty_id
+                   s.id AS student_id, s.is_verified, f.id AS faculty_id
             FROM users u
             JOIN roles r ON r.id = u.role_id
             LEFT JOIN students s ON s.user_id = u.id
@@ -34,7 +34,7 @@ def login_user(username: str, password: str) -> tuple[bool, str, dict]:
             cur.execute(
                 """
                 SELECT u.id, u.username, u.email, u.password_hash, u.role_id, r.name AS role_name,
-                       s.id AS student_id, NULL AS faculty_id
+                       s.id AS student_id, s.is_verified, NULL AS faculty_id
                 FROM students s
                 JOIN users u ON u.id = s.user_id
                 JOIN roles r ON r.id = u.role_id
@@ -47,7 +47,13 @@ def login_user(username: str, password: str) -> tuple[bool, str, dict]:
         return False, "Invalid username or password.", {}
     if not check_password_hash(row["password_hash"], password):
         return False, "Invalid username or password.", {}
+    
     role = row["role_name"].lower()
+    
+    # Check if student is verified by admin
+    if role == "student" and not row.get("is_verified"):
+        return False, "You are not allowed to login. Please wait for Admin permission.", {}
+        
     extra = row.get("student_id") or row.get("faculty_id")
     user = {
         "id": row["id"],

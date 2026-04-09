@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, send_file, abort, flash, redirect, url_for, make_response
+from flask import Blueprint, render_template, send_file, abort, flash, redirect, url_for, make_response, request
 from auth import require_roles, get_current_user
 from database import db_cursor
 import io
@@ -13,9 +13,11 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from docx import Document
-from pptx import Presentation
-from pptx.util import Inches, Pt
+from pptx import Presentation as PptxPresentation
+from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.enum.shapes import MSO_SHAPE
 
 admin_bp = Blueprint('admin_bp', __name__)
 
@@ -62,6 +64,155 @@ def data_dictionary():
     return render_template('admin/data_dictionary.html', 
                           user=user, 
                           data_dict=data_dict)
+
+@admin_bp.route('/pending-students')
+@require_roles('admin')
+def pending_students():
+    """List students awaiting verification."""
+    with db_cursor() as (conn, cur):
+        cur.execute("""
+            SELECT s.id, s.enrollment_no, s.first_name, s.last_name, s.email, 
+                   c.name AS course_name, s.created_at
+            FROM students s
+            JOIN courses c ON c.id = s.course_id
+            WHERE s.is_verified = FALSE
+            ORDER BY s.created_at DESC
+        """)
+        pending = cur.fetchall()
+    return render_template('admin/pending_students.html', pending=pending)
+
+@admin_bp.route('/verify-student/<int:sid>', methods=['POST'])
+@require_roles('admin')
+def verify_student(sid):
+    """Verify a student registration."""
+    action = request.form.get('action')
+    with db_cursor() as (conn, cur):
+        if action == 'approve':
+            cur.execute("UPDATE students SET is_verified = TRUE WHERE id = %s", (sid,))
+            flash("Student account approved successfully.", "success")
+        elif action == 'reject':
+            # Optionally delete the user/student or just leave as is
+            cur.execute("SELECT user_id FROM students WHERE id = %s", (sid,))
+            row = cur.fetchone()
+            if row:
+                uid = row['user_id']
+                cur.execute("DELETE FROM students WHERE id = %s", (sid,))
+                cur.execute("DELETE FROM users WHERE id = %s", (uid,))
+                flash("Student registration rejected and removed.", "info")
+        conn.commit()
+    return redirect(url_for('admin_bp.pending_students'))
+
+@admin_bp.route('/generate-project-presentation')
+@require_roles('admin')
+def generate_project_presentation():
+    """Generate a comprehensive project report in PPTX format."""
+    print("DEBUG: Generating full project presentation")
+    try:
+        prs = PptxPresentation()
+        
+        # 1. Title Slide
+        slide = prs.slides.add_slide(prs.slide_layouts[0])
+        slide.shapes.title.text = "College Management System"
+        slide.placeholders[1].text = "Comprehensive Project Documentation & System Analysis\nCreated for Admin Review"
+
+        # 2. Introduction
+        slide = prs.slides.add_slide(prs.slide_layouts[1])
+        slide.shapes.title.text = "1. Introduction"
+        content = slide.placeholders[1].text_frame
+        content.text = "The College Management System is a digital platform designed to automate academic and administrative tasks."
+        content.add_paragraph().text = "Key Goals:"
+        p = content.add_paragraph()
+        p.text = "- Streamline student enrollment and verification"
+        p.level = 1
+        p = content.add_paragraph()
+        p.text = "- Modernize attendance tracking via QR codes"
+        p.level = 1
+        p = content.add_paragraph()
+        p.text = "- Provide real-time data for admin decision making"
+        p.level = 1
+
+        # 3. System Architecture
+        slide = prs.slides.add_slide(prs.slide_layouts[1])
+        slide.shapes.title.text = "2. System Architecture"
+        content = slide.placeholders[1].text_frame
+        content.text = "The system follows a Model-View-Controller (MVC) pattern using Flask."
+        content.add_paragraph().text = "Frontend: HTML5, CSS3 (Glassmorphism), Bootstrap 5, JS"
+        content.add_paragraph().text = "Backend: Python (Flask), Socket.IO for real-time chat"
+        content.add_paragraph().text = "Database: PostgreSQL (Production) / MySQL (Local)"
+
+        # 4. Database Schema (Summary)
+        slide = prs.slides.add_slide(prs.slide_layouts[1])
+        slide.shapes.title.text = "3. Database Design (ER Summary)"
+        content = slide.placeholders[1].text_frame
+        content.text = "The system consists of several core modules:"
+        content.add_paragraph().text = "- Users & Roles (RBAC)"
+        content.add_paragraph().text = "- Students & Faculty Profiles"
+        content.add_paragraph().text = "- Academic Records (Courses, Subjects, Exams)"
+        content.add_paragraph().text = "- Financials (Fee Structures & Payments)"
+        content.add_paragraph().text = "- Communication (Real-time Chat & Notices)"
+
+        # 5. Data Dictionary (One Slide per major table)
+        with db_cursor() as (conn, cur):
+            cur.execute("""
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+                LIMIT 5;
+            """)
+            table_names = [row['table_name'] for row in cur.fetchall()]
+            
+            for tname in table_names:
+                cur.execute("""
+                    SELECT column_name, data_type, is_nullable
+                    FROM information_schema.columns 
+                    WHERE table_name = %s AND table_schema = 'public'
+                    ORDER BY ordinal_position LIMIT 10;
+                """, (tname,))
+                cols = cur.fetchall()
+                
+                slide = prs.slides.add_slide(prs.slide_layouts[5])
+                slide.shapes.title.text = f"Data Dictionary: {tname}"
+                
+                left, top, width, height = Inches(0.5), Inches(1.5), Inches(9.0), Inches(0.8)
+                t_shape = slide.shapes.add_table(len(cols) + 1, 3, left, top, width, height)
+                table = t_shape.table
+                
+                # Headers
+                for i, h in enumerate(['Column', 'Type', 'Null']):
+                    cell = table.cell(0, i)
+                    cell.text = h
+                    cell.fill.solid()
+                    cell.fill.fore_color.rgb = RGBColor(65, 105, 225)
+                
+                # Data
+                for r, col in enumerate(cols):
+                    table.cell(r+1, 0).text = str(col['column_name'])
+                    table.cell(r+1, 1).text = str(col['data_type'])
+                    table.cell(r+1, 2).text = str(col['is_nullable'])
+
+        # 6. Conclusion
+        slide = prs.slides.add_slide(prs.slide_layouts[1])
+        slide.shapes.title.text = "Final Summary"
+        content = slide.placeholders[1].text_frame
+        content.text = "This presentation provides a technical overview of the College Management System."
+        content.add_paragraph().text = "Generated automatically by the Admin Export Engine."
+
+        output = io.BytesIO()
+        prs.save(output)
+        output.seek(0)
+        
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            as_attachment=True,
+            download_name='College_Management_System_Report.pptx'
+        )
+            
+    except Exception as e:
+        print(f"CRITICAL: PPT generation failed: {str(e)}")
+        traceback.print_exc()
+        flash(f"Failed to generate presentation: {str(e)}", "error")
+        return redirect(url_for('dashboard'))
 
 @admin_bp.route('/export/<table_name>/<fmt>')
 @require_roles('admin')
@@ -147,7 +298,7 @@ def export_table(table_name, fmt):
 
         elif fmt == 'pptx':
             mimetype = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-            prs = Presentation()
+            prs = PptxPresentation()
             slide = prs.slides.add_slide(prs.slide_layouts[5])
             slide.shapes.title.text = f"Data Dictionary: {table_name}"
             left, top, width, height = Inches(0.5), Inches(1.5), Inches(9.0), Inches(0.8)
@@ -285,7 +436,7 @@ def export_all_tables(fmt):
 
         elif fmt == 'pptx':
             mimetype = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-            prs = Presentation()
+            prs = PptxPresentation()
             for table in all_metadata:
                 slide = prs.slides.add_slide(prs.slide_layouts[5])
                 slide.shapes.title.text = f"Schema: {table['table_name']}"

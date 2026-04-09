@@ -6,7 +6,7 @@
         <div>
             <h2 class="fw-bold mb-1">My Fees</h2>
             {% if student %}
-            <p class="text-muted mb-0"><i class="bi bi-person-badge-fill me-2"></i>{{ student.first_name }} {{
+            <p class="mb-0" style="color: var(--text-muted); opacity: 0.85;"><i class="bi bi-person-badge-fill me-2"></i>{{ student.first_name }} {{
                 student.last_name }} <span class="mx-2">•</span> {{ student.enrollment_no }}</p>
             {% endif %}
         </div>
@@ -47,8 +47,8 @@
         <div class="d-flex align-items-center">
             <i class="bi bi-shield-lock-fill fs-4 me-3 text-secondary"></i>
             <div>
-                <div class="fw-bold fs-5">Secure Online Payment</div>
-                <div class="text-muted small">Powered by Razorpay (Test Mode)</div>
+                <div class="fw-bold fs-5 text-white">Secure Online Payment</div>
+                <div class="small" style="color: var(--text-muted); opacity: 0.8;">Powered by Razorpay (Test Mode)</div>
             </div>
         </div>
         <button id="payNowBtn" class="btn btn-primary btn-lg rounded-pill px-4">
@@ -64,8 +64,8 @@
         <div class="d-flex align-items-center">
             <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
             <div>
-                <div class="fw-bold">All dues cleared</div>
-                <div class="text-muted small">Your fees are fully paid</div>
+                <div class="fw-bold text-white">All dues cleared</div>
+                <div class="small" style="color: var(--text-muted); opacity: 0.8;">Your fees are fully paid</div>
             </div>
         </div>
         <span class="badge rounded-pill bg-success px-3 py-2">Paid</span>
@@ -73,22 +73,22 @@
     {% endif %}
 
     <div class="card p-4">
-        <h5 class="card-header bg-transparent border-0 px-0 fw-bold mb-4"><i
+        <h5 class="card-header bg-transparent border-0 px-0 fw-bold mb-4" style="color: var(--secondary);"><i
                 class="bi bi-clock-history me-2 text-primary"></i>Payment History</h5>
         <div class="table-responsive bg-transparent shadow-none p-0 border-0">
             <table class="table table-hover mb-0 align-middle">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Mode</th>
-                        <th>Receipt</th>
+                        <th style="color: var(--secondary) !important;">Date</th>
+                        <th style="color: var(--secondary) !important;">Amount</th>
+                        <th style="color: var(--secondary) !important;">Mode</th>
+                        <th style="color: var(--secondary) !important;">Receipt</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for p in payments %}
                     <tr>
-                        <td class="fw-bold">{{ p.payment_date }}</td>
+                        <td class="fw-bold text-white">{{ p.payment_date }}</td>
                         <td class="fw-bold text-success">₹ {{ "%.2f"|format(p.amount_paid) }}</td>
                         <td>
                             <span class="badge bg-secondary">{{ p.payment_mode or '—' }}</span>
@@ -100,15 +100,15 @@
                                 <i class="bi bi-receipt me-1"></i>View Receipt
                             </a>
                             {% else %}
-                            <span class="text-muted small">Processing...</span>
+                            <span class="small" style="color: var(--text-muted); opacity: 0.8;">Processing...</span>
                             {% endif %}
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-5">
-                            <i class="bi bi-wallet2 display-4 d-block mb-3 opacity-50"></i>
-                            No payment history found.
+                        <td colspan="4" class="text-center py-5">
+                            <i class="bi bi-wallet2 display-4 d-block mb-3" style="color: var(--secondary); opacity: 0.4;"></i>
+                            <span style="color: var(--text-muted); opacity: 0.8;">No payment history found.</span>
                         </td>
                     </tr>
                     {% endfor %}
@@ -118,8 +118,8 @@
     </div>
     {% else %}
     <div class="alert alert-info glass-panel border-0 text-center py-5">
-        <i class="bi bi-info-circle display-4 d-block mb-3 opacity-50"></i>
-        No fee structure assigned for your course/semester yet.
+        <i class="bi bi-info-circle display-4 d-block mb-3" style="color: var(--secondary); opacity: 0.4;"></i>
+        <p style="color: var(--text-muted); opacity: 0.9;">No fee structure assigned for your course/semester yet.</p>
     </div>
     {% endif %}
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">

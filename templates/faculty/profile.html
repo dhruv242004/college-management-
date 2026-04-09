@@ -30,7 +30,7 @@
         <div class="mb-3"><code class="text-secondary bg-opacity-10 px-2 py-1 rounded">{{ faculty.emp_id }}</code></div>
 
         <div class="p-3 rounded bg-white bg-opacity-5">
-          <div class="small opacity-50 mb-1">Department & Designation</div>
+          <div class="small mb-1" style="color: var(--text-muted); opacity: 0.8;">Department & Designation</div>
           <div class="fw-bold text-secondary">{{ faculty.dept_name }}</div>
           <div class="badge bg-secondary mt-2">{{ faculty.designation or 'Faculty' }}</div>
         </div>
@@ -41,7 +41,7 @@
         <div class="d-flex align-items-center gap-3">
           <div class="stat-icon bg-info m-0"><i class="bi bi-key"></i></div>
           <div>
-            <div class="fw-bold small">No Login Created</div>
+            <div class="fw-bold small text-white">No Login Created</div>
             <a href="{{ url_for('faculty_bp.create_login', fid=faculty.id) }}" class="small text-info">Create login
               now</a>
           </div>
@@ -58,32 +58,32 @@
         <div class="card-body">
           <div class="row g-4">
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Employee ID</label>
-              <div class="fw-bold"><code>{{ faculty.emp_id }}</code></div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Employee ID</label>
+              <div class="fw-bold"><code class="text-white">{{ faculty.emp_id }}</code></div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Full Name</label>
-              <div class="fw-bold">{{ faculty.first_name }} {{ faculty.last_name }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Full Name</label>
+              <div class="fw-bold text-white">{{ faculty.first_name }} {{ faculty.last_name }}</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Email Address</label>
-              <div class="fw-bold">{{ faculty.email }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Email Address</label>
+              <div class="fw-bold text-white">{{ faculty.email }}</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Phone Number</label>
-              <div class="fw-bold">{{ faculty.phone or '—' }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Phone Number</label>
+              <div class="fw-bold text-white">{{ faculty.phone or '—' }}</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Designation</label>
-              <div class="fw-bold">{{ faculty.designation or '—' }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Designation</label>
+              <div class="fw-bold text-white">{{ faculty.designation or '—' }}</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Department</label>
-              <div class="fw-bold">{{ faculty.dept_name }} ({{ faculty.dept_code }})</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Department</label>
+              <div class="fw-bold text-white">{{ faculty.dept_name }} ({{ faculty.dept_code }})</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Joining Date</label>
-              <div class="fw-bold">{{ faculty.joined_date or '—' }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Joining Date</label>
+              <div class="fw-bold text-white">{{ faculty.joined_date or '—' }}</div>
             </div>
           </div>
         </div>

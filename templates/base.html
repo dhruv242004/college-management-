@@ -497,6 +497,27 @@
       opacity: 0.1;
     }
 
+    .opacity-25 {
+      opacity: 0.45 !important;
+    }
+
+    .opacity-50 {
+      opacity: 0.7 !important;
+    }
+
+    .opacity-75 {
+      opacity: 0.9 !important;
+    }
+
+    .text-muted {
+      color: var(--text-muted) !important;
+    }
+
+    .list-group-item-action:hover {
+      background: rgba(255, 215, 0, 0.05) !important;
+      color: var(--secondary) !important;
+    }
+
     .no-print {
       display: none !important;
     }
@@ -528,27 +549,34 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at 10% 20%, var(--card-surface) 0%, var(--bg-deep) 90%);
-      padding: 2rem;
+      background: radial-gradient(circle at center, #1c2541 0%, #0b132b 100%);
+      padding: 1.5rem;
+      position: relative;
+      overflow-y: auto;
     }
 
     .auth-container {
       display: flex;
-      gap: 4rem;
-      max-width: 1200px;
+      gap: 3.5rem;
+      max-width: 1000px;
       width: 100%;
       align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      margin: 0 auto;
     }
 
     .auth-info-side {
       flex: 1;
+      max-width: 480px;
       display: flex;
       flex-direction: column;
       gap: 2rem;
     }
 
     .auth-form-side {
-      flex: 0 0 450px;
+      flex: 0 0 420px;
     }
 
     .info-grid {
@@ -557,37 +585,116 @@
       gap: 1.5rem;
     }
 
-    .info-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-color);
-      padding: 1.5rem;
-      border-radius: var(--radius-md);
-      transition: var(--transition);
-    }
-
-    .info-item:hover {
-      border-color: var(--secondary);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    /* Auth Page specific Nav Link overides (Force Light Theme) */
     .auth-page .nav-link {
-      color: rgba(255, 255, 255, 0.5) !important;
-      font-weight: 600 !important;
+      color: rgba(255, 255, 255, 0.4) !important;
+      font-weight: 700 !important;
       text-transform: uppercase !important;
-      letter-spacing: 1px !important;
-      border-bottom: 2px solid transparent !important;
+      letter-spacing: 2px !important;
+      border-bottom: 3px solid transparent !important;
+      padding: 1.5rem 1rem !important;
+      background: rgba(0, 0, 0, 0.3) !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+      transition: all 0.2s ease-in-out !important;
+    }
+
+    .auth-page .nav-link i {
+      color: var(--primary) !important;
+      margin-right: 8px !important;
+      font-size: 1.1rem !important;
     }
 
     .auth-page .nav-link:hover {
-      color: var(--secondary) !important;
-      background: rgba(255, 255, 255, 0.03) !important;
+      color: #fff !important;
+      background: rgba(255, 255, 255, 0.05) !important;
     }
 
     .auth-page .nav-link.active {
       color: var(--secondary) !important;
-      background: rgba(255, 255, 255, 0.08) !important;
+      background: transparent !important;
       border-bottom-color: var(--secondary) !important;
+    }
+
+    .auth-page .nav-link.active i {
+      color: #fff !important;
+    }
+
+    .auth-form-side .card-body {
+      background: transparent !important;
+      padding-top: 3rem !important;
+      padding-bottom: 3rem !important;
+    }
+
+    .auth-form-side h3 {
+      font-size: 2rem !important;
+      letter-spacing: -0.5px !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    .auth-form-side .form-label {
+      text-transform: none !important;
+      font-size: 0.95rem !important;
+      margin-bottom: 0.75rem !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .auth-form-side .input-group-text {
+      background: rgba(255, 255, 255, 0.02) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: var(--secondary) !important;
+    }
+
+    .auth-form-side .form-control {
+      background: rgba(255, 255, 255, 0.02) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      padding: 14px 18px !important;
+    }
+
+    .auth-form-side .form-control:focus {
+      border-color: var(--secondary) !important;
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .btn-auth {
+      background: #4169E1 !important;
+      color: white !important;
+      border: none !important;
+      padding: 14px !important;
+      font-size: 1.1rem !important;
+      font-weight: 700 !important;
+      border-radius: 12px !important;
+      box-shadow: 0 8px 25px rgba(65, 105, 225, 0.3) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .btn-auth:hover {
+      transform: translateY(-2px) !important;
+      filter: brightness(1.1) !important;
+      box-shadow: 0 12px 30px rgba(65, 105, 225, 0.4) !important;
+    }
+
+    .info-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 1.5rem;
+      border-radius: 16px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .info-item:hover {
+      border-color: var(--secondary);
+      background: rgba(255, 215, 0, 0.02);
+      transform: translateY(-5px);
+    }
+
+    .info-item h5 {
+      font-size: 1.25rem !important;
+      margin-top: 0.5rem !important;
+    }
+
+    .info-item p {
+      color: rgba(255, 255, 255, 0.4) !important;
     }
 
     @media (max-width: 1024px) {
@@ -600,11 +707,12 @@
       .auth-form-side {
         flex: 1;
         width: 100%;
-        max-width: 500px;
+        max-width: 450px;
       }
 
       .auth-info-side {
         text-align: center;
+        align-items: center;
       }
 
       .info-grid {
@@ -707,6 +815,13 @@
         {% endif %}
 
         {% if current_user.role_name == 'admin' %}
+        <li class="nav-item">
+          <a href="{{ url_for('admin_bp.pending_students') }}"
+            class="nav-link {% if 'pending_students' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-person-check-fill"></i>
+            Verify Students
+          </a>
+        </li>
         <li class="nav-item">
           <a href="{{ url_for('faculty_bp.list_faculty') }}"
             class="nav-link {% if 'faculty' in request.endpoint %}active{% endif %}">

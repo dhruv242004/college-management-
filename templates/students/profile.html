@@ -30,10 +30,27 @@
             class="text-secondary bg-opacity-10 px-2 py-1 rounded">{{ student.enrollment_no }}</code></div>
 
         <div class="p-3 rounded bg-white bg-opacity-5">
-          <div class="small opacity-50 mb-1">Course & Semester</div>
+          <div class="small mb-1" style="color: var(--text-muted); opacity: 0.8;">Course & Semester</div>
           <div class="fw-bold text-secondary">{{ student.course_name }}</div>
           <div class="badge bg-secondary mt-2">Semester {{ student.current_semester }}</div>
         </div>
+
+        {% if current_user.role_name == 'student' and current_user.extra_id == student.id and student.photo_change_count == 0 %}
+        <div class="mt-4 p-3 border border-primary border-opacity-25 rounded bg-primary bg-opacity-5">
+          <h6 class="small fw-bold text-primary mb-2"><i class="bi bi-camera me-1"></i>Update Profile Photo</h6>
+          <p class="x-small text-muted mb-3">You can only change your photo <strong>once</strong>. Please upload a clear passport-size image.</p>
+          <form action="{{ url_for('students_bp.update_photo', sid=student.id) }}" method="POST" enctype="multipart/form-data">
+            <div class="mb-2">
+              <input type="file" name="photo" class="form-control form-control-sm bg-dark text-white border-secondary" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary w-100">Upload Photo</button>
+          </form>
+        </div>
+        {% elif current_user.role_name == 'student' and current_user.extra_id == student.id %}
+        <div class="mt-4 p-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded">
+          <div class="x-small text-success text-center"><i class="bi bi-check-circle-fill me-1"></i>Photo update limit reached</div>
+        </div>
+        {% endif %}
       </div>
 
       {% if current_user.role_name == 'admin' and not student.user_id %}
@@ -41,7 +58,7 @@
         <div class="d-flex align-items-center gap-3">
           <div class="stat-icon bg-info m-0"><i class="bi bi-key"></i></div>
           <div>
-            <div class="fw-bold small">No Login Created</div>
+            <div class="fw-bold small text-white">No Login Created</div>
             <a href="{{ url_for('students_bp.create_login', sid=student.id) }}" class="small text-info">Create login
               now</a>
           </div>
@@ -58,29 +75,29 @@
         <div class="card-body">
           <div class="row g-4">
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Full Name</label>
-              <div class="fw-bold">{{ student.first_name }} {{ student.last_name }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Full Name</label>
+              <div class="fw-bold text-white">{{ student.first_name }} {{ student.last_name }}</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Email Address</label>
-              <div class="fw-bold">{{ student.email }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Email Address</label>
+              <div class="fw-bold text-white">{{ student.email }}</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Phone Number</label>
-              <div class="fw-bold">{{ student.phone or '—' }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Phone Number</label>
+              <div class="fw-bold text-white">{{ student.phone or '—' }}</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Date of Birth</label>
-              <div class="fw-bold">{{ student.date_of_birth or '—' }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Date of Birth</label>
+              <div class="fw-bold text-white">{{ student.date_of_birth or '—' }}</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Gender</label>
-              <div class="fw-bold">{{ 'Male' if student.gender == 'M' else ('Female' if student.gender == 'F' else
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Gender</label>
+              <div class="fw-bold text-white">{{ 'Male' if student.gender == 'M' else ('Female' if student.gender == 'F' else
                 'Other') }}</div>
             </div>
             <div class="col-12">
-              <label class="small opacity-50 d-block">Address</label>
-              <div class="opacity-75">{{ student.address or '—' }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Address</label>
+              <div class="text-white-50">{{ student.address or '—' }}</div>
             </div>
           </div>
         </div>
@@ -93,20 +110,20 @@
         <div class="card-body">
           <div class="row g-4">
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Department</label>
-              <div class="fw-bold">{{ student.dept_name }} ({{ student.dept_code }})</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Department</label>
+              <div class="fw-bold text-white">{{ student.dept_name }} ({{ student.dept_code }})</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Course</label>
-              <div class="fw-bold">{{ student.course_name }} ({{ student.course_code }})</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Course</label>
+              <div class="fw-bold text-white">{{ student.course_name }} ({{ student.course_code }})</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Current Semester</label>
-              <div class="fw-bold">Semester {{ student.current_semester }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Current Semester</label>
+              <div class="fw-bold text-white">Semester {{ student.current_semester }}</div>
             </div>
             <div class="col-sm-6">
-              <label class="small opacity-50 d-block">Admission Date</label>
-              <div class="fw-bold">{{ student.admission_date or '—' }}</div>
+              <label class="small d-block mb-1" style="color: var(--text-muted); opacity: 0.8;">Admission Date</label>
+              <div class="fw-bold text-white">{{ student.admission_date or '—' }}</div>
             </div>
           </div>
         </div>

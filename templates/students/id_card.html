@@ -88,8 +88,10 @@
           <main class="id-body">
             <section class="id-photo-block">
               <div class="id-photo-frame">
-                {% if student.photo_path %}
-                  <img src="{{ url_for('static', filename=student.photo_path) }}" alt="Student photo">
+                {% if student.photo_url %}
+                  <img src="{{ student.photo_url }}" alt="Student photo">
+                {% elif student.photo_path %}
+                  <img src="{{ url_for('static', filename=student.photo_path, _external=True) }}" alt="Student photo">
                 {% else %}
                   <div class="id-photo-placeholder">
                     <i class="bi bi-person-fill"></i>
