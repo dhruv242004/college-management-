@@ -4,10 +4,15 @@ import datetime
 from flask import Flask, redirect, url_for, render_template, request
 from config import config
 from auth import get_current_user, require_login, require_roles
-from database import db_cursor
+from database import db_cursor, init_db
 from flask_socketio import SocketIO, join_room, leave_room, emit
 
 app = Flask(__name__)
+# Initialize database schema/migrations
+try:
+    init_db()
+except Exception as e:
+    print(f"Database initialization failed: {e}")
 app.config["SECRET_KEY"] = config.SECRET_KEY
 app.config["PERMANENT_SESSION_LIFETIME"] = config.PERMANENT_SESSION_LIFETIME
 app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY

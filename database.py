@@ -75,5 +75,42 @@ def db_cursor(dictionary=True):
         conn.close()
 
 def init_db():
-    """Initialize database schema."""
-    pass
+    """Initialize database schema and handle simple migrations."""
+    # 1. Check for 'is_verified' in 'students'
+    has_is_verified = False
+    with db_cursor(dictionary=True) as (conn, cur):
+        # We check information_schema for the column. 
+        # Using lowercase for table and column names as they are usually stored that way.
+        cur.execute("""
+            SELECT 1 FROM information_schema.columns 
+            WHERE LOWER(table_name) = 'students' AND LOWER(column_name) = 'is_verified'
+        """)
+        has_is_verified = cur.fetchone() is not None
+    
+    if not has_is_verified:
+        with db_cursor(dictionary=False) as (conn, cur):
+            print("Migration: Adding 'is_verified' column to 'students' table...")
+            try:
+                # PostgreSQL/MySQL compatible ALTER TABLE
+                cur.execute("ALTER TABLE students ADD COLUMN is_verified BOOLEAN DEFAULT FALSE")
+                print("Migration: 'is_verified' added successfully.")
+            except Exception as e:
+                print(f"Migration: Error adding 'is_verified': {e}")
+                
+    # 2. Check for 'photo_change_count' in 'students'
+    has_photo_count = False
+    with db_cursor(dictionary=True) as (conn, cur):
+        cur.execute("""
+            SELECT 1 FROM information_schema.columns 
+            WHERE LOWER(table_name) = 'students' AND LOWER(column_name) = 'photo_change_count'
+        """)
+        has_photo_count = cur.fetchone() is not None
+        
+    if not has_photo_count:
+        with db_cursor(dictionary=False) as (conn, cur):
+            print("Migration: Adding 'photo_change_count' column to 'students' table...")
+            try:
+                cur.execute("ALTER TABLE students ADD COLUMN photo_change_count INTEGER DEFAULT 0")
+                print("Migration: 'photo_change_count' added successfully.")
+            except Exception as e:
+                print(f"Migration: Error adding 'photo_change_count': {e}")
