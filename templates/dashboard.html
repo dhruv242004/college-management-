@@ -155,13 +155,15 @@
         <div class="stat-icon bg-warning text-dark"><i class="bi bi-lightning-fill"></i></div>
         <div class="stat-label">Quick Links</div>
         <div class="row g-2 mt-1">
+          <div class="col-6"><a href="{{ url_for('exam_bp.student_exams') }}"
+              class="btn btn-sm btn-primary w-100">Online Exams</a></div>
           <div class="col-6"><a href="{{ url_for('exam_bp.my_results') }}"
               class="btn btn-sm btn-secondary w-100">Results</a></div>
           <div class="col-6"><a href="{{ url_for('fees_bp.my_fees') }}" class="btn btn-sm btn-secondary w-100">Fees</a>
           </div>
           <div class="col-6"><a href="{{ url_for('timetable_bp.my_timetable') }}"
               class="btn btn-sm btn-secondary w-100">Timetable</a></div>
-          <div class="col-6"><a href="{{ url_for('chat_bp.index') }}" class="btn btn-sm btn-primary w-100">Messages</a>
+          <div class="col-12 mt-2"><a href="{{ url_for('chat_bp.index') }}" class="btn btn-sm btn-outline-primary w-100">Messages</a>
           </div>
         </div>
       </div>

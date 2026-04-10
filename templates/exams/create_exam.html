@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Create Exam – College CMS{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-white mb-0"><i class="bi bi-journal-plus me-2 text-primary"></i>Create Online Exam</h2>
+        <a href="{{ url_for('exam_bp.index') }}" class="btn btn-outline-secondary rounded-pill">Cancel</a>
+    </div>
+
+    <form method="POST" id="examForm">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card glass-panel shadow-sm border-0 mb-4">
+                    <div class="card-header bg-transparent border-bottom border-secondary border-opacity-10">
+                        <h5 class="card-title mb-0 text-secondary">Exam Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Subject</label>
+                            <select name="subject_id" class="form-select bg-dark border-secondary text-white" required>
+                                <option value="">Select Subject</option>
+                                {% for s in subjects %}
+                                <option value="{{ s.id }}">{{ s.name }} ({{ s.code }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Exam Title</label>
+                            <input type="text" name="title" class="form-control bg-dark border-secondary text-white" placeholder="e.g. Mid-Term Quiz 1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Duration (Minutes)</label>
+                            <input type="number" name="duration" class="form-control bg-dark border-secondary text-white" value="60" min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Min Attendance Required (%)</label>
+                            <input type="number" name="min_attendance" class="form-control bg-dark border-secondary text-white" value="60" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Start Time</label>
+                            <input type="datetime-local" name="start_time" class="form-control bg-dark border-secondary text-white" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">End Time</label>
+                            <input type="datetime-local" name="end_time" class="form-control bg-dark border-secondary text-white" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Description</label>
+                            <textarea name="description" class="form-control bg-dark border-secondary text-white" rows="3" placeholder="Instructions for students..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 shadow-lg">
+                    <i class="bi bi-cloud-upload me-2"></i>Create Exam Now
+                </button>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card glass-panel shadow-sm border-0">
+                    <div class="card-header bg-transparent border-bottom border-secondary border-opacity-10 d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 text-secondary">Questions</h5>
+                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="addQuestion()">
+                            <i class="bi bi-plus-lg me-1"></i>Add Question
+                        </button>
+                    </div>
+                    <div class="card-body" id="questionsContainer">
+                        <!-- Questions will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<template id="questionTemplate">
+    <div class="question-card mb-4 p-4 border border-secondary border-opacity-10 rounded-3 bg-white bg-opacity-5 position-relative">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="this.parentElement.remove()"></button>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label text-muted small">Question Text</label>
+                <textarea name="q_text[]" class="form-control bg-dark border-secondary text-white" rows="2" required></textarea>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-muted small">Type</label>
+                <select name="q_type[]" class="form-select bg-dark border-secondary text-white q-type-select" onchange="handleTypeChange(this)" required>
+                    <option value="text">Text</option>
+                    <option value="mcq">MCQ</option>
+                    <option value="true_false">True/False</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-muted small">Marks</label>
+                <input type="number" name="q_marks[]" class="form-control bg-dark border-secondary text-white" value="1" min="1">
+            </div>
+            
+            <!-- Dynamic Content Area -->
+            <div class="col-12 dynamic-content"></div>
+        </div>
+    </div>
+</template>
+
+<script>
+let questionCount = 0;
+
+function addQuestion() {
+    const container = document.getElementById('questionsContainer');
+    const template = document.getElementById('questionTemplate');
+    const clone = template.content.cloneNode(true);
+    
+    // Assign index to handle multiple options correctly
+    const idx = questionCount++;
+    clone.querySelector('.q-type-select').dataset.index = idx;
+    
+    container.appendChild(clone);
+}
+
+function handleTypeChange(select) {
+    const idx = select.dataset.index;
+    const type = select.value;
+    const contentArea = select.closest('.question-card').querySelector('.dynamic-content');
+    contentArea.innerHTML = '';
+
+    if (type === 'mcq') {
+        contentArea.innerHTML = `
+            <div class="mt-3 p-3 bg-dark rounded">
+                <label class="form-label text-secondary small">MCQ Options</label>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="q_opts_${idx}[]" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Option 1" required></div>
+                    <div class="col-md-6"><input type="text" name="q_opts_${idx}[]" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Option 2" required></div>
+                    <div class="col-md-6"><input type="text" name="q_opts_${idx}[]" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Option 3"></div>
+                    <div class="col-md-6"><input type="text" name="q_opts_${idx}[]" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Option 4"></div>
+                </div>
+                <label class="form-label text-secondary small">Correct Option Value</label>
+                <input type="text" name="q_correct_${idx}" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Exact text of correct option" required>
+            </div>
+        `;
+    } else if (type === 'true_false') {
+        contentArea.innerHTML = `
+            <div class="mt-3 p-3 bg-dark rounded">
+                <label class="form-label text-secondary small">Correct Answer</label>
+                <select name="q_correct_tf_${idx}" class="form-select form-select-sm bg-dark border-secondary text-white w-auto">
+                    <option value="True">True</option>
+                    <option value="False">False</option>
+                </select>
+            </div>
+        `;
+    }
+}
+
+// Add first question automatically
+document.addEventListener('DOMContentLoaded', addQuestion);
+</script>
+
+<style>
+.question-card { transition: all 0.2s; }
+.question-card:hover { border-color: var(--primary) !important; background: rgba(255,255,255,0.08) !important; }
+</style>
+{% endblock %}

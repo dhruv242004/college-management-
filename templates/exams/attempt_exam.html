@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Attempt Exam – College CMS{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="card glass-panel shadow-lg border-0 mb-4 overflow-hidden">
+        <div class="card-header bg-gradient p-4 text-center">
+            <h2 class="fw-bold mb-1 text-white">{{ exam.title }}</h2>
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm">
+                    <i class="bi bi-clock me-2"></i>{{ exam.duration_minutes }} Minutes
+                </span>
+                <span class="badge bg-info px-3 py-2 rounded-pill shadow-sm">
+                    <i class="bi bi-journal-bookmark me-2"></i>{{ exam.subject_name }}
+                </span>
+                <span id="timerBadge" class="badge bg-danger px-3 py-2 rounded-pill shadow-sm">
+                    <i class="bi bi-alarm me-2"></i><span id="timer">Loading...</span>
+                </span>
+            </div>
+        </div>
+        <div class="card-body p-4 p-md-5">
+            <div class="alert alert-info border-0 mb-5 p-4 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05) !important;">
+                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-info-circle-fill me-2"></i>Instructions</h6>
+                <p class="mb-0 text-white opacity-100 small">{{ exam.description or "Read questions carefully before answering." }}</p>
+            </div>
+
+            <form method="POST" id="examForm">
+                {% for q in questions %}
+                <div class="question-item mb-5 p-4 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center mb-4">
+                        <span class="badge bg-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: 700; background-color: var(--primary) !important;">
+                            {{ loop.index }}
+                        </span>
+                        <h5 class="fw-bold mb-0 text-white">{{ q.question_text }}</h5>
+                        <span class="ms-auto badge bg-secondary text-dark px-3 py-1 rounded-pill small fw-bold" style="background-color: var(--secondary) !important;">
+                            {{ q.marks }} Marks
+                        </span>
+                    </div>
+
+                    <div class="answer-area ms-md-5 ps-md-2">
+                        {% if q.question_type == 'mcq' %}
+                            {% set opts = q.options|from_json if q.options else [] %}
+                            <div class="row g-3">
+                                {% for opt in opts %}
+                                <div class="col-md-6">
+                                    <div class="form-check custom-option-card h-100 p-3 rounded-3 border border-secondary border-opacity-10 transition-all" style="background: rgba(255,255,255,0.05) !important;">
+                                        <input class="form-check-input" type="radio" name="q_{{ q.id }}" id="q_{{ q.id }}_{{ loop.index }}" value="{{ opt }}" required>
+                                        <label class="form-check-label w-100 ps-2 text-white opacity-100 stretched-link" for="q_{{ q.id }}_{{ loop.index }}">
+                                            {{ opt }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% elif q.question_type == 'true_false' %}
+                            <div class="d-flex gap-4">
+                                <div class="form-check custom-option-card p-3 px-5 rounded-3 border border-secondary border-opacity-10 transition-all" style="background: rgba(255,255,255,0.05) !important;">
+                                    <input class="form-check-input" type="radio" name="q_{{ q.id }}" id="q_{{ q.id }}_true" value="True" required>
+                                    <label class="form-check-label ps-2 text-white fw-bold stretched-link" for="q_{{ q.id }}_true">True</label>
+                                </div>
+                                <div class="form-check custom-option-card p-3 px-5 rounded-3 border border-secondary border-opacity-10 transition-all" style="background: rgba(255,255,255,0.05) !important;">
+                                    <input class="form-check-input" type="radio" name="q_{{ q.id }}" id="q_{{ q.id }}_false" value="False" required>
+                                    <label class="form-check-label ps-2 text-white fw-bold stretched-link" for="q_{{ q.id }}_false">False</label>
+                                </div>
+                            </div>
+                        {% else %}
+                            <textarea name="q_{{ q.id }}" class="form-control bg-dark border-secondary text-white p-3 rounded-4" rows="4" placeholder="Type your answer here..." required></textarea>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="text-center mt-5 pt-4 border-top border-secondary border-opacity-10">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg" onclick="return confirm('Submit Exam?')">
+                        <i class="bi bi-cloud-arrow-up-fill me-2"></i>Final Submission
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Timer Logic
+const duration = {{ exam.duration_minutes }};
+let timeLeft = duration * 60;
+
+function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer').textContent = 
+        `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    
+    if (timeLeft <= 0) {
+        alert("Time is up! Submitting your answers automatically.");
+        document.getElementById('examForm').submit();
+    }
+    timeLeft--;
+}
+
+setInterval(updateTimer, 1000);
+updateTimer();
+
+// Enhanced styling for radio options
+document.querySelectorAll('.custom-option-card input').forEach(input => {
+    input.addEventListener('change', function() {
+        const group = document.getElementsByName(this.name);
+        group.forEach(i => {
+            i.closest('.custom-option-card').classList.remove('active-option');
+        });
+        if(this.checked) this.closest('.custom-option-card').classList.add('active-option');
+    });
+});
+</script>
+
+<style>
+.custom-option-card { 
+    cursor: pointer; 
+    background: rgba(255,255,255,0.02); 
+    position: relative; 
+    z-index: 1;
+}
+.custom-option-card:hover { border-color: var(--primary) !important; background: rgba(65, 105, 225, 0.08) !important; }
+.active-option { border-color: var(--primary) !important; background: rgba(65, 105, 225, 0.15) !important; }
+.active-option label { opacity: 1 !important; font-weight: 700 !important; }
+.transition-all { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+.question-item { position: relative; }
+.question-item:hover { border-color: var(--secondary) !important; }
+
+/* Ensure form controls are on top and clickable */
+.form-control {
+    position: relative;
+    z-index: 5;
+    background-color: rgba(0, 0, 0, 0.3) !important;
+}
+.form-check-input {
+    cursor: pointer;
+    z-index: 10;
+}
+</style>
+{% endblock %}

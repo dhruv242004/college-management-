@@ -29,24 +29,26 @@
           </div>
           
           <!-- Session Info -->
-          <div class="alert alert-info alert-soft w-100 mb-4">
-            <h6 class="fw-bold mb-2">Session Information</h6>
-            <div class="row text-start small">
-              <div class="col-6">
-                <strong>Subject:</strong><br>
-                <span class="text-muted">{{ session.subject_name }}</span>
+          <div class="alert alert-info w-100 mb-4 shadow-sm" style="border-radius: 12px; border-left: 5px solid #fff;">
+            <h6 class="fw-bold mb-3 text-white border-bottom border-white border-opacity-25 pb-2">
+              <i class="bi bi-info-circle-fill me-2"></i>Session Information
+            </h6>
+            <div class="row text-start">
+              <div class="col-6 mb-3">
+                <strong class="d-block small text-white opacity-75 mb-1">Subject</strong>
+                <span class="fw-bold">{{ session.subject_name }}</span>
+              </div>
+              <div class="col-6 mb-3">
+                <strong class="d-block small text-white opacity-75 mb-1">Faculty</strong>
+                <span class="fw-bold">{{ session.faculty_name }}</span>
               </div>
               <div class="col-6">
-                <strong>Faculty:</strong><br>
-                <span class="text-muted">{{ session.faculty_name }}</span>
+                <strong class="d-block small text-white opacity-75 mb-1">Session ID</strong>
+                <code class="text-white small" style="background: rgba(0,0,0,0.2); padding: 2px 4px; border-radius: 4px;">{{ session.session_id[:8] }}...</code>
               </div>
-              <div class="col-6 mt-2">
-                <strong>Session ID:</strong><br>
-                <code class="text-muted small">{{ session.session_id }}</code>
-              </div>
-              <div class="col-6 mt-2">
-                <strong>Date:</strong><br>
-                <span class="text-muted">{{ session.date }}</span>
+              <div class="col-6">
+                <strong class="d-block small text-white opacity-75 mb-1">Date</strong>
+                <span class="fw-bold">{{ session.date }}</span>
               </div>
             </div>
           </div>
@@ -94,15 +96,15 @@
           <!-- Stats -->
           <div class="row g-3 mb-4">
             <div class="col-6">
-              <div class="text-center p-3 bg-success-subtle rounded">
-                <div class="display-6 fw-bold text-success" id="present">0</div>
-                <small class="text-muted">Students Present</small>
+              <div class="text-center p-3 bg-success rounded shadow-sm border border-white border-opacity-10">
+                <div class="display-6 fw-bold text-white" id="present">0</div>
+                <small class="text-white opacity-75 fw-bold">Students Present</small>
               </div>
             </div>
             <div class="col-6">
-              <div class="text-center p-3 bg-info-subtle rounded">
-                <div class="display-6 fw-bold text-info" id="scanCount">0</div>
-                <small class="text-muted">Scans</small>
+              <div class="text-center p-3 bg-info rounded shadow-sm border border-white border-opacity-10">
+                <div class="display-6 fw-bold text-white" id="scanCount">0</div>
+                <small class="text-white opacity-75 fw-bold">Total Scans</small>
               </div>
             </div>
           </div>

@@ -34,52 +34,42 @@
         </div>
 
         <div class="card-body">
-          <!-- Video Preview -->
-          <div id="scanner-container" class="mb-4" style="display: none;">
-            <div id="video-container" class="position-relative mx-auto" style="max-width: 500px;">
-              <video id="video" style="width: 100%; border-radius: 0.5rem; background: #000;" muted playsinline></video>
-              <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; border: 3px solid #00ff00; border-radius: 0.5rem;"></div>
+          <!-- Manual Entry Section (Most Prominent) -->
+          <div id="manual-entry" class="mb-4 p-3 bg-light rounded border border-primary border-opacity-25 shadow-sm">
+            <h5 class="fw-bold mb-3 text-primary">
+              <i class="bi bi-shield-lock-fill me-2"></i>Enter Attendance Code
+            </h5>
+            <div class="alert alert-info alert-soft py-2 mb-3" role="alert">
+              <small><i class="bi bi-info-circle me-1"></i>Enter the 6-digit code shown on the faculty's screen.</small>
             </div>
-            <div class="mt-3 text-center">
-              <button type="button" class="btn btn-secondary" id="stopScanBtn">
-                <i class="bi bi-stop-circle me-2"></i>Stop Camera
+            
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-white"><i class="bi bi-key"></i></span>
+              <input type="text" id="otp_code_manual" class="form-control text-uppercase font-monospace tracking-widest" 
+                     placeholder="6-DIGIT CODE" maxlength="6" 
+                     style="font-size: 1.5rem; font-weight: 700; color: #ffffff !important; background-color: #1c2541 !important; border: 2px solid #FFD700 !important; text-align: center;">
+              <button type="button" class="btn btn-primary px-4" id="submitOtpBtn">
+                Submit
               </button>
             </div>
           </div>
 
-          <!-- Manual Entry Fallback -->
-          <div id="manual-entry" class="mb-4">
-            <div class="alert alert-info alert-soft" role="alert">
-              <strong>Can't scan QR code?</strong> You can manually enter the code.
-            </div>
-            
-            <div class="row g-3">
-              <div class="col-md-12">
-                <label class="form-label fw-bold">Enter Secure Attendance Code</label>
-                <div class="input-group input-group-lg mb-3">
-                  <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
-                  <input type="text" id="otp_code_manual" class="form-control text-uppercase font-monospace tracking-widest" placeholder="6-DIGIT CODE" maxlength="6">
-                  <button type="button" class="btn btn-primary px-4" id="submitOtpBtn">
-                    Submit Code
-                  </button>
-                </div>
-              </div>
-              
-              <div class="col-md-12 mt-4">
-                <label class="form-label text-muted small">Or paste QR token here (Advanced)</label>
-                <textarea 
-                  id="qr_token_manual" 
-                  class="form-control form-control-sm mb-3" 
-                  placeholder="Paste QR token here..." 
-                  rows="2"></textarea>
-                <div class="d-grid">
-                  <button type="button" class="btn btn-outline-secondary btn-sm" id="submitManualBtn">
-                    Submit Token
-                  </button>
-                </div>
-              </div>
-            </div>
+          <div class="text-center mb-4">
+            <span class="badge bg-secondary opacity-50 px-3">OR</span>
           </div>
+
+          <!-- Video Preview -->
+           <div id="scanner-container" class="mb-4" style="display: none;">
+             <div id="video-container" class="position-relative mx-auto" style="max-width: 500px;">
+               <video id="video" style="width: 100%; border-radius: 0.5rem; background: #000;" muted playsinline></video>
+               <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; border: 3px solid #00ff00; border-radius: 0.5rem;"></div>
+             </div>
+             <div class="mt-3 text-center">
+               <button type="button" class="btn btn-secondary" id="stopScanBtn">
+                 <i class="bi bi-stop-circle me-2"></i>Stop Camera
+               </button>
+             </div>
+           </div>
 
           <!-- Buttons -->
           <div class="d-grid gap-2">
@@ -97,34 +87,34 @@
 
       <!-- Instructions -->
       <div class="card glass-panel border-0 shadow mt-4">
-        <div class="card-header bg-light border-0">
+        <div class="card-header bg-dark-subtle border-0">
           <h6 class="card-title mb-0">
             <i class="bi bi-question-circle me-2"></i>Instructions
           </h6>
         </div>
         <div class="card-body">
-          <ol class="mb-0">
-            <li><strong>Start Camera:</strong> Click "Start Camera Scanner" button</li>
-            <li><strong>Position QR:</strong> Point camera at QR code displayed by faculty</li>
-            <li><strong>Wait for Scan:</strong> System will automatically recognize and process</li>
-            <li><strong>Confirmation:</strong> You'll see success or error message</li>
+          <ol class="mb-0 text-white opacity-75">
+            <li class="mb-2"><strong class="text-primary">Start Camera:</strong> Click "Start Camera Scanner" button</li>
+            <li class="mb-2"><strong class="text-primary">Position QR:</strong> Point camera at QR code displayed by faculty</li>
+            <li class="mb-2"><strong class="text-primary">Wait for Scan:</strong> System will automatically recognize and process</li>
+            <li class="mb-0"><strong class="text-primary">Confirmation:</strong> You'll see success or error message</li>
           </ol>
         </div>
       </div>
 
       <!-- Security Info -->
       <div class="card glass-panel border-0 shadow mt-3">
-        <div class="card-header bg-light border-0">
+        <div class="card-header bg-dark-subtle border-0">
           <h6 class="card-title mb-0">
             <i class="bi bi-shield-check me-2"></i>Security & Privacy
           </h6>
         </div>
-        <div class="card-body small">
+        <div class="card-body small text-white opacity-75">
           <ul class="mb-0">
-            <li>Your location data (if allowed) is recorded for verification</li>
-            <li>Device information is logged for attendance records</li>
-            <li>QR codes expire after the validity period</li>
-            <li>Duplicate scans are prevented automatically</li>
+            <li class="mb-1">Your location data (if allowed) is recorded for verification</li>
+            <li class="mb-1">Device information is logged for attendance records</li>
+            <li class="mb-1">QR codes expire after the validity period</li>
+            <li class="mb-0">Duplicate scans are prevented automatically</li>
           </ul>
         </div>
       </div>
@@ -218,16 +208,6 @@ function scanQR() {
   requestAnimationFrame(scanQR);
 }
 
-// Manual token submission
-document.getElementById('submitManualBtn').addEventListener('click', () => {
-  const token = document.getElementById('qr_token_manual').value.trim();
-  if (!token) {
-    showStatus('warning', 'Please enter or paste the QR token');
-    return;
-  }
-  processToken(token);
-});
-
 // OTP code submission
 document.getElementById('submitOtpBtn').addEventListener('click', async () => {
   const otpCode = document.getElementById('otp_code_manual').value.trim().toUpperCase();
@@ -265,6 +245,11 @@ document.getElementById('submitOtpBtn').addEventListener('click', async () => {
         <small>Attendance recorded via secure code.</small>
       `);
       document.getElementById('otp_code_manual').value = '';
+      
+      // Redirect to history after a short delay
+      setTimeout(() => {
+        window.location.href = '/attendance/my';
+      }, 2000);
     } else {
       showStatus('danger', `<i class="bi bi-exclamation-circle me-2"></i> ${data.message}`);
     }
@@ -313,9 +298,10 @@ async function processToken(token) {
         <small>Your attendance has been recorded successfully!</small>
       `);
       
-      // Clear manual entry
-      document.getElementById('qr_token_manual').value = '';
-      document.getElementById('startScanBtn').style.display = 'block';
+      // Redirect after a short delay
+      setTimeout(() => {
+        window.location.href = '/attendance/my';
+      }, 2000);
       
     } else {
       showStatus('danger', `

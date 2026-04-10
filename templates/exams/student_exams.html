@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}My Online Exams – College CMS{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-bold text-white mb-0"><i class="bi bi-laptop me-2 text-primary"></i>My Online Exams</h2>
+        <div class="badge bg-secondary rounded-pill px-3 py-2 shadow-sm border border-secondary border-opacity-10">
+            <i class="bi bi-clock-history me-2"></i>Active Sessions
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for exam in exams %}
+        <div class="col-xl-4 col-md-6">
+            <div class="card glass-panel shadow-lg border-0 h-100 transition-all hover-glow">
+                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-10 p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 mb-2 small fw-bold">
+                            {{ exam.subject_code }}
+                        </span>
+                        {% if exam.attempt_status == 'submitted' %}
+                        <span class="badge bg-success rounded-pill px-3 py-1 shadow-sm small">
+                            <i class="bi bi-check-circle me-1"></i>Submitted
+                        </span>
+                        {% elif exam.attempt_status == 'in_progress' %}
+                        <span class="badge bg-warning text-dark rounded-pill px-3 py-1 shadow-sm small">
+                            <i class="bi bi-play-circle me-1"></i>In Progress
+                        </span>
+                        {% endif %}
+                    </div>
+                    <h5 class="fw-bold text-white mb-1">{{ exam.title }}</h5>
+                    <p class="text-secondary small mb-0">{{ exam.subject_name }}</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="exam-meta mb-4 p-3 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-calendar3 me-3 text-primary"></i>
+                            <span class="small text-white opacity-100">{{ exam.start_time.strftime('%d %b, %H:%M') }} – {{ exam.end_time.strftime('%H:%M') }}</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-clock me-3 text-primary"></i>
+                            <span class="small text-white opacity-100">{{ exam.duration_minutes }} Minutes</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check2-circle me-3 text-primary"></i>
+                            <span class="small text-white opacity-100">Min Attendance: {{ exam.min_attendance_percentage }}%</span>
+                        </div>
+                    </div>
+                    
+                    {% if exam.attempt_status == 'submitted' %}
+                    <button class="btn btn-secondary w-100 rounded-pill disabled opacity-50 py-2">
+                        <i class="bi bi-lock me-2"></i>Attempt Locked
+                    </button>
+                    {% else %}
+                    <a href="{{ url_for('exam_bp.attempt_exam', exam_id=exam.id) }}" class="btn btn-primary w-100 rounded-pill shadow-sm py-2 hover-scale">
+                        <i class="bi bi-pencil-square me-2"></i>Start Exam
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="empty-state p-5 glass-panel rounded-5">
+                <i class="bi bi-journal-x display-1 text-secondary opacity-25 mb-4"></i>
+                <h3 class="text-white fw-bold">No Exams Scheduled</h3>
+                <p class="text-secondary">You have no upcoming or active online examinations at the moment.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.hover-glow:hover { box-shadow: 0 10px 40px rgba(65, 105, 225, 0.15) !important; border-color: var(--primary) !important; }
+.hover-scale { transition: transform 0.2s; }
+.hover-scale:hover { transform: translateY(-3px); }
+.empty-state { background: rgba(255, 255, 255, 0.02); }
+</style>
+{% endblock %}

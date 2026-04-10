@@ -107,8 +107,8 @@
     }
 
     main {
-      margin-left: var(--sidebar-width);
-      width: calc(100% - var(--sidebar-width));
+      margin-left: {% if current_user %}var(--sidebar-width){% else %}0{% endif %};
+      width: {% if current_user %}calc(100% - var(--sidebar-width)){% else %}100%{% endif %};
       min-height: 100vh;
       padding: 2rem;
       transition: var(--transition);
@@ -120,8 +120,8 @@
       }
 
       main {
-        margin-left: 0;
-        width: 100%;
+        margin-left: 0 !important;
+        width: 100% !important;
         padding: 1rem;
       }
 
@@ -179,16 +179,32 @@
     }
 
     .card-header {
-      background: rgba(255, 255, 255, 0.03);
+      background: #1C2541 !important;
       padding: 1.25rem 1.5rem;
       border-bottom: 1px solid var(--border-color);
       font-weight: 600;
+      color: var(--secondary) !important;
     }
 
     .card-title {
       color: var(--secondary);
       font-size: 1.1rem;
       margin-bottom: 0;
+    }
+
+    .list-group-item {
+      background-color: var(--card-surface) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-muted) !important;
+    }
+
+    .list-group-item-action {
+      transition: var(--transition);
+    }
+
+    .list-group-item-action:hover {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      color: var(--secondary) !important;
     }
 
     .stat-card {
@@ -301,7 +317,6 @@
       font-weight: 500 !important;
       margin-bottom: 0.5rem !important;
       display: block !important;
-      ss
     }
 
     .input-group-text {
@@ -498,19 +513,40 @@
     }
 
     .opacity-25 {
-      opacity: 0.45 !important;
+      opacity: 0.6 !important;
     }
 
     .opacity-50 {
-      opacity: 0.7 !important;
+      opacity: 0.8 !important;
     }
 
     .opacity-75 {
-      opacity: 0.9 !important;
+      opacity: 0.95 !important;
     }
 
     .text-muted {
-      color: var(--text-muted) !important;
+      color: #CBD5E1 !important;
+      opacity: 1 !important;
+    }
+
+    small, .small {
+      font-size: 0.875rem;
+      color: #E2E8F0 !important;
+      opacity: 0.9 !important;
+    }
+
+    .alert-info {
+      background-color: #3B82F6 !important;
+      color: #ffffff !important;
+      border: none !important;
+    }
+
+    .alert-info .text-muted, 
+    .alert-info small, 
+    .alert-info .small,
+    .alert-info strong {
+      color: #ffffff !important;
+      opacity: 1 !important;
     }
 
     .list-group-item-action:hover {
@@ -550,15 +586,15 @@
       align-items: center;
       justify-content: center;
       background: radial-gradient(circle at center, #1c2541 0%, #0b132b 100%);
-      padding: 1.5rem;
+      padding: 2rem;
       position: relative;
-      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .auth-container {
       display: flex;
-      gap: 3.5rem;
-      max-width: 1000px;
+      gap: 5rem;
+      max-width: 1100px;
       width: 100%;
       align-items: center;
       justify-content: center;
@@ -772,9 +808,15 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="{{ url_for('attendance_bp.my_attendance') }}" class="nav-link">
+          <a href="{{ url_for('attendance_bp.index') }}" class="nav-link {% if 'attendance' in request.endpoint %}active{% endif %}">
             <i class="bi bi-check2-circle"></i>
-            My Attendance
+            Attendance
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('exam_bp.student_exams') }}" class="nav-link {% if 'exam' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-laptop-fill"></i>
+            Online Exams
           </a>
         </li>
         <li class="nav-item">

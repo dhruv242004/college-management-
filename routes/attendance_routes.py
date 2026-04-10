@@ -14,11 +14,17 @@ ACAD_YEAR = "2024-25"
 
 @attendance_bp.route("/")
 @require_login
-@require_roles("admin", "faculty")
+@require_roles("admin", "faculty", "student")
 def index():
     """Main attendance index with QR and traditional options."""
     user = get_current_user()
-    fid = user.get("extra_id") if user.get("role_name") == "faculty" else None
+    role = user.get("role_name")
+    fid = user.get("extra_id") if role == "faculty" else None
+    
+    # Students see a simplified view
+    if role == "student":
+        return render_template("attendance/index.html")
+        
     is_faculty_assigned = True
     with db_cursor() as (conn, cur):
         if fid:

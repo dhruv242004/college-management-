@@ -17,26 +17,26 @@
   <div class="row g-4">
     <!-- Browse by Course -->
     <div class="col-md-6">
-      <div class="card h-100 p-0 overflow-hidden">
-        <div class="card-header border-bottom border-secondary border-opacity-10 bg-white bg-opacity-5 p-4">
+      <div class="card h-100 p-0 overflow-hidden border-0 shadow-lg">
+        <div class="card-header border-bottom border-secondary border-opacity-10 p-4" style="background: #1c2541 !important;">
           <div class="d-flex align-items-center">
-            <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+            <div class="stat-icon bg-primary bg-opacity-25 text-primary me-3 shadow-sm" style="background-color: rgba(65, 105, 225, 0.2) !important;">
               <i class="bi bi-book"></i>
             </div>
             <div>
               <h5 class="fw-bold mb-0 text-white">Browse by Course</h5>
-              <small class="opacity-50">Select course to see its weekly schedule</small>
+              <small class="text-white opacity-75">Select course to see its weekly schedule</small>
             </div>
           </div>
         </div>
         <div class="list-group list-group-flush">
           {% for c in courses %}
           <a href="{{ url_for('timetable_bp.course_timetable', course_id=c.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 px-4 border-0 border-bottom border-secondary border-opacity-10">
-            <span class="text-white fw-medium">{{ c.name }} <small class="opacity-50 ms-1">({{ c.code }})</small></span>
+            <span class="text-white fw-medium">{{ c.name }} <small class="text-white opacity-50 ms-1">({{ c.code }})</small></span>
             <i class="bi bi-chevron-right text-secondary small"></i>
           </a>
           {% else %}
-          <div class="p-5 text-center opacity-50">No courses available.</div>
+          <div class="p-5 text-center text-white opacity-50">No courses available.</div>
           {% endfor %}
         </div>
       </div>
@@ -44,15 +44,15 @@
 
     <!-- Browse by Faculty -->
     <div class="col-md-6">
-      <div class="card h-100 p-0 overflow-hidden">
-        <div class="card-header border-bottom border-secondary border-opacity-10 bg-white bg-opacity-5 p-4">
+      <div class="card h-100 p-0 overflow-hidden border-0 shadow-lg">
+        <div class="card-header border-bottom border-secondary border-opacity-10 p-4" style="background: #1c2541 !important;">
           <div class="d-flex align-items-center">
-            <div class="stat-icon bg-secondary bg-opacity-10 text-secondary me-3">
+            <div class="stat-icon bg-secondary bg-opacity-25 text-secondary me-3 shadow-sm" style="background-color: rgba(255, 215, 0, 0.15) !important;">
               <i class="bi bi-people"></i>
             </div>
             <div>
               <h5 class="fw-bold mb-0 text-white">Browse by Faculty</h5>
-              <small class="opacity-50">View schedule for teaching staff</small>
+              <small class="text-white opacity-75">View schedule for teaching staff</small>
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@
           {% for f in faculty %}
           <a href="{{ url_for('timetable_bp.faculty_timetable', fid=f.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 px-4 border-0 border-bottom border-secondary border-opacity-10">
             <div class="d-flex align-items-center">
-              <div class="avatar-circle-sm bg-secondary bg-opacity-10 text-secondary d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 32px; height: 32px; font-size: 0.75rem;">
+              <div class="avatar-circle-sm bg-secondary bg-opacity-25 text-secondary d-flex align-items-center justify-content-center rounded-circle me-3 shadow-sm" style="width: 32px; height: 32px; font-size: 0.75rem; font-weight: 700;">
                 {{ f.first_name[0] if f.first_name else 'F' }}
               </div>
               <span class="text-white fw-medium">{{ f.first_name }} {{ f.last_name }}</span>
@@ -68,7 +68,7 @@
             <i class="bi bi-chevron-right text-secondary small"></i>
           </a>
           {% else %}
-          <div class="p-5 text-center opacity-50">No faculty members found.</div>
+          <div class="p-5 text-center text-white opacity-50">No faculty members found.</div>
           {% endfor %}
         </div>
       </div>

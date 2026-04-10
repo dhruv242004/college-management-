@@ -1,6 +1,7 @@
 """College Management System - Flask application."""
 import os
 import datetime
+import json
 from flask import Flask, redirect, url_for, render_template, request
 from config import config
 from auth import get_current_user, require_login, require_roles
@@ -354,6 +355,13 @@ def dashboard():
 @app.context_processor
 def inject_user():
     return {"current_user": get_current_user()}
+
+
+app.jinja_env.globals.update(
+    get_current_user=get_current_user,
+    now=datetime.datetime.now,
+    from_json=json.loads
+)
 
 
 @app.template_filter("date")
