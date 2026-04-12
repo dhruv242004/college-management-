@@ -137,13 +137,27 @@ let scannerActive = false;
 
 // Start camera
 document.getElementById('startScanBtn').addEventListener('click', async () => {
+  showStatus('info', '<span class="spinner-border spinner-border-sm me-2"></span>Requesting camera access...');
+  
   try {
+    // Check if secure context (HTTPS or localhost)
+    if (!window.isSecureContext) {
+      throw new Error('Camera access requires a secure connection (HTTPS). Please ensure you are on a secure site.');
+    }
+
     const stream = await navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
+      video: { 
+        facingMode: 'environment',
+        width: { ideal: 640 }, 
+        height: { ideal: 480 } 
+      } 
     });
+    
     video.srcObject = stream;
     
-    // Use onloadedmetadata to ensure video dimensions are available
+    // Hide info status once camera starts
+    document.getElementById('status-message').style.display = 'none';
+    
     video.onloadedmetadata = () => {
       video.play();
       document.getElementById('scanner-container').style.display = 'block';
@@ -154,7 +168,13 @@ document.getElementById('startScanBtn').addEventListener('click', async () => {
     
   } catch (error) {
     console.error('Camera Error:', error);
-    showStatus('danger', 'Camera not available: ' + error.message + '. Please ensure you have granted camera permissions.');
+    let errorMsg = 'Camera not available: ' + error.message;
+    if (error.name === 'NotAllowedError') {
+      errorMsg = 'Camera access denied. Please enable camera permissions in your browser settings.';
+    } else if (error.name === 'NotFoundError') {
+      errorMsg = 'No camera found on this device.';
+    }
+    showStatus('danger', `<i class="bi bi-exclamation-triangle me-2"></i> ${errorMsg}`);
   }
 });
 
@@ -193,8 +213,12 @@ function scanQR() {
 }
 
 // OTP code submission
-document.getElementById('submitOtpBtn').addEventListener('click', async () => {
-  const otpCode = document.getElementById('otp_code_manual').value.trim().toUpperCase();
+document.getElementById('submitOtpBtn').addEventListener('click', async (e) => {
+  e.preventDefault(); // Prevent any form submission
+  
+  const otpInput = document.getElementById('otp_code_manual');
+  const otpCode = otpInput.value.trim().toUpperCase();
+  
   if (!otpCode) {
     showStatus('warning', 'Please enter the 6-digit attendance code');
     return;
@@ -202,6 +226,12 @@ document.getElementById('submitOtpBtn').addEventListener('click', async () => {
   
   if (isScanning) return;
   isScanning = true;
+  
+  // Disable button while processing
+  const submitBtn = document.getElementById('submitOtpBtn');
+  const originalBtnText = submitBtn.innerHTML;
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
   
   showStatus('info', '<span class="spinner-border spinner-border-sm me-2"></span>Verifying attendance code...');
   
@@ -221,10 +251,10 @@ document.getElementById('submitOtpBtn').addEventListener('click', async () => {
     if (data.success) {
       showStatus('success', `
         <i class="bi bi-check-circle me-2"></i>
-        ${data.message}<br>
-        <small>Attendance recorded via secure code.</small>
+        <strong>Success!</strong> ${data.message}<br>
+        <small>Redirecting to your attendance records...</small>
       `);
-      document.getElementById('otp_code_manual').value = '';
+      otpInput.value = '';
       
       // Redirect to history after a short delay
       setTimeout(() => {
@@ -232,9 +262,14 @@ document.getElementById('submitOtpBtn').addEventListener('click', async () => {
       }, 2000);
     } else {
       showStatus('danger', `<i class="bi bi-exclamation-circle me-2"></i> ${data.message}`);
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
     }
   } catch (error) {
-    showStatus('danger', 'Error processing code: ' + error.message);
+    console.error('OTP Submission Error:', error);
+    showStatus('danger', '<i class="bi bi-wifi-off me-2"></i> Network error. Please check your connection and try again.');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalBtnText;
   } finally {
     isScanning = false;
   }

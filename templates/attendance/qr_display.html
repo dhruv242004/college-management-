@@ -9,6 +9,12 @@
       <h1 class="display-5 fw-bold">
         <i class="bi bi-qr-code text-success me-2"></i>QR Session Active
       </h1>
+      {% if session.is_existing %}
+      <div class="alert alert-warning py-2 mb-0 shadow-sm border-0 border-start border-4 border-warning">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        An active session already exists for this subject today. Resuming existing session.
+      </div>
+      {% endif %}
     </div>
   </div>
 

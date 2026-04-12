@@ -70,6 +70,43 @@ class QRAttendanceService:
             # Get session date and time
             session_date = current_time.date()
             
+            # Check for existing active session for same subject, faculty and date
+            cur.execute(
+                """
+                SELECT session_id, qr_token, otp_code, start_time, expiry_time 
+                FROM attendance_sessions 
+                WHERE subject_id = %s AND faculty_id = %s AND date = %s AND status = 'active'
+                """,
+                (subject_id, faculty_id, session_date)
+            )
+            existing_session = cur.fetchone()
+            
+            if existing_session:
+                # If existing session is still valid, return it instead of creating new one
+                if datetime.utcnow() < existing_session['expiry_time']:
+                    # Update QR and return existing
+                    qr_image = self._generate_qr_image(existing_session['qr_token'])
+                    qr_base64 = self._qr_to_base64(qr_image)
+                    
+                    return {
+                        'session_id': existing_session['session_id'],
+                        'qr_image': qr_base64,
+                        'token': existing_session['qr_token'],
+                        'start_time': existing_session['start_time'].isoformat(),
+                        'expiry_time': existing_session['expiry_time'].isoformat(),
+                        'duration_minutes': duration_minutes,
+                        'otp_code': existing_session['otp_code'],
+                        'faculty_id': faculty_id,
+                        'subject_id': subject_id,
+                        'is_existing': True
+                    }
+                else:
+                    # Mark existing as expired since we're creating a new one
+                    cur.execute(
+                        "UPDATE attendance_sessions SET status = 'expired' WHERE session_id = %s",
+                        (existing_session['session_id'],)
+                    )
+            
             try:
                 cur.execute(
                     """
