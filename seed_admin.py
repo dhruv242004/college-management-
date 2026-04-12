@@ -4,7 +4,7 @@ from database import db_cursor
 
 ADMIN_USERNAME = "admin"
 ADMIN_EMAIL = "admin@college.edu"
-ADMIN_PASSWORD = "admin123"
+ADMIN_PASSWORD = "Dhruv@2424"
 
 def seed_admin():
     print("🌱 Seeding Admin user...")
