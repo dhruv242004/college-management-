@@ -25,20 +25,16 @@
           <td>{{ f.email }}</td>
           <td>{{ f.designation or '—' }}</td>
           <td>{{ f.dept_name }}</td>
-          <td>
-            <a href="{{ url_for('faculty_bp.profile', fid=f.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+          <td class="table-actions">
+            <a href="{{ url_for('faculty_bp.profile', fid=f.id) }}" class="btn btn-primary" title="View Profile">View</a>
             {% if not f.user_id %}
-            <a href="{{ url_for('faculty_bp.create_login', fid=f.id) }}" class="btn btn-sm btn-outline-success"
-              title="Faculty can then log in">Create login</a>
+            <a href="{{ url_for('faculty_bp.create_login', fid=f.id) }}" class="btn btn-outline-success" title="Create Login">Login</a>
             {% endif %}
-            <a href="{{ url_for('faculty_bp.assign_subjects', fid=f.id) }}"
-              class="btn btn-sm btn-outline-primary">Assign</a>
-            <a href="{{ url_for('faculty_bp.assigned_students', fid=f.id) }}"
-              class="btn btn-sm btn-outline-info">Students</a>
-            <a href="{{ url_for('faculty_bp.edit', fid=f.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-            <form action="{{ url_for('faculty_bp.delete', fid=f.id) }}" method="post" class="d-inline"
-              onsubmit="return confirm('Delete this faculty?');">
-              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+            <a href="{{ url_for('faculty_bp.assign_subjects', fid=f.id) }}" class="btn btn-outline-primary" title="Assign Subjects">Assign</a>
+            <a href="{{ url_for('faculty_bp.assigned_students', fid=f.id) }}" class="btn btn-outline-info" title="Assigned Students">Students</a>
+            <a href="{{ url_for('faculty_bp.edit', fid=f.id) }}" class="btn btn-secondary" title="Edit Faculty">Edit</a>
+            <form action="{{ url_for('faculty_bp.delete', fid=f.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete this faculty?');">
+              <button type="submit" class="btn btn-outline-danger" title="Delete Faculty">Delete</button>
             </form>
           </td>
         </tr>

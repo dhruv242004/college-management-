@@ -30,12 +30,10 @@
             <td class="opacity-75">{{ c.dept_name }}</td>
             <td class="opacity-75">{{ c.duration_years }} yrs</td>
             {% if current_user.role_name == 'admin' %}
-            <td class="text-end">
-              <a href="{{ url_for('academic_bp.edit_course', cid=c.id) }}"
-                class="btn btn-sm btn-outline-primary">Edit</a>
-              <form action="{{ url_for('academic_bp.delete_course', cid=c.id) }}" method="post" class="d-inline"
-                onsubmit="return confirm('Delete?');">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+            <td class="table-actions justify-content-end">
+              <a href="{{ url_for('academic_bp.edit_course', cid=c.id) }}" class="btn btn-secondary">Edit</a>
+              <form action="{{ url_for('academic_bp.delete_course', cid=c.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete?');">
+                <button type="submit" class="btn btn-outline-danger">Delete</button>
               </form>
             </td>
             {% endif %}

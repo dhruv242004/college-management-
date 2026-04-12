@@ -31,10 +31,10 @@
             <td class="text-center"><span class="badge bg-secondary">Sem {{ s.semester }}</span></td>
             <td class="text-center fw-bold text-primary">{{ s.credits }}</td>
             {% if current_user.role_name == 'admin' %}
-            <td class="text-end">
-              <a href="{{ url_for('academic_bp.edit_subject', sid=s.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+            <td class="table-actions justify-content-end">
+              <a href="{{ url_for('academic_bp.edit_subject', sid=s.id) }}" class="btn btn-secondary">Edit</a>
               <form action="{{ url_for('academic_bp.delete_subject', sid=s.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete?');">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                <button type="submit" class="btn btn-outline-danger">Delete</button>
               </form>
             </td>
             {% endif %}

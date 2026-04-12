@@ -23,12 +23,10 @@
           <tr>
             <td><code class="text-secondary bg-opacity-10">{{ d.code }}</code></td>
             <td class="fw-bold text-white">{{ d.name }}</td>
-            <td class="text-end">
-              <a href="{{ url_for('academic_bp.edit_department', did=d.id) }}"
-                class="btn btn-sm btn-outline-primary">Edit</a>
-              <form action="{{ url_for('academic_bp.delete_department', did=d.id) }}" method="post" class="d-inline"
-                onsubmit="return confirm('Delete?');">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+            <td class="table-actions justify-content-end">
+              <a href="{{ url_for('academic_bp.edit_department', did=d.id) }}" class="btn btn-secondary">Edit</a>
+              <form action="{{ url_for('academic_bp.delete_department', did=d.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete?');">
+                <button type="submit" class="btn btn-outline-danger">Delete</button>
               </form>
             </td>
           </tr>

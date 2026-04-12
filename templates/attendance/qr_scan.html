@@ -111,7 +111,6 @@
         </div>
         <div class="card-body small text-white opacity-75">
           <ul class="mb-0">
-            <li class="mb-1">Your location data (if allowed) is recorded for verification</li>
             <li class="mb-1">Device information is logged for attendance records</li>
             <li class="mb-1">QR codes expire after the validity period</li>
             <li class="mb-0">Duplicate scans are prevented automatically</li>
@@ -126,61 +125,44 @@
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
 
+<!-- Invisible canvas for scanning -->
+<canvas id="qr-canvas" style="display: none;"></canvas>
+
 <script>
 let video = document.getElementById('video');
-let canvas, ctx;
+let canvas = document.getElementById('qr-canvas');
+let ctx = canvas.getContext('2d', { willReadFrequently: true });
 let isScanning = false;
 let scannerActive = false;
-
-// Get geolocation
-function getGeolocation() {
-  return new Promise((resolve) => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy
-          });
-        },
-        (error) => {
-          console.log('Geolocation error:', error);
-          resolve(null);
-        }
-      );
-    } else {
-      resolve(null);
-    }
-  });
-}
 
 // Start camera
 document.getElementById('startScanBtn').addEventListener('click', async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: 'environment' } 
+      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
     });
     video.srcObject = stream;
     
-    document.getElementById('scanner-container').style.display = 'block';
-    document.getElementById('startScanBtn').style.display = 'none';
-    
-    // Setup canvas for scanning
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
-    
-    scannerActive = true;
-    scanQR();
+    // Use onloadedmetadata to ensure video dimensions are available
+    video.onloadedmetadata = () => {
+      video.play();
+      document.getElementById('scanner-container').style.display = 'block';
+      document.getElementById('startScanBtn').style.display = 'none';
+      scannerActive = true;
+      requestAnimationFrame(scanQR);
+    };
     
   } catch (error) {
-    showStatus('error', 'Camera not available: ' + error.message);
+    console.error('Camera Error:', error);
+    showStatus('danger', 'Camera not available: ' + error.message + '. Please ensure you have granted camera permissions.');
   }
 });
 
 // Stop camera
 document.getElementById('stopScanBtn').addEventListener('click', () => {
-  video.srcObject.getTracks().forEach(track => track.stop());
+  if (video.srcObject) {
+    video.srcObject.getTracks().forEach(track => track.stop());
+  }
   document.getElementById('scanner-container').style.display = 'none';
   document.getElementById('startScanBtn').style.display = 'block';
   scannerActive = false;
@@ -196,9 +178,11 @@ function scanQR() {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, imageData.width, imageData.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: "dontInvert",
+    });
     
-    if (code) {
+    if (code && code.data) {
       // QR code detected
       processToken(code.data);
       return;
@@ -216,23 +200,19 @@ document.getElementById('submitOtpBtn').addEventListener('click', async () => {
     return;
   }
   
+  if (isScanning) return;
   isScanning = true;
+  
   showStatus('info', '<span class="spinner-border spinner-border-sm me-2"></span>Verifying attendance code...');
   
   try {
-    const deviceInfo = navigator.userAgent;
-    const location = await getGeolocation();
-    
     const response = await fetch('/attendance/otp/mark', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        otp_code: otpCode,
-        latitude: location?.latitude,
-        longitude: location?.longitude,
-        accuracy: location?.accuracy
+        otp_code: otpCode
       })
     });
     
@@ -255,37 +235,33 @@ document.getElementById('submitOtpBtn').addEventListener('click', async () => {
     }
   } catch (error) {
     showStatus('danger', 'Error processing code: ' + error.message);
+  } finally {
+    isScanning = false;
   }
-  isScanning = false;
 });
 
 // Process token
 async function processToken(token) {
+  if (isScanning) return;
   isScanning = true;
+  
   showStatus('info', '<span class="spinner-border spinner-border-sm me-2"></span>Processing QR code...');
   
-  if (scannerActive) {
+  // Stop camera immediately after successful detection
+  if (video.srcObject) {
     video.srcObject.getTracks().forEach(track => track.stop());
-    document.getElementById('scanner-container').style.display = 'none';
-    document.getElementById('startScanBtn').style.display = 'block';
-    scannerActive = false;
   }
+  document.getElementById('scanner-container').style.display = 'none';
+  scannerActive = false;
   
   try {
-    // Get device info
-    const deviceInfo = navigator.userAgent;
-    const location = await getGeolocation();
-    
     const response = await fetch('/attendance/qr/scan', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        qr_token: token,
-        latitude: location?.latitude,
-        longitude: location?.longitude,
-        accuracy: location?.accuracy
+        qr_token: token
       })
     });
     
@@ -314,9 +290,9 @@ async function processToken(token) {
   } catch (error) {
     showStatus('danger', 'Error processing QR code: ' + error.message);
     document.getElementById('startScanBtn').style.display = 'block';
+  } finally {
+    isScanning = false;
   }
-  
-  isScanning = false;
 }
 
 // Show status message
@@ -328,10 +304,13 @@ function showStatus(type, message) {
   alertEl.innerHTML = message;
   messageEl.style.display = 'block';
   
-  // Auto-hide success after 5 seconds
-  if (type === 'success') {
+  // Auto-hide non-error after 5 seconds
+  if (type !== 'danger') {
     setTimeout(() => {
-      messageEl.style.display = 'none';
+      // Only hide if it's still the same message
+      if (alertEl.innerHTML === message) {
+        messageEl.style.display = 'none';
+      }
     }, 5000);
   }
 }

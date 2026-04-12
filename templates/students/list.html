@@ -24,9 +24,9 @@
           {% endfor %}
         </select>
       </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-primary">Search</button>
-        <a href="{{ url_for('students_bp.list_students') }}" class="btn btn-outline-secondary">Clear</a>
+      <div class="col-md-3 d-flex align-items-end gap-2">
+        <button type="submit" class="btn btn-primary px-4">Search</button>
+        <a href="{{ url_for('students_bp.list_students') }}" class="btn btn-secondary">Clear</a>
       </div>
     </form>
   </div>
@@ -57,15 +57,15 @@
           <td>{{ s.current_semester }}</td>
           <td>{{ s.course_name }}</td>
           <td>{{ s.dept_name }}</td>
-          <td>
-            <a href="{{ url_for('students_bp.profile', sid=s.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+          <td class="table-actions">
+            <a href="{{ url_for('students_bp.profile', sid=s.id) }}" class="btn btn-primary" title="View Profile">View</a>
             {% if current_user.role_name == 'admin' %}
             {% if not s.user_id %}
-            <a href="{{ url_for('students_bp.create_login', sid=s.id) }}" class="btn btn-sm btn-outline-success" title="Student can then log in to see details">Create login</a>
+            <a href="{{ url_for('students_bp.create_login', sid=s.id) }}" class="btn btn-outline-success" title="Create Login">Create Login</a>
             {% endif %}
-            <a href="{{ url_for('students_bp.edit', sid=s.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+            <a href="{{ url_for('students_bp.edit', sid=s.id) }}" class="btn btn-secondary" title="Edit Student">Edit</a>
             <form action="{{ url_for('students_bp.delete', sid=s.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete this student?');">
-              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              <button type="submit" class="btn btn-outline-danger" title="Delete Student">Delete</button>
             </form>
             {% endif %}
           </td>
