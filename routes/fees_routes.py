@@ -1,11 +1,20 @@
 """Fees: structure, payments, receipts, due tracking."""
+import os
 import uuid
 from datetime import date
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from auth import require_login, require_roles, get_current_user
 from database import db_cursor
+from config import _env_strip
 
 fees_bp = Blueprint("fees_bp", __name__)
+
+
+def _razorpay_template_context():
+    kid = _env_strip(os.environ.get("RAZORPAY_KEY_ID"))
+    sec = _env_strip(os.environ.get("RAZORPAY_KEY_SECRET"))
+    ready = bool(kid and sec)
+    return {"razorpay_ready": ready, "razorpay_key_id": kid if ready else ""}
 
 ACAD_YEAR = "2025-26"
 
@@ -268,7 +277,15 @@ def my_fees():
         )
         structure = cur.fetchone()
     if not structure:
-        return render_template("fees/my_fees.html", student=student, structure=None, payments=[], paid=0, pending=0)
+        return render_template(
+            "fees/my_fees.html",
+            student=student,
+            structure=None,
+            payments=[],
+            paid=0,
+            pending=0,
+            **_razorpay_template_context(),
+        )
     with db_cursor() as (conn, cur):
         cur.execute(
             "SELECT * FROM fee_payments WHERE student_id = %s AND fee_structure_id = %s ORDER BY payment_date DESC",
@@ -284,6 +301,7 @@ def my_fees():
         payments=payments,
         paid=paid,
         pending=pending,
+        **_razorpay_template_context(),
     )
 
 

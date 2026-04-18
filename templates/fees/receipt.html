@@ -11,6 +11,12 @@
     border-radius: 20px;
     overflow: hidden;
   }
+  #receipt-card .card-body .text-muted {
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  #receipt-card .card-body .text-dark {
+    color: #fff !important;
+  }
   .hover-primary:hover {
     color: var(--primary) !important;
   }
@@ -53,9 +59,18 @@
             <div class="row mb-5">
               <div class="col-12">
                     <h6 class="text-uppercase fw-bold ls-1 mb-3 text-primary">Student Information</h6>
-                    <h4 class="fw-bold mb-1">{{ payment.first_name }} {{ payment.last_name }}</h4>
-                    <p class="mb-1 text-muted"><span class="fw-medium text-dark">Enrollment:</span> {{ payment.enrollment_no }}</p>
-                    <p class="mb-0 text-muted"><span class="fw-medium text-dark">Course:</span> {{ payment.course_name }} <span class="mx-2">•</span> <span class="fw-medium text-dark">Semester:</span> {{ payment.current_semester }}</p>
+                    <h4 class="fw-bold mb-1 text-white">{{ payment.first_name }} {{ payment.last_name }}</h4>
+                    <p class="mb-1 text-white-75">
+                      <span class="fw-medium text-white">Enrollment:</span>
+                      <span class="text-white">{{ payment.enrollment_no }}</span>
+                    </p>
+                    <p class="mb-0 text-white-75">
+                      <span class="fw-medium text-white">Course:</span>
+                      <span class="text-white">{{ payment.course_name }}</span>
+                      <span class="mx-2">•</span>
+                      <span class="fw-medium text-white">Semester:</span>
+                      <span class="text-white">{{ payment.current_semester }}</span>
+                    </p>
                 </div>
               </div>
             </div>
@@ -71,13 +86,13 @@
                 <tbody>
                   <tr>
                     <td class="py-4">
-                        <span class="fw-bold d-block text-dark">Academic Fee Payment</span>
-                        <small class="text-muted">Academic Year: {{ payment.academic_year }}</small>
+                        <span class="fw-bold d-block text-white">Academic Fee Payment</span>
+                        <small class="text-white-75">Academic Year: {{ payment.academic_year }}</small>
                     </td>
                     <td class="text-end py-4 fw-bold fs-5">₹ {{ "%.2f"|format(payment.amount_paid) }}</td>
                   </tr>
                   <tr>
-                    <td class="py-2 text-muted small">
+                    <td class="py-2 text-white-75 small">
                         <i class="bi bi-credit-card me-1"></i> Payment Mode: {{ payment.payment_mode or 'Cash' }}
                     </td>
                     <td></td>
@@ -94,8 +109,8 @@
 
             {% if payment.remarks %}
             <div class="mb-5">
-              <h6 class="text-muted small text-uppercase fw-bold">Remarks</h6>
-              <p class="fst-italic text-dark">{{ payment.remarks }}</p>
+              <h6 class="text-white-75 small text-uppercase fw-bold">Remarks</h6>
+              <p class="fst-italic text-white">{{ payment.remarks }}</p>
             </div>
             {% endif %}
             

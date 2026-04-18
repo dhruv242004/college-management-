@@ -4,9 +4,24 @@ from dotenv import load_dotenv
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-# Only load .env if NOT running on Render (production)
-if os.environ.get("FLASK_ENV") != "production":
-    load_dotenv(os.path.join(BASE_DIR, '.env'))
+
+def _env_strip(val, default=""):
+    """Strip whitespace, UTF-8 BOM, and wrapping quotes from env values."""
+    if val is None:
+        return default
+    s = str(val).strip().strip("\ufeff").strip()
+    if (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'")):
+        s = s[1:-1].strip()
+    return s
+
+
+# Load project .env when the file exists (fixes local dev if the shell has
+# FLASK_ENV=production set globally, which would otherwise skip loading).
+_env_path = os.path.join(BASE_DIR, ".env")
+if os.path.isfile(_env_path):
+    load_dotenv(_env_path, override=True)
+elif os.environ.get("FLASK_ENV") != "production":
+    load_dotenv(_env_path, override=True)
 
 
 class Config:
@@ -33,5 +48,9 @@ class Config:
     ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
     BASE_URL = os.environ.get("BASE_URL") or "http://localhost:5000"
+
+    # Razorpay — set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env (never hardcode keys here)
+    RAZORPAY_KEY_ID = _env_strip(os.environ.get("RAZORPAY_KEY_ID"))
+    RAZORPAY_KEY_SECRET = _env_strip(os.environ.get("RAZORPAY_KEY_SECRET"))
 
 config = Config()

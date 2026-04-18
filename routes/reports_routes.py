@@ -126,7 +126,7 @@ def results_report():
     session_name = request.args.get("exam_session") or "2024-25-S1"
     sql = """
         SELECT st.enrollment_no, st.first_name, st.last_name, st.current_semester, c.name AS course_name,
-               sub.name AS subject_name, m.internal_marks, m.external_marks, m.total_marks, m.grade
+               sub.name AS subject_name, sub.code AS subject_code, m.internal_marks, m.external_marks, m.total_marks, m.grade, m.created_at
         FROM students st
         JOIN courses c ON c.id = st.course_id
         JOIN marks m ON m.student_id = st.id
