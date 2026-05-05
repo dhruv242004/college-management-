@@ -101,8 +101,8 @@ def seed_sample_data():
                     enroll = f"{ccode}2025{random.randint(100, 999)}"
                     cur.execute(
                         """
-                        INSERT INTO students (user_id, enrollment_no, first_name, last_name, email, gender, course_id, current_semester, admission_date)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        INSERT INTO students (user_id, enrollment_no, first_name, last_name, email, gender, course_id, current_semester, admission_date, is_verified)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, TRUE)
                         """,
                         (uid, enroll, fname, lname, email, gender, course_map[ccode], 1, date.today() - timedelta(days=60))
                     )
