@@ -152,7 +152,13 @@ def create_exam():
 @require_login
 @require_roles("student")
 def student_exams():
-    sid = get_current_user().get("extra_id")
+    user = get_current_user()
+    sid = user.get("extra_id")
+    
+    if not sid:
+        flash("Student profile not found. Please contact admin.", "danger")
+        return redirect(url_for("dashboard"))
+
     with db_cursor() as (conn, cur):
         # Fetch all online exams for the student's course/semester
         cur.execute(
