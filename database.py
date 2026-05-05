@@ -17,24 +17,30 @@ except ImportError:
 
 def get_connection():
     """Create and return a database connection (PostgreSQL or MySQL)."""
+    db_url = config.DATABASE_URL
+    
     # 1. Try PostgreSQL (Standard for Render)
-    if config.DATABASE_URL:
+    if db_url:
         if not psycopg2:
             raise RuntimeError("psycopg2 is not installed. Required for PostgreSQL.")
         try:
             # Handle Render's 'postgres://' vs 'postgresql://' if needed
-            url = config.DATABASE_URL
-            if url.startswith("postgres://"):
-                url = url.replace("postgres://", "postgresql://", 1)
-            conn = psycopg2.connect(url)
+            if db_url.startswith("postgres://"):
+                db_url = db_url.replace("postgres://", "postgresql://", 1)
+            
+            # Log connection attempt (redacted)
+            print(f"Connecting to PostgreSQL...")
+            conn = psycopg2.connect(db_url)
             conn.autocommit = False
             return conn
         except Exception as e:
-            raise RuntimeError(f"PostgreSQL connection failed: {e}")
+            # If DATABASE_URL is present but fails, DO NOT fall back to MySQL
+            raise RuntimeError(f"PostgreSQL connection failed. Check your DATABASE_URL environment variable. Error: {e}")
 
-    # 2. Fallback to MySQL (Local development)
+    # 2. Fallback to MySQL (Local development only if DATABASE_URL is missing)
     if mysql.connector:
         try:
+            print("Connecting to MySQL (Local fallback)...")
             conn = mysql.connector.connect(
                 host=config.MYSQL_HOST,
                 user=config.MYSQL_USER,
@@ -45,9 +51,9 @@ def get_connection():
             )
             return conn
         except Exception as e:
-            raise RuntimeError(f"MySQL connection failed: {e}")
+            raise RuntimeError(f"Local MySQL connection failed: {e}")
     
-    raise RuntimeError("No database driver or configuration found.")
+    raise RuntimeError("No database driver (psycopg2 or mysql-connector-python) found.")
 
 @contextmanager
 def db_cursor(dictionary=True):
