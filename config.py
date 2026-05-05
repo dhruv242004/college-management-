@@ -4,6 +4,13 @@ from dotenv import load_dotenv
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+def _env_strip(key, default=None):
+    """Get environment variable and strip whitespace."""
+    val = os.environ.get(key)
+    if val:
+        return val.strip()
+    return default
+
 # Load .env only if it exists (for local development)
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
