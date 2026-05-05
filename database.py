@@ -82,38 +82,52 @@ def db_cursor(dictionary=True):
 
 def init_db():
     """Initialize database schema and handle simple migrations."""
-    # Check if database is empty by looking for 'users' table
+    # Check if database is seeded by looking for 'admin' user
+    is_seeded = False
     with db_cursor(dictionary=False) as (conn, cur):
         cur.execute("SELECT 1 FROM information_schema.tables WHERE table_name = 'users'")
-        has_users = cur.fetchone() is not None
+        if cur.fetchone():
+            cur.execute("SELECT 1 FROM users WHERE username = 'admin'")
+            is_seeded = cur.fetchone() is not None
 
-    if not has_users:
-        print("Database is empty. Initializing schema from schema_pg.sql...")
-        schema_path = os.path.join(os.path.dirname(__file__), 'schema_pg.sql')
-        if os.path.exists(schema_path):
-            try:
-                with open(schema_path, 'r', encoding='utf-8') as f:
-                    schema_sql = f.read()
-                
-                with db_cursor(dictionary=False) as (conn, cur):
-                    cur.execute(schema_sql)
-                    conn.commit()
-                print("Schema initialized successfully.")
-                
-                # Seed admin and sample data after fresh initialization
+    if not is_seeded:
+        print("Database not seeded or empty. Checking for schema...")
+        # Check if tables need to be created first
+        with db_cursor(dictionary=False) as (conn, cur):
+            cur.execute("SELECT 1 FROM information_schema.tables WHERE table_name = 'users'")
+            tables_exist = cur.fetchone() is not None
+        
+        if not tables_exist:
+            print("Initializing schema from schema_pg.sql...")
+            schema_path = os.path.join(os.path.dirname(__file__), 'schema_pg.sql')
+            if os.path.exists(schema_path):
                 try:
-                    from seed_admin import seed_admin
-                    from seed_data import seed_sample_data
-                    seed_admin()
-                    seed_sample_data()
+                    with open(schema_path, 'r', encoding='utf-8') as f:
+                        schema_sql = f.read()
+                    
+                    with db_cursor(dictionary=False) as (conn, cur):
+                        cur.execute(schema_sql)
+                        conn.commit()
+                    print("Schema initialized successfully.")
                 except Exception as e:
-                    print(f"Error seeding database: {e}")
-                
-                return # Skip migrations if we just created the schema
-            except Exception as e:
-                print(f"Error initializing schema: {e}")
-        else:
-            print(f"Warning: schema_pg.sql not found at {schema_path}")
+                    print(f"Error initializing schema: {e}")
+                    return
+            else:
+                print(f"Warning: schema_pg.sql not found at {schema_path}")
+                return
+
+        # Seed admin and sample data
+        print("Seeding database...")
+        try:
+            from seed_admin import seed_admin
+            from seed_data import seed_sample_data
+            seed_admin()
+            seed_sample_data()
+            print("Seeding completed successfully.")
+        except Exception as e:
+            print(f"Error seeding database: {e}")
+        
+        return # Skip migrations if we just created/seeded the database
 
     # --- Legacy Migrations (Only run if tables already exist) ---
     try:
