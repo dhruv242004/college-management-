@@ -251,11 +251,16 @@ def student_register():
                     )
                 )
                 
+                # IMPORTANT: Must commit before calling ensure_card_record 
+                # because it uses its own connection
+                conn.commit()
+                
                 # Initial card record (blood group added from form)
                 cur.execute("SELECT id FROM students WHERE enrollment_no = %s", (enrollment_no,))
                 sid = cur.fetchone()["id"]
                 default_id_card_service.ensure_card_record(sid, blood_group=blood_group)
                 
+                # Final commit for the ID card record (handled inside ensure_card_record, but good to be safe)
                 conn.commit()
             
             flash(f"Registration successful! Your enrollment number is: {enrollment_no}. Please wait for admin approval before logging in.", "success")
