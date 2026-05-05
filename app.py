@@ -357,10 +357,20 @@ def inject_user():
     return {"current_user": get_current_user()}
 
 
+def safe_from_json(value):
+    if value is None:
+        return []
+    if isinstance(value, (list, dict)):
+        return value
+    try:
+        return json.loads(value)
+    except:
+        return []
+
 app.jinja_env.globals.update(
     get_current_user=get_current_user,
     now=datetime.datetime.now,
-    from_json=json.loads
+    from_json=safe_from_json
 )
 
 
