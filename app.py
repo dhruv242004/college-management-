@@ -383,5 +383,13 @@ def date_filter(value, format="%Y-%m-%d"):
     return value
 
 
+import traceback
+
+@app.errorhandler(500)
+def handle_500(e):
+    print("Internal Server Error Detected!")
+    traceback.print_exc()
+    return "Internal Server Error. Check logs for traceback.", 500
+
 if __name__ == "__main__":
     socketio.run(app, debug=True, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)
