@@ -1,7 +1,8 @@
 """Seed the database with realistic Indian sample data for students and faculty."""
 from werkzeug.security import generate_password_hash
 from database import db_cursor
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+import datetime # Some parts use datetime.datetime
 import random
 
 # Default password for all sample accounts
@@ -142,6 +143,51 @@ def seed_sample_data():
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """,
                     (sub['course_id'], sub['id'], fid, sub['semester'], day, start_time, end_time, room, "2024-25")
+                )
+
+            # 8. Insert Sample Fee Structure
+            print("💰 Inserting Sample Fee Structure...")
+            cur.execute("SELECT id FROM courses WHERE code = 'BTECH-CSE'")
+            cse_id = cur.fetchone()['id']
+            cur.execute(
+                """
+                INSERT INTO fee_structure (course_id, semester, amount, academic_year, due_date)
+                VALUES (%s, 1, 45000.00, '2025-26', %s)
+                ON CONFLICT DO NOTHING
+                """,
+                (cse_id, date.today() + timedelta(days=30))
+            )
+
+            # 9. Insert Sample Online Exam
+            print("📝 Inserting Sample Online Exam...")
+            cur.execute("SELECT id FROM faculty WHERE email = 'rajesh@college.edu'")
+            fid = cur.fetchone()['id']
+            cur.execute("SELECT id FROM subjects WHERE code = 'CS101'")
+            sub_id = cur.fetchone()['id']
+            
+            cur.execute(
+                """
+                INSERT INTO online_exams (faculty_id, subject_id, title, description, duration_minutes, min_attendance_percentage, start_time, end_time)
+                VALUES (%s, %s, 'Data Structures Quiz', 'Covers Arrays, Linked Lists and Stacks.', 30, 0, %s, %s)
+                RETURNING id
+                """,
+                (fid, sub_id, datetime.datetime.now(), datetime.datetime.now() + datetime.timedelta(hours=24))
+            )
+            exam_id = cur.fetchone()['id']
+            
+            # Add Questions
+            questions = [
+                ('What is the time complexity of searching in a sorted array?', 'mcq', json.dumps(['O(n)', 'O(log n)', 'O(1)', 'O(n^2)']), 'O(log n)', 2),
+                ('A linked list is a linear data structure.', 'true_false', None, 'True', 1),
+                ('Which data structure uses LIFO?', 'mcq', json.dumps(['Queue', 'Stack', 'Tree', 'Graph']), 'Stack', 2)
+            ]
+            for q_text, q_type, q_opts, q_ans, q_marks in questions:
+                cur.execute(
+                    """
+                    INSERT INTO exam_questions (exam_id, question_text, question_type, options, correct_answer, marks)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (exam_id, q_text, q_type, q_opts, q_ans, q_marks)
                 )
 
             print("✅ Data Seeding Completed Successfully!")
