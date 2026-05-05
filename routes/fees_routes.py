@@ -245,10 +245,13 @@ def record_payment(student_id):
 @require_login
 @require_roles("student")
 def my_fees():
-    sid = get_current_user().get("extra_id")
+    user = get_current_user()
+    sid = user.get("extra_id")
+    
     if not sid:
-        flash("Student profile not linked.", "danger")
+        flash("Student profile not found. Please contact admin.", "danger")
         return redirect(url_for("dashboard"))
+
     with db_cursor() as (conn, cur):
         cur.execute(
             "SELECT st.*, c.name AS course_name FROM students st JOIN courses c ON c.id = st.course_id WHERE st.id = %s",
