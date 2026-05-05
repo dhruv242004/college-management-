@@ -95,11 +95,20 @@ def init_db():
                 with open(schema_path, 'r', encoding='utf-8') as f:
                     schema_sql = f.read()
                 
-                # Execute schema as a single block (PostgreSQL supports this)
                 with db_cursor(dictionary=False) as (conn, cur):
                     cur.execute(schema_sql)
                     conn.commit()
                 print("Schema initialized successfully.")
+                
+                # Seed admin and sample data after fresh initialization
+                try:
+                    from seed_admin import seed_admin
+                    from seed_data import seed_sample_data
+                    seed_admin()
+                    seed_sample_data()
+                except Exception as e:
+                    print(f"Error seeding database: {e}")
+                
                 return # Skip migrations if we just created the schema
             except Exception as e:
                 print(f"Error initializing schema: {e}")
