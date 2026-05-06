@@ -159,10 +159,10 @@ def razorpay_checkout(order_id):
     )
 
 
-@payment_bp.route("/verify-razorpay-payment")
+@payment_bp.route("/verify-payment")
 @require_login
 @require_roles("student")
-def verify_razorpay_payment():
+def verify_payment():
     try:
         payment_id = request.args.get("razorpay_payment_id")
         order_id = request.args.get("razorpay_order_id")
