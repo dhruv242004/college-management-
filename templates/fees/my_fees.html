@@ -137,9 +137,6 @@
 
 {% block scripts %}
 {{ super() }}
-{% if razorpay_ready %}
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-{% endif %}
 <script>
     (function () {
         const payBtn = document.getElementById('payNowBtn');
@@ -149,22 +146,11 @@
         const toastEl = document.getElementById('payToast');
         const toastBody = document.getElementById('payToastBody');
         const bsToast = toastEl ? new bootstrap.Toast(toastEl) : null;
-        const razorpayReady = {{ 'true' if razorpay_ready else 'false' }} === true;
-        const verifyUrl = {{ url_for('payment_bp.verify_payment') | tojson }};
-        const payPrefill = {
-            name: {{ ((student.first_name ~ ' ' ~ student.last_name) | trim) | tojson }},
-            email: {{ (student.email or '') | tojson }}
-        };
 
         function showToast(msg) {
             if (!bsToast) return;
             toastBody.textContent = msg;
             bsToast.show();
-        }
-
-        function releasePayUi() {
-            payBtn.disabled = false;
-            spinner.classList.add('d-none');
         }
 
         payBtn.addEventListener('click', async () => {
@@ -176,89 +162,41 @@
                 const res = await fetch('{{ url_for("payment_bp.create_order") }}', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({})
+                    body: JSON.stringify({}),
+                    credentials: 'same-origin'
                 });
 
-                const data = await res.json().catch(() => ({}));
+                let data;
+                const text = await res.text();
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error("Non-JSON response:", text);
+                    showToast('Server returned non-JSON response. Check console.');
+                    payBtn.disabled = false;
+                    spinner.classList.add('d-none');
+                    return;
+                }
 
                 if (!res.ok) {
-                    showToast((data && data.error) || 'Failed to create order');
-                    releasePayUi();
-                    return;
-                }
-
-                if (data.gateway === 'razorpay') {
-                    if (!razorpayReady || typeof Razorpay === 'undefined') {
-                        showToast('Razorpay checkout script failed to load. Refresh the page.');
-                        releasePayUi();
-                        return;
-                    }
-                    const options = {
-                        key: data.key_id,
-                        amount: data.amount,
-                        currency: data.currency || 'INR',
-                        order_id: data.order_id,
-                        name: 'College CMS',
-                        description: 'Semester fees',
-                        prefill: payPrefill,
-                        theme: { color: '#4169E1' },
-                        modal: {
-                            ondismiss: function () {
-                                releasePayUi();
-                            }
-                        },
-                        handler: function (response) {
-                            (async function () {
-                                showToast('Confirming payment…');
-                                try {
-                                    const v = await fetch(verifyUrl, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            razorpay_order_id: response.razorpay_order_id,
-                                            razorpay_payment_id: response.razorpay_payment_id,
-                                            razorpay_signature: response.razorpay_signature
-                                        })
-                                    });
-                                    const vd = await v.json().catch(() => ({}));
-                                    if (!v.ok) {
-                                        showToast((vd && vd.error) || 'Verification failed');
-                                        releasePayUi();
-                                        return;
-                                    }
-                                    if (vd.redirect) {
-                                        window.location.href = vd.redirect;
-                                        return;
-                                    }
-                                    showToast('Unexpected server response');
-                                    releasePayUi();
-                                } catch (err) {
-                                    showToast('Verification error: ' + err.message);
-                                    releasePayUi();
-                                }
-                            })();
-                        }
-                    };
-                    const rzp = new Razorpay(options);
-                    rzp.on('payment.failed', function () {
-                        showToast('Payment failed or was declined.');
-                        releasePayUi();
-                    });
+                    showToast(data.error || 'Failed to create order');
+                    payBtn.disabled = false;
                     spinner.classList.add('d-none');
-                    rzp.open();
                     return;
                 }
 
-                if (data.gateway === 'mock' && data.checkout_url) {
+                if (data.checkout_url) {
                     window.location.href = data.checkout_url;
-                    return;
+                } else {
+                    showToast('Order created but no checkout URL received');
+                    payBtn.disabled = false;
+                    spinner.classList.add('d-none');
                 }
 
-                showToast('Invalid response from server');
-                releasePayUi();
             } catch (e) {
                 showToast('Unexpected error: ' + e.message);
-                releasePayUi();
+                payBtn.disabled = false;
+                spinner.classList.add('d-none');
             }
         });
     })();
