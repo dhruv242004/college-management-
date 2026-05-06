@@ -7,7 +7,12 @@ import razorpay
 from config import config
 
 # Initialize Razorpay Client
-razorpay_client = razorpay.Client(auth=(config.RAZORPAY_KEY_ID, config.RAZORPAY_KEY_SECRET))
+razorpay_client = None
+if config.RAZORPAY_KEY_ID and config.RAZORPAY_KEY_SECRET and config.RAZORPAY_KEY_ID != "YOUR_RAZORPAY_KEY_ID":
+    try:
+        razorpay_client = razorpay.Client(auth=(config.RAZORPAY_KEY_ID, config.RAZORPAY_KEY_SECRET))
+    except Exception as e:
+        print(f"Error initializing Razorpay client: {e}")
 
 payment_bp = Blueprint("payment_bp", __name__)
 
@@ -100,6 +105,9 @@ def create_order():
         internal_order_id = f"ORD-{uuid.uuid4().hex[:12].upper()}"
         
         # Create Razorpay Order
+        if not razorpay_client:
+            return jsonify({"error": "Razorpay is not configured. Please check your environment variables (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)."}), 500
+            
         razorpay_order = razorpay_client.order.create({
             "amount": int(pending_amount * 100), # Amount in paise
             "currency": "INR",
