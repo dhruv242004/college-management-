@@ -4,6 +4,7 @@ from database import db_cursor
 from datetime import date, timedelta, datetime
 import datetime # Some parts use datetime.datetime
 import random
+import json
 
 # Default password for all sample accounts
 DEFAULT_PW = generate_password_hash("password123")
