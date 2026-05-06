@@ -245,53 +245,49 @@ def record_payment(student_id):
 @require_login
 @require_roles("student")
 def my_fees():
-    try:
-        user = get_current_user()
-        sid = user.get("extra_id")
-        
-        if not sid:
-            flash("Student profile not found. Please contact admin.", "danger")
-            return redirect(url_for("dashboard"))
+    user = get_current_user()
+    sid = user.get("extra_id")
+    
+    if not sid:
+        flash("Student profile not found. Please contact admin.", "danger")
+        return redirect(url_for("dashboard"))
 
-        with db_cursor() as (conn, cur):
-            cur.execute(
-                "SELECT st.*, c.name AS course_name FROM students st JOIN courses c ON c.id = st.course_id WHERE st.id = %s",
-                (sid,),
-            )
-            student = cur.fetchone()
-        if not student:
-            flash("Student not found.", "danger")
-            return redirect(url_for("dashboard"))
-        with db_cursor() as (conn, cur):
-            cur.execute(
-                """
-                SELECT fs.* FROM fee_structure fs
-                WHERE fs.course_id = %s AND fs.semester = %s AND fs.academic_year = %s
-                """,
-                (student["course_id"], student["current_semester"], ACAD_YEAR),
-            )
-            structure = cur.fetchone()
-        if not structure:
-            return render_template("fees/my_fees.html", student=student, structure=None, payments=[], paid=0, pending=0)
-        with db_cursor() as (conn, cur):
-            cur.execute(
-                "SELECT * FROM fee_payments WHERE student_id = %s AND fee_structure_id = %s ORDER BY payment_date DESC",
-                (sid, structure["id"]),
-            )
-            payments = cur.fetchall()
-        paid = float(sum(p["amount_paid"] for p in payments))
-        pending = max(0.0, float(structure["amount"]) - paid)
-        return render_template(
-            "fees/my_fees.html",
-            student=student,
-            structure=structure,
-            payments=payments,
-            paid=paid,
-            pending=pending,
+    with db_cursor() as (conn, cur):
+        cur.execute(
+            "SELECT st.*, c.name AS course_name FROM students st JOIN courses c ON c.id = st.course_id WHERE st.id = %s",
+            (sid,),
         )
-    except Exception as e:
-        import traceback
-        return f"DEBUG ERROR: {str(e)}<br><pre>{traceback.format_exc()}</pre>", 500
+        student = cur.fetchone()
+    if not student:
+        flash("Student not found.", "danger")
+        return redirect(url_for("dashboard"))
+    with db_cursor() as (conn, cur):
+        cur.execute(
+            """
+            SELECT fs.* FROM fee_structure fs
+            WHERE fs.course_id = %s AND fs.semester = %s AND fs.academic_year = %s
+            """,
+            (student["course_id"], student["current_semester"], ACAD_YEAR),
+        )
+        structure = cur.fetchone()
+    if not structure:
+        return render_template("fees/my_fees.html", student=student, structure=None, payments=[], paid=0, pending=0)
+    with db_cursor() as (conn, cur):
+        cur.execute(
+            "SELECT * FROM fee_payments WHERE student_id = %s AND fee_structure_id = %s ORDER BY payment_date DESC",
+            (sid, structure["id"]),
+        )
+        payments = cur.fetchall()
+    paid = float(sum(p["amount_paid"] for p in payments))
+    pending = max(0.0, float(structure["amount"]) - paid)
+    return render_template(
+        "fees/my_fees.html",
+        student=student,
+        structure=structure,
+        payments=payments,
+        paid=paid,
+        pending=pending,
+    )
 
 
 @fees_bp.route("/receipt/<receipt_no>")
