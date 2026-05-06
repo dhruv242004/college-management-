@@ -44,5 +44,9 @@ class Config:
     ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
     BASE_URL = os.environ.get("BASE_URL") or "http://localhost:5000"
+    
+    # Razorpay
+    RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID") or "rzp_test_placeholder"
+    RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET") or "placeholder_secret"
 
 config = Config()
