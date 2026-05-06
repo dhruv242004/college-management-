@@ -563,6 +563,80 @@ CREATE TABLE payments (
 CREATE INDEX idx_payments_student ON payments(student_id);
 CREATE INDEX idx_payments_status ON payments(status);
 
+-- ---------------------------------------------------------------------------
+-- ONLINE EXAMS
+-- ---------------------------------------------------------------------------
+CREATE TABLE online_exams (
+    id SERIAL PRIMARY KEY,
+    faculty_id INTEGER NOT NULL,
+    subject_id INTEGER NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    duration_minutes INTEGER NOT NULL,
+    min_attendance_percentage DECIMAL(5,2) DEFAULT 0,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (faculty_id) REFERENCES faculty(id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_oe_faculty ON online_exams(faculty_id);
+CREATE INDEX idx_oe_subject ON online_exams(subject_id);
+CREATE INDEX idx_oe_start ON online_exams(start_time);
+
+-- ---------------------------------------------------------------------------
+-- EXAM QUESTIONS
+-- ---------------------------------------------------------------------------
+CREATE TABLE exam_questions (
+    id SERIAL PRIMARY KEY,
+    exam_id INTEGER NOT NULL,
+    question_text TEXT NOT NULL,
+    question_type VARCHAR(20) NOT NULL CHECK (question_type IN ('mcq', 'true_false', 'short_answer')),
+    options JSONB,
+    correct_answer TEXT,
+    marks INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (exam_id) REFERENCES online_exams(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_eq_exam ON exam_questions(exam_id);
+
+-- ---------------------------------------------------------------------------
+-- STUDENT EXAM ATTEMPTS
+-- ---------------------------------------------------------------------------
+CREATE TABLE student_exam_attempts (
+    id SERIAL PRIMARY KEY,
+    exam_id INTEGER NOT NULL,
+    student_id INTEGER NOT NULL,
+    status VARCHAR(20) DEFAULT 'started' CHECK (status IN ('started', 'submitted', 'graded')),
+    start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    submit_time TIMESTAMP,
+    score DECIMAL(5,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (exam_id) REFERENCES online_exams(id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    UNIQUE (exam_id, student_id)
+);
+
+CREATE INDEX idx_sea_exam_student ON student_exam_attempts(exam_id, student_id);
+
+-- ---------------------------------------------------------------------------
+-- STUDENT ANSWERS
+-- ---------------------------------------------------------------------------
+CREATE TABLE student_answers (
+    id SERIAL PRIMARY KEY,
+    attempt_id INTEGER NOT NULL,
+    question_id INTEGER NOT NULL,
+    answer_text TEXT,
+    is_correct BOOLEAN DEFAULT FALSE,
+    marks_obtained DECIMAL(5,2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (attempt_id) REFERENCES student_exam_attempts(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES exam_questions(id) ON DELETE CASCADE,
+    UNIQUE (attempt_id, question_id)
+);
+
 -- Sample data for exams (PostgreSQL syntax)
 INSERT INTO exams (course_id, subject_id, semester, exam_date, start_time, end_time, exam_type, exam_session)
 SELECT
