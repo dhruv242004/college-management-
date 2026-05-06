@@ -387,9 +387,11 @@ import traceback
 
 @app.errorhandler(500)
 def handle_500(e):
+    import traceback
+    error_info = traceback.format_exc()
     print("Internal Server Error Detected!")
-    traceback.print_exc()
-    return "Internal Server Error. Check logs for traceback.", 500
+    print(error_info)
+    return f"<h1>Internal Server Error (DEBUG)</h1><pre>{error_info}</pre>", 500
 
 if __name__ == "__main__":
     socketio.run(app, debug=True, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)
